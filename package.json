@@ -1,0 +1,24 @@
+{
+    "name": "whiteboard"
+  , "version": "0.0.1"
+  , "private": true
+  , "scripts": {
+     "start": "coffee server.coffee"
+    }
+  , "devDependencies": {
+      "supervisor": ""
+      , "jasmine-node": ""
+  }
+  , "dependencies": {
+      "coffee-script": "1.1.2"
+      , "express": "2.4.6"
+      , "jade": "0.15.3"
+      , "pile": ""
+      , "socket.io": "0.8.2"
+      , "stylus": "0.15.1"
+      , "nib": "0.2.0"
+      , "underscore": "1.1.7"
+      , "underscore.string": "1.1.6"
+      , "async": ""
+  }
+}
