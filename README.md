@@ -21,3 +21,7 @@ Production execute
 
     npm start
 
+
+## Issues with node-canvas
+
+https://github.com/LearnBoost/node-canvas/issues/109#issuecomment-1804833

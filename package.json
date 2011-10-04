@@ -3,7 +3,7 @@
   , "version": "0.0.1"
   , "private": true
   , "scripts": {
-     "start": "coffee server.coffee"
+     "start": "NODE_ENV=production coffee server.coffee"
     }
   , "devDependencies": {
       "supervisor": ""
@@ -16,9 +16,9 @@
       , "pile": ""
       , "socket.io": "0.8.2"
       , "stylus": "0.15.1"
-      , "nib": "0.2.0"
       , "underscore": "1.1.7"
       , "underscore.string": "1.1.6"
+      , "socket.io": ""
       , "async": ""
   }
 }
