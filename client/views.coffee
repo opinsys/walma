@@ -1,5 +1,5 @@
 
-views = NS "views"
+views = NS "PWI.views"
 
 class views.Whiteboard extends Backbone.View
 

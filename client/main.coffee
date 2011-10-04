@@ -1,4 +1,4 @@
-views = NS "views"
+views = NS "PWI.views"
 
 $ ->
   whiteboard = new views.Whiteboard

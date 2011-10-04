@@ -1,12 +1,13 @@
-
-# Main namespace object for Puavo Whiteboard
-window["PWI"] = root = {}
+# Namespace for this app is PWI
+#
 
 # Namespace tool for accessing our namespace
+#
 # Usage:
-#   bar = NS "foo.bar"
+#   bar = NS "PWI.foo.bar"
+#
 window.NS = (nsString) ->
-  parent = root
+  parent = window
   for ns in nsString.split "."
     current = parent[ns]
     # Create new namespace if it is missing
