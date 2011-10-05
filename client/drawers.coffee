@@ -33,25 +33,14 @@ class drawers.Whiteboard extends Backbone.View
 
 
 
-class Drawer
-
-  getCoords: (e) ->
-    if e.offsetX
-      # Webkit
-      x: e.offsetX,  y: e.offsetY
-    else if e.layerX
-      # Browser
-      x: e.layerX, y: e.layerY
-    else
-      # Touch device
-      x: e.pageX - @el.offsetLeft
-      y: e.pageY - @el.offsetTop
 
 
-class drawers.TouchDrawer extends Drawer
-  constructor: (@whiteboard) ->
-    @el = @whiteboard.el
 
+class drawers.TouchDrawer extends Backbone.View
+
+  constructor: (@opts) ->
+    super
+    @whiteboard = @opts.whiteboard
 
     @el.ontouchstart = @startDraw
     @el.ontouchend = @stopDraw
@@ -63,7 +52,6 @@ class drawers.TouchDrawer extends Drawer
 
     for touch, i in e.touches
       @lastPoints[i] = @getCoords touch
-
 
     false
 
@@ -77,13 +65,17 @@ class drawers.TouchDrawer extends Drawer
 
     false
 
+  getCoords: (e) ->
+    x: e.pageX - @el.offsetLeft
+    y: e.pageY - @el.offsetTop
 
-class drawers.MouseDrawer extends Drawer
 
-  constructor: (@whiteboard) ->
+class drawers.MouseDrawer extends Backbone.View
 
+  constructor: (@opts) ->
+    super
+    @whiteboard = @opts.whiteboard
 
-    @el = @whiteboard.el
     @el.onmousedown = @startDraw
     @el.onmouseup = @stopDraw
     @lastPoint = null
@@ -105,6 +97,15 @@ class drawers.MouseDrawer extends Drawer
     @el.onmousemove = null
 
 
+  getCoords: (e) ->
+    if e.offsetX
+      # Webkit
+      x: e.offsetX,  y: e.offsetY
+    else if e.layerX
+      # Firefox
+      x: e.layerX, y: e.layerY
+    else
+      console.log "could not get coords for", e
 
 # Draw to Canvas using socket.io
 class drawers.SockectDrawer

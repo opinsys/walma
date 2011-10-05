@@ -9,9 +9,13 @@ $ ->
 
 
   if hasTtouch
-    new drawers.TouchDrawer whiteboard
+    new drawers.TouchDrawer
+      whiteboard: whiteboard
+      el: ".whiteboard"
   else
-    new drawers.MouseDrawer whiteboard
+    new drawers.MouseDrawer
+      whiteboard: whiteboard
+      el: ".whiteboard"
 
 
 
