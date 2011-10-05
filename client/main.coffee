@@ -4,3 +4,7 @@ $ ->
   whiteboard = new views.Whiteboard
     el: ".whiteboard"
 
+  new views.MouseDrawer whiteboard
+
+
+

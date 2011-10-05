@@ -13,7 +13,6 @@ class views.Whiteboard extends Backbone.View
   constructor: (opts) ->
     super
 
-    @lastPoints = []
 
     @ctx = @el.getContext('2d')
 
@@ -22,39 +21,49 @@ class views.Whiteboard extends Backbone.View
     @ctx.beginPath()
 
 
-    $(@el).mousedown @startDraw
 
-    @el.onmouseup = @stopDraw
+  drawLine: (from, to) =>
+    @ctx.moveTo from.x, from.y
+    @ctx.lineTo to.x, to.y
 
-    @el.ontouchstart = @startDraw
-    @el.ontouchstop = @stopDraw
-    @el.ontouchmove = @draw
-
-
-  startDraw: (e) =>
-    @lastPoints[0] = @getCoords e
-    @el.onmousemove = @draw
-
-    return false
-
-  draw: (e) =>
-    p = @getCoords e
-    @lastPoints[0] = @drawLine @lastPoints[0].x, @lastPoints[0].y, p.x, p.y
     @ctx.stroke()
     @ctx.closePath()
     @ctx.beginPath()
 
+    to
+
+
+
+class views.MouseDrawer
+
+  constructor: (@whiteboard) ->
+    @el = @whiteboard.el
+    @el.onmousedown = @startDraw
+    @el.onmouseup = @stopDraw
+    @lastPoint = null
+
+    # @el.ontouchstart = @startDraw
+    # @el.ontouchstop = @stopDraw
+    # @el.ontouchmove = @draw
+
+  cursorMove: (e) =>
+    to = @getCoords e
+    console.log "drawing", to
+    @lastPoint = @whiteboard.drawLine @lastPoint, to
+
+
+  startDraw: (e) =>
+    console.log "start"
+    @lastPoint = @getCoords e
+    @el.onmousemove = @cursorMove
+
+    return false
 
   stopDraw: (e) =>
     e.preventDefault()
-    console.log "drawig stopped"
+    console.log "drawing stopped"
     @el.onmousemove = null
 
-  drawLine: (sX, sY, eX, eY) =>
-    @ctx.moveTo sX, sY
-    @ctx.lineTo eX, eY
-
-    x: eX, y: eY
 
   getCoords: (e) ->
     if e.offsetX
@@ -65,4 +74,5 @@ class views.Whiteboard extends Backbone.View
     else
       x: x.pageX - @el.offsetLeft
       t: x.pageY - @el.offsetTop
+
 
