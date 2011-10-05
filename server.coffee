@@ -33,10 +33,27 @@ app.configure  ->
   js.addFile __dirname + "/client/main.coffee"
 
 
-app.get "/", (req, res) ->
+main = (req, res) ->
   res.render "index.jade"
 
+
+
+app.get "/", main
+app.get "/:room", main
+
+
 app.listen 1337
+
+
+sockets = io.of "/drawer"
+sockets.on "connection", (socket) ->
+  socket.on "join", (room) ->
+    socket.join room
+    socket.on "draw", (shape) ->
+      console.log "got", shape, "for", room
+      socket.broadcast.to(room).emit "draw", shape
+
+
 
 
 

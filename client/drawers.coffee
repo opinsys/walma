@@ -21,7 +21,7 @@ class drawers.Whiteboard extends Backbone.View
 
 
   line: (from, to) =>
-    console.log "need to draw from", from, "to", to
+    console.log "drawing", from, "to", to
     @ctx.moveTo from.x, from.y
     @ctx.lineTo to.x, to.y
 

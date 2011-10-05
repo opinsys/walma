@@ -7,5 +7,9 @@ module.exports = (io) ->
   debug = io.of "/debug"
   debug.on "connection", (socket) ->
     socket.on "console.log", (msg) ->
+      # Make user agent humanreadable
       msg.args.unshift  useragent.parse(msg.agent).toAgent() + ":"
       console.log.apply console, msg.args
+
+
+

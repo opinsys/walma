@@ -10,25 +10,27 @@ debug.on "disconnect", ->
   console.log "Server disconnected. Reloading in 1s"
   window.location.reload()
 
+# First make sure that we have some logging tool.
 if not window.console?.log?
   window.console =
     log: ->
 
-console_ = console
-origLog = (args) ->
-  console_.log.apply console_, args
 
+console_ = console
+origLog = (args) -> console_.log.apply console_, args
+
+# Wrap console.log so that we can also log messages to our development server.
+# This is here because some crappy devices won't show to log otherwise.
 window.console =
   log: (args...) ->
     origLog args
-    if $?
-      $("#log").append args.join(", ") + "\n"
 
     # socket.io does the real serialization. We just remove the parts it cannot
-    # serialized
+    # serialize
     serialized = for part in args
       try
         JSON.stringify part
+        # Can serialize this. Return the original for later serialization
         part 
       catch e
         "(non json: #{ part })"
@@ -37,5 +39,4 @@ window.console =
       agent: navigator.userAgent
       args: serialized
 
-console.log "clien logger connected"
-
+console.log "client logger connected"
