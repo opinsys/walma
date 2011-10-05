@@ -20,7 +20,7 @@ class drawers.Whiteboard extends Backbone.View
 
 
 
-  drawLine: (from, to) =>
+  line: (from, to) =>
     console.log "need to draw from", from, "to", to
     @ctx.moveTo from.x, from.y
     @ctx.lineTo to.x, to.y
@@ -40,7 +40,6 @@ class drawers.TouchDrawer extends Backbone.View
 
   constructor: (@opts) ->
     super
-    @whiteboard = @opts.whiteboard
 
     @el.ontouchstart = @startDraw
     @el.ontouchend = @stopDraw
@@ -60,8 +59,12 @@ class drawers.TouchDrawer extends Backbone.View
 
   fingerMove: (e) =>
     for touch, i in e.touches
-      p = @getCoords e.touches[i]
-      @lastPoints[i] = @whiteboard.drawLine @lastPoints[i], p
+
+      @trigger "draw",
+        type: "line"
+        from: @lastPoints[i]
+        to: @lastPoints[i] = @getCoords e.touches[i]
+
 
     false
 
@@ -82,8 +85,11 @@ class drawers.MouseDrawer extends Backbone.View
 
 
   cursorMove: (e) =>
-    to = @getCoords e
-    @lastPoint = @whiteboard.drawLine @lastPoint, to
+    @trigger "draw",
+      type: "line"
+      from: @lastPoint
+      to: @lastPoint = @getCoords e
+
 
 
   startDraw: (e) =>

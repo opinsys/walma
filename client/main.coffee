@@ -9,13 +9,14 @@ $ ->
 
 
   if hasTtouch
-    new drawers.TouchDrawer
+    drawer = new drawers.TouchDrawer
       whiteboard: whiteboard
       el: ".whiteboard"
   else
-    new drawers.MouseDrawer
+    drawer = new drawers.MouseDrawer
       whiteboard: whiteboard
       el: ".whiteboard"
 
-
+  drawer.bind "draw", (shape) ->
+    whiteboard[shape.type] shape.from, shape.to
 
