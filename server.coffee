@@ -14,6 +14,7 @@ css.bind app
 
 app.configure "development", ->
   js.addFile __dirname + "/client/remotelogger.coffee"
+  # js.addUrl "http://jsconsole.com/remote.js?86EF08C8-38F4-4CDA-8054-C29F18189221"
   js.liveUpdate css, io
   logClients io
 
@@ -28,7 +29,7 @@ app.configure  ->
   js.addFile __dirname + "/client/vendor/backbone.js"
 
   js.addFile __dirname + "/client/helpers.coffee"
-  js.addFile __dirname + "/client/views.coffee"
+  js.addFile __dirname + "/client/drawers.coffee"
   js.addFile __dirname + "/client/main.coffee"
 
 

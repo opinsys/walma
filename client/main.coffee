@@ -1,10 +1,17 @@
-views = NS "PWI.views"
+drawers = NS "PWI.drawers"
+
+# http://modernizr.github.com/Modernizr/touch.html
+hasTtouch = 'ontouchstart' of window
 
 $ ->
-  whiteboard = new views.Whiteboard
+  whiteboard = new drawers.Whiteboard
     el: ".whiteboard"
 
-  new views.MouseDrawer whiteboard
+
+  if hasTtouch
+    new drawers.TouchDrawer whiteboard
+  else
+    new drawers.MouseDrawer whiteboard
 
 
 
