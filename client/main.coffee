@@ -25,9 +25,13 @@ $ ->
   socket.on "connect", ->
     socket.emit "join", room
 
-  drawer.bind "draw", (shape) ->
-    socket.emit "draw", shape
+  socket.on "start", (history) ->
+    for shape in history
+      whiteboard[shape.type] shape.from, shape.to
 
-  socket.on "draw", (shape) ->
-    whiteboard[shape.type] shape.from, shape.to
+    drawer.bind "draw", (shape) ->
+      socket.emit "draw", shape
+
+    socket.on "draw", (shape) ->
+      whiteboard[shape.type] shape.from, shape.to
 

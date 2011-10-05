@@ -45,12 +45,26 @@ app.get "/:room", main
 app.listen 1337
 
 
+# Drawing history "database"
+db = {}
+
 sockets = io.of "/drawer"
 sockets.on "connection", (socket) ->
   socket.on "join", (room) ->
+
+    # Send history to the new client
+    socket.emit "start", db[room] ?= []
+
     socket.join room
+
     socket.on "draw", (shape) ->
+      # got new shape from some client
+
+      # Append change to the history
+      db[room].push shape
+
       console.log "got", shape, "for", room
+      # Send new shape to all clients in the room
       socket.broadcast.to(room).emit "draw", shape
 
 
