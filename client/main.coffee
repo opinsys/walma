@@ -25,7 +25,12 @@ $ ->
   socket.on "connect", ->
     socket.emit "join", room
 
+  socket.on "disconnect", ->
+    $("h1").html "disconneted :("
+
   socket.on "start", (history) ->
+    size = JSON.stringify(history).length
+    $("h1").after "<p>Loaded around #{ size / 1024 }kB from history</p>"
     for shape in history
       whiteboard[shape.type] shape.from, shape.to
 

@@ -2,9 +2,9 @@
 drawers = NS "PWI.drawers"
 
 
-
-
-# Ideas from http://www.nogginbox.co.uk/blog/canvas-and-multi-touch
+# Ideas from
+# http://www.nogginbox.co.uk/blog/canvas-and-multi-touch
+# http://dev.opera.com/articles/view/html5-canvas-painting/
 
 class drawers.Whiteboard extends Backbone.View
 
@@ -113,7 +113,5 @@ class drawers.MouseDrawer extends Backbone.View
     else
       console.log "could not get coords for", e
 
-# Draw to Canvas using socket.io
-class drawers.SockectDrawer
 
 
