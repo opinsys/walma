@@ -1,8 +1,5 @@
 
-drawers = NS "PWI.drawers"
-
-
-# Ideas from
+drawers = NS "PWB.drawers" # Ideas from
 # http://www.nogginbox.co.uk/blog/canvas-and-multi-touch
 # http://dev.opera.com/articles/view/html5-canvas-painting/
 

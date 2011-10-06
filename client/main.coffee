@@ -1,4 +1,4 @@
-drawers = NS "PWI.drawers"
+drawers = NS "PWB.drawers"
 
 socket = io.connect().of("/drawer")
 
