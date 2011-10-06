@@ -1,6 +1,40 @@
 
 # Collaborative whiteboard
 
+## Protocol
+
+CoffeeScriptyfied JSON
+
+    board: "mathclass"
+    history: [
+        tool: "pencil",
+        user: "esa",
+        time: 1317890572951,
+        color: "red",
+        moves: [
+            down: { x: 100, y: 100 }
+        ,
+            move: { x: 100, y: 100 }
+        ,
+            move: { x: 200, y: 200 }
+        ,
+            move: { x: 100, y: 200 }
+        ,
+            move: { x: 0, y: 200 }
+        ,
+            up: { x: 0, y: 200 }
+        ]
+    ,
+        tool: "line",
+        user: "matti",
+        time: 1317890572961,
+        color: "green"
+        moves:
+            start: { x: 300, y: 300 }
+        ,
+            end: { x: 400, y: 400 }
+    ]
+
 
 # Installing
 

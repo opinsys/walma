@@ -1,39 +1,21 @@
 
-drawers = NS "PWB.drawers" # Ideas from
+drawers = NS "PWB.drawers"
+{notImplemented} = NS "PWB.helpers"
+
+# Ideas from
 # http://www.nogginbox.co.uk/blog/canvas-and-multi-touch
 # http://dev.opera.com/articles/view/html5-canvas-painting/
 
-class drawers.Whiteboard extends Backbone.View
 
-  constructor: (opts) ->
-    super
+class BaseDrawer extends Backbone.View
 
+  use: (tool) ->
+    @tool = tool
+    @activate()
 
-    @ctx = @el.getContext('2d')
+  activate: notImplemented "activate"
 
-    @ctx.lineWidth = 2
-    @ctx.strokeStyle = "rgb(0, 0, 0)"
-    @ctx.beginPath()
-
-
-
-  line: (from, to) =>
-    console.log "drawing", from, "to", to
-    @ctx.moveTo from.x, from.y
-    @ctx.lineTo to.x, to.y
-
-    @ctx.stroke()
-    @ctx.closePath()
-    @ctx.beginPath()
-
-    to
-
-
-
-
-
-
-class drawers.TouchDrawer extends Backbone.View
+class drawers.TouchDrawer extends BaseDrawer
 
   constructor: (@opts) ->
     super
@@ -70,33 +52,31 @@ class drawers.TouchDrawer extends Backbone.View
     y: e.pageY - @el.offsetTop
 
 
-class drawers.MouseDrawer extends Backbone.View
+class drawers.MouseDrawer extends BaseDrawer
 
-  constructor: (@opts) ->
-    super
-    @whiteboard = @opts.whiteboard
+  activate: ->
+    if not @active
+      @el.onmousedown = @mouseDown
+      @el.onmouseup = @mouseUp
+      @lastPoint = null
+      @active = true
 
-    @el.onmousedown = @startDraw
-    @el.onmouseup = @stopDraw
-    @lastPoint = null
-
+  mouseDown: (e) =>
+    @tool.down @getCoords e
+    @el.onmousemove = @cursorMove
+    false
 
   cursorMove: (e) =>
-    @trigger "draw",
-      type: "line"
-      from: @lastPoint
-      to: @lastPoint = @getCoords e
+    @tool.move @getCoords e
+    # console.log "DOWn", @down
 
 
-
-  startDraw: (e) =>
-    @lastPoint = @getCoords e
-    @el.onmousemove = @cursorMove
-
-    return false
-
-  stopDraw: (e) =>
+  mouseUp: (e) =>
     e.preventDefault()
+
+    @tool.up @getCoords e
+
+    # Stop drawing
     @el.onmousemove = null
 
 

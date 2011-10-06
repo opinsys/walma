@@ -30,6 +30,7 @@ app.configure  ->
 
   js.addFile __dirname + "/client/helpers.coffee"
   js.addFile __dirname + "/client/drawers.coffee"
+  js.addFile __dirname + "/client/drawers.tools.coffee"
   js.addFile __dirname + "/client/main.coffee"
 
 
