@@ -38,6 +38,7 @@ class tools.Pencil extends BaseTool
     # TODO: draw a dot
 
   move: (to) ->
+    console.log "moving", this
     @moves.push to
     from = @lastPoint
 

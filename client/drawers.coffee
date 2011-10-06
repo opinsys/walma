@@ -6,6 +6,20 @@ drawers = NS "PWB.drawers"
 # http://www.nogginbox.co.uk/blog/canvas-and-multi-touch
 # http://dev.opera.com/articles/view/html5-canvas-painting/
 
+# Python like decorator for sanitazing point positions on canvas.
+# We don't care if cursor is out of bounds sometimes.
+sanitizePoint = (fn) -> (e) ->
+  # call the original function
+  point = fn.call @, e
+
+  # Sanitize ouput
+  for key, attr of {width: "x", height: "y"}
+    point[attr] = 0 if point[attr] < 0
+    point.attr = @el[key] if point[attr] > @el[key]
+
+  point
+
+
 
 class BaseDrawer extends Backbone.View
 
@@ -54,33 +68,39 @@ class drawers.TouchDrawer extends BaseDrawer
 
 class drawers.MouseDrawer extends BaseDrawer
 
+  events:
+    "mousedown": "startDrawing"
+    "mouseup": "stopDrawing"
+    "mouseout": "stopDrawing"
+
   activate: ->
     if not @active
-      @el.onmousedown = @mouseDown
-      @el.onmouseup = @mouseUp
       @lastPoint = null
       @active = true
 
-  mouseDown: (e) =>
+  startDrawing: (e) =>
+    @down = true
     @tool.down @getCoords e
-    @el.onmousemove = @cursorMove
+    $(@el).mousemove @cursorMove
     false
 
   cursorMove: (e) =>
     @tool.move @getCoords e
-    # console.log "DOWn", @down
 
 
-  mouseUp: (e) =>
+  stopDrawing: (e) =>
     e.preventDefault()
 
-    @tool.up @getCoords e
+    # Only if mouse was down. This will be fired by mouseout too.
+    if @down
+      @tool.up @getCoords e
 
-    # Stop drawing
-    @el.onmousemove = null
+      # Stop drawing
+      $(@el).unbind "mousemove", @cursorMove
+      @down = false
 
 
-  getCoords: (e) ->
+  getCoords: sanitizePoint (e) ->
     if e.offsetX
       # Webkit
       x: e.offsetX,  y: e.offsetY
