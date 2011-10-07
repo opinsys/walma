@@ -29,41 +29,7 @@ class BaseDrawer extends Backbone.View
 
   activate: notImplemented "activate"
 
-class drawers.TouchDrawer extends BaseDrawer
 
-  constructor: (@opts) ->
-    super
-
-    @el.ontouchstart = @startDraw
-    @el.ontouchend = @stopDraw
-    @el.ontouchmove = @fingerMove
-
-    @lastPoints = []
-
-  startDraw: (e) =>
-
-    for touch, i in e.touches
-      @lastPoints[i] = @getCoords touch
-
-    false
-
-  stopDraw: (e) ->
-    e.preventDefault()
-
-  fingerMove: (e) =>
-    for touch, i in e.touches
-
-      @trigger "draw",
-        type: "line"
-        from: @lastPoints[i]
-        to: @lastPoints[i] = @getCoords e.touches[i]
-
-
-    false
-
-  getCoords: (e) ->
-    x: e.pageX - @el.offsetLeft
-    y: e.pageY - @el.offsetTop
 
 
 class drawers.MouseDrawer extends BaseDrawer
@@ -75,7 +41,6 @@ class drawers.MouseDrawer extends BaseDrawer
 
   activate: ->
     if not @active
-      @lastPoint = null
       @active = true
 
   startDrawing: (e) =>
@@ -111,4 +76,33 @@ class drawers.MouseDrawer extends BaseDrawer
       console.log "could not get coords for", e
 
 
+
+class drawers.TouchDrawer extends BaseDrawer
+
+  constructor: ->
+    super
+
+  events:
+    "touchstart": "startDrawing"
+    "touchend": "stopDrawing"
+    "touchmove": "fingerMove"
+
+  activate:  => drawers.MouseDrawer::activate.apply @, arguments
+
+  fingerMove: (e) =>
+    @tool.move @lastTouch = @getCoords e
+
+
+  startDrawing: (e) =>
+    @tool.down @lastTouch = @getCoords e
+    false
+
+  stopDrawing: (e) =>
+    @tool.up @lastTouch
+    false
+
+  getCoords: (e) ->
+    e = e.originalEvent.touches[0]
+    x: e.pageX - @el.offsetLeft
+    y: e.pageY - @el.offsetTop
 

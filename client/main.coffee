@@ -25,6 +25,7 @@ $ ->
 
   if hasTtouch
     drawer = new drawers.TouchDrawer
+      el: "canvas.sketch"
   else
     drawer = new drawers.MouseDrawer
       el: "canvas.sketch"
@@ -34,19 +35,16 @@ $ ->
     model: toolModel
 
   pencil.bind "draw", (shape) ->
-    console.log "Sending", shape
     socket.emit "draw",
       shape: shape
       user: "esa"
       time: (new Date()).getTime()
 
-    console.log shape
 
   drawer.use pencil
 
   socket.on "draw", (draw) ->
 
-    console.log "got", draw, tools
     tool = new tools[draw.shape.tool]
       el: ".whiteboard"
       sketch: ".remoteSketch"
@@ -68,6 +66,8 @@ $ ->
       tool = new tools[draw.shape.tool]
         el: ".whiteboard"
       tool.replay draw.shape
+
+    null # do not return the loop
 
 
 # Just some styling

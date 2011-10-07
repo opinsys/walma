@@ -23,7 +23,6 @@ class BaseTool extends Backbone.View
 
 
   setColor: (color) ->
-    console.log "setting color", color
     @sketch.strokeStyle = color
 
   getColor:  -> @sketch.strokeStyle
@@ -57,7 +56,6 @@ class tools.Pencil extends BaseTool
 
   constructor: ->
     super
-
     @sketch.lineCap = "round"
 
 
@@ -67,14 +65,16 @@ class tools.Pencil extends BaseTool
 
   down: (point) ->
     # Start drawing
-    @moves = []
+    point = _.clone point
     point.op = "down"
+    @moves = []
     @moves.push point
     @lastPoint = point
 
     # TODO: draw a dot
 
   move: (to) ->
+    to = _.clone to
     to.op = "move"
     @moves.push to
     from = @lastPoint
