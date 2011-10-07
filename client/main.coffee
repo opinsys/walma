@@ -49,6 +49,7 @@ $ ->
     console.log "got", draw, tools
     tool = new tools[draw.shape.tool]
       el: ".whiteboard"
+      sketch: ".remoteSketch"
     tool.replay draw.shape
 
 
@@ -68,5 +69,11 @@ $ ->
         el: ".whiteboard"
       tool.replay draw.shape
 
+
+# Just some styling
+$ ->
+  $("[data-color]").each ->
+    that = $ @
+    that.css "color", that.data "color"
 
 

@@ -10,22 +10,29 @@ class BaseTool extends Backbone.View
   constructor: (@opts) ->
     super
 
-
-    @sketchCanvas = @$("canvas.sketch").get 0
+    @sketchCanvas = @$( @opts.sketch or "canvas.sketch").get 0
     @mainCanvas = @$("canvas.main").get 0
 
     @sketch = @sketchCanvas.getContext("2d")
     @main = @mainCanvas.getContext("2d")
 
+    if @model
+      @model.bind "change", @updateCanvasSettings
+      @updateCanvasSettings()
 
-    # @sketch.fillStyle = '#000000'
-    @sketch.strokeStyle = "black"
-    @sketch.lineWidth = 3
+
 
   setColor: (color) ->
+    console.log "setting color", color
     @sketch.strokeStyle = color
 
   getColor:  -> @sketch.strokeStyle
+
+  setSize: (width) ->
+    @sketch.lineWidth = width
+
+  getSize: -> @sketch.lineWidth
+
 
   draw:  ->
     @main.drawImage @sketchCanvas, 0, 0
@@ -42,6 +49,7 @@ class BaseTool extends Backbone.View
   move: notImplemented "move"
   toJSON: notImplemented "toJSON"
   replay: notImplemented "replay"
+  updateCanvasSettings: notImplemented "updateCanvasSettings"
 
 class tools.Pencil extends BaseTool
 
@@ -50,12 +58,12 @@ class tools.Pencil extends BaseTool
   constructor: ->
     super
 
-    if @model
-      console.log "have model", this
-      @model.bind "change", =>
-        # Can we get information which attr changed here?
-        console.log "setting color to",  @model.get "color"
-        @setColor @model.get "color"
+    @sketch.lineCap = "round"
+
+
+  updateCanvasSettings: =>
+    @setColor @model.get "color"
+    @setSize @model.get "size"
 
   down: (point) ->
     # Start drawing
@@ -85,14 +93,15 @@ class tools.Pencil extends BaseTool
     @draw()
 
   toJSON: ->
-    color: @sketch.strokeStyle
+    color: @getColor()
     tool: @name
-    size: @size
+    size: @getSize()
     moves: @moves
 
   replay: (shape) ->
     # TODO: Sanitize method
     @setColor shape.color
+    @setSize shape.size
 
     for point in shape.moves
       @[point.op] point
