@@ -24,6 +24,7 @@ class BaseTool extends Backbone.View
 
   setColor: (color) ->
     @sketch.strokeStyle = color
+    @sketch.fillStyle = color
 
   getColor:  -> @sketch.strokeStyle
 
@@ -71,7 +72,16 @@ class tools.Pencil extends BaseTool
     @moves.push point
     @lastPoint = point
 
-    # TODO: draw a dot
+
+
+    # Draw a dot at the begining of the path. This is not required for Firefox,
+    # but Webkits (Chrome & Android) won't draw anything if user just clicks
+    # the canvas.
+    @sketch.beginPath()
+    @sketch.arc(point.x, point.y, @getSize() / 2, 0, (Math.PI/180)*360, true);
+    @sketch.fill()
+    @sketch.closePath()
+
 
   move: (to) ->
     to = _.clone to
@@ -79,11 +89,11 @@ class tools.Pencil extends BaseTool
     @moves.push to
     from = @lastPoint
 
+    @sketch.beginPath()
     @sketch.moveTo from.x, from.y
     @sketch.lineTo to.x, to.y
 
     @sketch.stroke()
-    @sketch.beginPath()
     @sketch.closePath()
 
     @lastPoint = to

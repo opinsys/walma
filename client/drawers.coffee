@@ -83,8 +83,8 @@ class drawers.TouchDrawer extends BaseDrawer
     super
 
   events:
-    "touchstart": "startDrawing"
-    "touchend": "stopDrawing"
+    "touchstart": "fingerDown"
+    "touchend": "fingerUp"
     "touchmove": "fingerMove"
 
   activate:  => drawers.MouseDrawer::activate.apply @, arguments
@@ -92,12 +92,11 @@ class drawers.TouchDrawer extends BaseDrawer
   fingerMove: (e) =>
     @tool.move @lastTouch = @getCoords e
 
-
-  startDrawing: (e) =>
+  fingerDown: (e) =>
     @tool.down @lastTouch = @getCoords e
     false
 
-  stopDrawing: (e) =>
+  fingerUp: (e) =>
     @tool.up @lastTouch
     false
 

@@ -66,7 +66,7 @@ sockets.on "connection", (socket) ->
       # Append change to the history
       db[room].push draw
 
-      console.log "got #{ room }", JSON.stringify draw
+      # console.log "got #{ room }", JSON.stringify draw
       # Send new shape to all clients in the room
       socket.broadcast.to(room).emit "draw", draw
 
