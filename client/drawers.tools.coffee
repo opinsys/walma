@@ -8,6 +8,7 @@ class BaseTool extends Backbone.View
   name: "BaseTool" # Must match the class name
 
   constructor: (@opts) ->
+    super
 
 
     @sketchCanvas = @$("canvas.sketch").get 0
@@ -15,6 +16,16 @@ class BaseTool extends Backbone.View
 
     @sketch = @sketchCanvas.getContext("2d")
     @main = @mainCanvas.getContext("2d")
+
+
+    # @sketch.fillStyle = '#000000'
+    @sketch.strokeStyle = "black"
+    @sketch.lineWidth = 3
+
+  setColor: (color) ->
+    @sketch.strokeStyle = color
+
+  getColor:  -> @sketch.strokeStyle
 
   draw:  ->
     @main.drawImage @sketchCanvas, 0, 0
@@ -38,8 +49,13 @@ class tools.Pencil extends BaseTool
 
   constructor: ->
     super
-    @color = @opts.color
-    @size = @opts.size
+
+    if @model
+      console.log "have model", this
+      @model.bind "change", =>
+        # Can we get information which attr changed here?
+        console.log "setting color to",  @model.get "color"
+        @setColor @model.get "color"
 
   down: (point) ->
     # Start drawing
@@ -69,13 +85,15 @@ class tools.Pencil extends BaseTool
     @draw()
 
   toJSON: ->
-    color: @color
+    color: @sketch.strokeStyle
     tool: @name
     size: @size
     moves: @moves
 
   replay: (shape) ->
     # TODO: Sanitize method
+    @setColor shape.color
+
     for point in shape.moves
       @[point.op] point
     @draw()

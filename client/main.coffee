@@ -1,6 +1,8 @@
 
 {drawers} = NS "PWB"
 {tools} = NS "PWB.drawers"
+{views} = NS "PWB.drawers"
+{models} = NS "PWB.drawers"
 
 socket = io.connect().of("/drawer")
 
@@ -16,6 +18,11 @@ $ ->
   # sketchCanvas = document.createElement "canvas"
   # sketchCanvas.
 
+  toolModel = new models.ToolModel
+  toolSettings = new views.ToolSettings
+    el: ".tool_settings"
+    model: toolModel
+
   if hasTtouch
     drawer = new drawers.TouchDrawer
   else
@@ -24,6 +31,7 @@ $ ->
 
   pencil = new tools.Pencil
     el: ".whiteboard"
+    model: toolModel
 
   pencil.bind "draw", (shape) ->
     console.log "Sending", shape

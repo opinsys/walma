@@ -30,7 +30,7 @@ CoffeeScriptyfied JSON
         time: 1317890572961,
         color: "green"
         moves:
-            start: { x: 300, y: 300 }
+            down: { x: 300, y: 300 }
         ,
             end: { x: 400, y: 400 }
     ]
