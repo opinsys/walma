@@ -58,15 +58,15 @@ sockets.on "connection", (socket) ->
 
     socket.join room
 
-    socket.on "draw", (shape) ->
+    socket.on "draw", (draw) ->
       # got new shape from some client
 
       # Append change to the history
-      db[room].push shape
+      db[room].push draw
 
-      console.log "got", shape, "for", room
+      console.log "got", draw, "for", room
       # Send new shape to all clients in the room
-      socket.broadcast.to(room).emit "draw", shape
+      socket.broadcast.to(room).emit "draw", draw
 
 
 

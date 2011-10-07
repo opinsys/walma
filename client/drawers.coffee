@@ -15,7 +15,7 @@ sanitizePoint = (fn) -> (e) ->
   # Sanitize ouput
   for key, attr of {width: "x", height: "y"}
     point[attr] = 0 if point[attr] < 0
-    point.attr = @el[key] if point[attr] > @el[key]
+    point[attr] = @el[key] if point[attr] > @el[key]
 
   point
 

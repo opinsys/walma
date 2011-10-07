@@ -22,25 +22,43 @@ $ ->
     drawer = new drawers.MouseDrawer
       el: "canvas.sketch"
 
-  drawer.use new tools.Pencil
+  pencil = new tools.Pencil
     el: ".whiteboard"
 
-  # socket.on "connect", ->
-  #   socket.emit "join", room
+  pencil.bind "draw", (shape) ->
+    console.log "Sending", shape
+    socket.emit "draw",
+      shape: shape
+      user: "esa"
+      time: (new Date()).getTime()
 
-  # socket.on "disconnect", ->
-  #   $("h1").html "disconneted :("
+    console.log shape
 
-  # socket.on "start", (history) ->
-  #   size = JSON.stringify(history).length
-  #   $("h1").after "<p>Loaded around #{ size / 1024 }kB from history</p>"
-    # for shape in history
-    #   whiteboard[shape.type] shape.from, shape.to
+  drawer.use pencil
 
-    # TODO: to tool
-    # drawer.bind "draw", (shape) ->
-    #   socket.emit "draw", shape
+  socket.on "draw", (draw) ->
 
-    # socket.on "draw", (shape) ->
-    #   whiteboard[shape.type] shape.from, shape.to
+    console.log "got", draw, tools
+    tool = new tools[draw.shape.tool]
+      el: ".whiteboard"
+    tool.replay draw.shape
+
+
+  socket.on "connect", ->
+    socket.emit "join", room
+
+  socket.on "disconnect", ->
+    $("h1").html "disconneted :("
+
+  socket.on "start", (history) ->
+    size = JSON.stringify(history).length
+
+    $("h1").after "<p>Loaded around #{ size / 1024 }kB from history</p>"
+
+    for draw in history
+      tool = new tools[draw.shape.tool]
+        el: ".whiteboard"
+      tool.replay draw.shape
+
+
 

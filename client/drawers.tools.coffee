@@ -4,9 +4,11 @@ tools = NS "PWB.drawers.tools"
 
 
 class BaseTool extends Backbone.View
+
+  name: "BaseTool" # Must match the class name
+
   constructor: (@opts) ->
 
-    @color = @opts.color?
 
     @sketchCanvas = @$("canvas.sketch").get 0
     @mainCanvas = @$("canvas.main").get 0
@@ -14,12 +16,15 @@ class BaseTool extends Backbone.View
     @sketch = @sketchCanvas.getContext("2d")
     @main = @mainCanvas.getContext("2d")
 
-  draw: ->
+  draw:  ->
     @main.drawImage @sketchCanvas, 0, 0
     @clear()
 
+    @trigger "draw", @toJSON()
+
   clear: ->
     @sketch.clearRect 0, 0, @mainCanvas.width, @mainCanvas.height
+
 
   down: notImplemented "down"
   up: notImplemented "up"
@@ -29,16 +34,24 @@ class BaseTool extends Backbone.View
 
 class tools.Pencil extends BaseTool
 
+  name: "Pencil"
+
+  constructor: ->
+    super
+    @color = @opts.color
+    @size = @opts.size
+
   down: (point) ->
     # Start drawing
     @moves = []
+    point.op = "down"
     @moves.push point
     @lastPoint = point
 
     # TODO: draw a dot
 
   move: (to) ->
-    console.log "moving", this
+    to.op = "move"
     @moves.push to
     from = @lastPoint
 
@@ -55,5 +68,15 @@ class tools.Pencil extends BaseTool
     @move point
     @draw()
 
+  toJSON: ->
+    color: @color
+    tool: @name
+    size: @size
+    moves: @moves
 
+  replay: (shape) ->
+    # TODO: Sanitize method
+    for point in shape.moves
+      @[point.op] point
+    @draw()
 
