@@ -1,10 +1,10 @@
 
 express = require "express"
-pile = require "pile"
+piler = require "piler"
 logClients = require "./clientlogger"
 
-css = pile.createCSSManager()
-js = pile.createJSManager()
+css = piler.createCSSManager()
+js = piler.createJSManager()
 app = express.createServer()
 
 io = require('socket.io').listen app
@@ -24,6 +24,7 @@ css.addFile clientFiles + "/stylesheets/style.styl"
 
 js.addUrl "/socket.io/socket.io.js"
 js.addFile clientFiles + "/vendor/jquery.js"
+js.addFile clientFiles + "/vendor/async.js"
 js.addFile clientFiles + "/vendor/underscore.js"
 js.addFile clientFiles + "/vendor/underscore.string.js"
 js.addFile clientFiles + "/vendor/backbone.js"

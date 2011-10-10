@@ -57,17 +57,37 @@ $ ->
   socket.on "disconnect", ->
     $("h1").html "disconneted :("
 
+  progress = $("h1")
+  progress.text "loading"
   socket.on "start", (history) ->
     size = JSON.stringify(history).length
 
     $("h1").after "<p>Loaded around #{ size / 1024 }kB from history</p>"
+    now = -> new Date().getTime()
 
-    for draw in history
+    start = now()
+    i = 0
+    async.forEachSeries history, (draw, cb) ->
+      i += 1
       tool = new tools[draw.shape.tool]
         el: ".whiteboard"
       tool.replay draw.shape
 
-    null # do not return the loop
+    if now() - start > 300
+        progress.text "#{ i+1 } / #{ history.length }"
+        start = now()
+        setTimeout ->
+          cb()
+        , 10
+      else
+        cb()
+
+
+    , (err) ->
+        throw err if err
+        progress.text "#{ i } / #{ history.length }"
+
+    null
 
 
 # Just some styling
