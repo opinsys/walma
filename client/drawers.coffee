@@ -56,6 +56,7 @@ class drawers.MouseDrawer extends BaseDrawer
     @down = true
     @tool.begin()
     @tool.down @lastPoint = @getCoords e
+    console.log "user is drawing", @tool.sketch.strokeStyle
     false
 
   cursorMove: (e) =>

@@ -4,16 +4,14 @@ views = NS "PWB.drawers.views"
 
 class views.ToolSettings extends Backbone.View
 
-  defaults:
-    color: "black"
-    tool: "Pencil"
-    size: 3
 
   constructor: ->
     super
     currentSize = parseInt @$(".size input").val(), 10
-    console.log "CURR", currentSize
     @model.set size: currentSize or @defaults.size
+    @model.set color: @$(".color .selected").data("color")
+    @model.set tool: @$(".tool .selected").data("tool")
+
 
   events:
     "click .color button": "changeColor"
@@ -21,10 +19,20 @@ class views.ToolSettings extends Backbone.View
     "keyup .size input": "changeSize"
 
   changeTool: (e) =>
-    @model.set tool: $(e.currentTarget).data("tool")
+    setting = $(e.currentTarget)
+    @model.set tool: setting.data("tool")
+
+    @$(".tool .selected").removeClass "selected"
+    setting.addClass "selected"
 
   changeColor: (e) =>
-    @model.set color: $(e.currentTarget).data("color")
+    setting = $(e.currentTarget)
+    @model.set color: setting.data("color")
+
+    @$(".color .selected").removeClass "selected"
+    setting.addClass "selected"
+
+
 
   changeSize: (e) =>
     @model.set size: parseInt $(e.currentTarget).val(), 10

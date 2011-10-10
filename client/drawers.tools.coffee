@@ -46,7 +46,6 @@ class BaseTool extends Backbone.View
     @moves = []
 
   end: ->
-    console.log "END"
     @trigger "draw", @toJSON()
 
   down: notImplemented "down"
@@ -59,15 +58,14 @@ class BaseTool extends Backbone.View
     @setSize @model.get "size"
 
   replay: (shape) ->
+    @begin()
     @setColor shape.color
     @setSize shape.size
 
     # TODO: Sanitize op
-    @begin()
     for point in shape.moves
       @[point.op] point
     @draw()
-    @end()
 
   toJSON: ->
     color: @getColor()
