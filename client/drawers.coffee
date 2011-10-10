@@ -34,38 +34,50 @@ class BaseDrawer extends Backbone.View
 
 class drawers.MouseDrawer extends BaseDrawer
 
+  constructor: ->
+    super
+    $(window).mouseup @stopDrawing
+
   events:
     "mousedown": "startDrawing"
-    "mouseup": "stopDrawing"
-    "mouseout": "stopDrawing"
+    "mouseout": "mouseOut"
+
+
+  mouseOut: =>
+    @mouseOnCanvas = false
 
   activate: ->
     if not @active
       @active = true
 
   startDrawing: (e) =>
+    @mouseOnCanvas = true
     @down = true
-    @tool.down @getCoords e
+    @tool.down @lastPoint = @getCoords e
     $(@el).mousemove @cursorMove
     false
 
   cursorMove: (e) =>
-    @tool.move @getCoords e
+    @tool.move @lastPoint = @getCoords e
 
 
   stopDrawing: (e) =>
     e.preventDefault()
 
-    # Only if mouse was down. This will be fired by mouseout too.
+    # Only if mouse was down.
     if @down
-      @tool.up @getCoords e
+
+      if @mouseOnCanvas
+        @tool.up @getCoords e
+      else
+        @tool.up @lastPoint
 
       # Stop drawing
       $(@el).unbind "mousemove", @cursorMove
       @down = false
 
 
-  getCoords: sanitizePoint (e) ->
+  getCoords: (e) ->
     if e.offsetX
       # Webkit
       x: e.offsetX,  y: e.offsetY

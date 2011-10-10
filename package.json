@@ -3,7 +3,7 @@
   , "version": "0.0.1"
   , "private": true
   , "scripts": {
-     "start": "NODE_ENV=production coffee server.coffee"
+     "start": "node server.js"
     }
   , "devDependencies": {
       "supervisor": ""

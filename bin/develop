@@ -1,4 +1,4 @@
 #!/bin/bash
 
-node_modules/.bin/supervisor server.coffee
+node_modules/.bin/supervisor -w lib -e 'coffee|js' server.js
 

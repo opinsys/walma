@@ -12,28 +12,28 @@ io = require('socket.io').listen app
 js.bind app
 css.bind app
 
+clientFiles = __dirname + "/../client"
+
 app.configure "development", ->
-  js.addFile __dirname + "/client/remotelogger.coffee"
-  # js.addUrl "http://jsconsole.com/remote.js?86EF08C8-38F4-4CDA-8054-C29F18189221"
+  js.addFile clientFiles + "/remotelogger.coffee"
   js.liveUpdate css, io
   logClients io
 
-app.configure  ->
 
-  css.addFile __dirname + "/stylesheets/style.styl"
+css.addFile clientFiles + "/stylesheets/style.styl"
 
-  js.addUrl "/socket.io/socket.io.js"
-  js.addFile __dirname + "/client/vendor/jquery.js"
-  js.addFile __dirname + "/client/vendor/underscore.js"
-  js.addFile __dirname + "/client/vendor/underscore.string.js"
-  js.addFile __dirname + "/client/vendor/backbone.js"
+js.addUrl "/socket.io/socket.io.js"
+js.addFile clientFiles + "/vendor/jquery.js"
+js.addFile clientFiles + "/vendor/underscore.js"
+js.addFile clientFiles + "/vendor/underscore.string.js"
+js.addFile clientFiles + "/vendor/backbone.js"
 
-  js.addFile __dirname + "/client/helpers.coffee"
-  js.addFile __dirname + "/client/drawers.coffee"
-  js.addFile __dirname + "/client/drawers.tools.coffee"
-  js.addFile __dirname + "/client/drawers.models.coffee"
-  js.addFile __dirname + "/client/drawers.views.coffee"
-  js.addFile __dirname + "/client/main.coffee"
+js.addFile clientFiles + "/helpers.coffee"
+js.addFile clientFiles + "/drawers.coffee"
+js.addFile clientFiles + "/drawers.tools.coffee"
+js.addFile clientFiles + "/drawers.models.coffee"
+js.addFile clientFiles + "/drawers.views.coffee"
+js.addFile clientFiles + "/main.coffee"
 
 
 main = (req, res) ->
