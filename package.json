@@ -14,7 +14,7 @@
       "coffee-script": "1.1.2"
       , "express": "2.4.6"
       , "jade": "0.15.3"
-      , "pile": ""
+      , "piler": ""
       , "socket.io": "0.8.2"
       , "stylus": "0.15.1"
       , "underscore": "1.1.7"
