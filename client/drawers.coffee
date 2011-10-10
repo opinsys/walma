@@ -54,6 +54,7 @@ class drawers.MouseDrawer extends BaseDrawer
   startDrawing: (e) =>
     @out = false
     @down = true
+    @tool.begin()
     @tool.down @lastPoint = @getCoords e
     false
 
@@ -84,6 +85,7 @@ class drawers.MouseDrawer extends BaseDrawer
     # Only if mouse was down.
     if @down
       @tool.up @lastPoint
+      @tool.end()
 
       # if @mouseOnCanvas
       #   @tool.up @getCoords e
@@ -123,11 +125,14 @@ class drawers.TouchDrawer extends BaseDrawer
     @tool.move @lastTouch = @getCoords e
 
   fingerDown: (e) =>
+    @tool.begin()
     @tool.down @lastTouch = @getCoords e
+
     false
 
   fingerUp: (e) =>
     @tool.up @lastTouch
+    @tool.end()
     false
 
   getCoords: (e) ->

@@ -6,6 +6,7 @@ class views.ToolSettings extends Backbone.View
 
   defaults:
     color: "black"
+    tool: "Pencil"
     size: 3
 
   constructor: ->
@@ -16,7 +17,11 @@ class views.ToolSettings extends Backbone.View
 
   events:
     "click .color button": "changeColor"
+    "click .tool button": "changeTool"
     "keyup .size input": "changeSize"
+
+  changeTool: (e) =>
+    @model.set tool: $(e.currentTarget).data("tool")
 
   changeColor: (e) =>
     @model.set color: $(e.currentTarget).data("color")

@@ -8,15 +8,9 @@ socket = io.connect().of("/drawer")
 
 # http://modernizr.github.com/Modernizr/touch.html
 hasTtouch = 'ontouchstart' of window
-room = window.location.pathname.substring(1) or "main"
+room = window.location.pathname.substring(1) or "_main"
 
 $ ->
-  # whiteboard = new drawers.Whiteboard
-  #   el: "canvas.main"
-
-  # mainCanvas = $(".whiteboard").get 0
-  # sketchCanvas = document.createElement "canvas"
-  # sketchCanvas.
 
   toolModel = new models.ToolModel
   toolSettings = new views.ToolSettings
@@ -30,18 +24,23 @@ $ ->
     drawer = new drawers.MouseDrawer
       el: "canvas.sketch"
 
-  pencil = new tools.Pencil
-    el: ".whiteboard"
-    model: toolModel
 
-  pencil.bind "draw", (shape) ->
-    socket.emit "draw",
-      shape: shape
-      user: "esa"
-      time: (new Date()).getTime()
+  toolModel.bind "change:tool", ->
+    tool = new tools[toolModel.get "tool"]
+      el: ".whiteboard"
+      model: toolModel
+    console.log "using now", tool
 
+    tool.bind "draw", (shape) ->
+      socket.emit "draw",
+        shape: shape
+        user: "esa"
+        time: (new Date()).getTime()
 
-  drawer.use pencil
+    drawer.use tool
+
+  toolModel.set tool: "Pencil"
+
 
   socket.on "draw", (draw) ->
 
@@ -58,7 +57,7 @@ $ ->
     $("h1").html "disconneted :("
 
   progress = $("h1")
-  progress.text "loading"
+  progress.text "downloading history"
   socket.on "start", (history) ->
     size = JSON.stringify(history).length
 
@@ -73,7 +72,7 @@ $ ->
         el: ".whiteboard"
       tool.replay draw.shape
 
-    if now() - start > 300
+      if now() - start > 500
         progress.text "#{ i+1 } / #{ history.length }"
         start = now()
         setTimeout ->
@@ -85,7 +84,7 @@ $ ->
 
     , (err) ->
         throw err if err
-        progress.text "#{ i } / #{ history.length }"
+        progress.text "#{ i } / #{ history.length } operation drawn"
 
     null
 

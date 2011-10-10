@@ -38,18 +38,38 @@ class BaseTool extends Backbone.View
     @main.drawImage @sketchCanvas, 0, 0
     @clear()
 
-    @trigger "draw", @toJSON()
 
   clear: ->
     @sketch.clearRect 0, 0, @mainCanvas.width, @mainCanvas.height
 
+  begin: ->
+
+  end: ->
+    @trigger "draw", @toJSON()
 
   down: notImplemented "down"
   up: notImplemented "up"
   move: notImplemented "move"
-  toJSON: notImplemented "toJSON"
-  replay: notImplemented "replay"
-  updateCanvasSettings: notImplemented "updateCanvasSettings"
+
+  updateCanvasSettings: =>
+    console.log "updating", this, @model, arguments
+    @setColor @model.get "color"
+    @setSize @model.get "size"
+
+  replay: (shape) ->
+    @setColor shape.color
+    @setSize shape.size
+
+    # TODO: Sanitize op
+    for point in shape.moves
+      @[point.op] point
+    @draw()
+
+  toJSON: ->
+    color: @getColor()
+    tool: @name
+    size: @getSize()
+    moves: @moves
 
 class tools.Pencil extends BaseTool
 
@@ -60,9 +80,6 @@ class tools.Pencil extends BaseTool
     @sketch.lineCap = "round"
 
 
-  updateCanvasSettings: =>
-    @setColor @model.get "color"
-    @setSize @model.get "size"
 
   down: (point) ->
     # Start drawing
@@ -71,8 +88,6 @@ class tools.Pencil extends BaseTool
     @moves = []
     @moves.push point
     @lastPoint = point
-
-
 
     # Draw a dot at the begining of the path. This is not required for Firefox,
     # but Webkits (Chrome & Android) won't draw anything if user just clicks
@@ -102,18 +117,22 @@ class tools.Pencil extends BaseTool
     @move point
     @draw()
 
-  toJSON: ->
-    color: @getColor()
-    tool: @name
-    size: @getSize()
-    moves: @moves
 
-  replay: (shape) ->
-    # TODO: Sanitize method
-    @setColor shape.color
-    @setSize shape.size
 
-    for point in shape.moves
-      @[point.op] point
+
+# Eraser is basically just a pencil where compositing is turned inside out
+class tools.Eraser extends tools.Pencil
+  name: "Eraser"
+
+  draw:  ->
+    @main.globalCompositeOperation = "destination-out"
+    super
+    @main.globalCompositeOperation = "source-over"
+
+
+  # Draw always on movement so that we can immediately see what we erase
+  move: ->
+    super
     @draw()
+
 
