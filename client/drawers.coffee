@@ -37,10 +37,11 @@ class drawers.MouseDrawer extends BaseDrawer
   constructor: ->
     super
     $(window).mouseup @stopDrawing
+    $(window).mousemove @cursorMove
 
   events:
     "mousedown": "startDrawing"
-    "mouseout": "mouseOut"
+    # "mouseout": "mouseOut"
 
 
   mouseOut: =>
@@ -51,14 +52,30 @@ class drawers.MouseDrawer extends BaseDrawer
       @active = true
 
   startDrawing: (e) =>
-    @mouseOnCanvas = true
+    @out = false
     @down = true
     @tool.down @lastPoint = @getCoords e
-    $(@el).mousemove @cursorMove
     false
 
   cursorMove: (e) =>
-    @tool.move @lastPoint = @getCoords e
+
+    return if not @down
+
+    # Mouse went ouf of canvas. 
+    if e.target isnt @el and not @out
+      # Lift up the cursor from last know point
+      @tool.up @lastPoint
+      @out = true
+      return
+
+    if e.target is @el
+      if @out
+        # Came back to canvas! Put cursor down
+        @tool.down @lastPoint = @getCoords e
+      else
+        @tool.move @lastPoint = @getCoords e
+
+      @out = false
 
 
   stopDrawing: (e) =>
@@ -66,15 +83,16 @@ class drawers.MouseDrawer extends BaseDrawer
 
     # Only if mouse was down.
     if @down
+      @tool.up @lastPoint
 
-      if @mouseOnCanvas
-        @tool.up @getCoords e
-      else
-        @tool.up @lastPoint
+      # if @mouseOnCanvas
+      #   @tool.up @getCoords e
+      # else
+      #   @tool.up @lastPoint
 
       # Stop drawing
-      $(@el).unbind "mousemove", @cursorMove
-      @down = false
+    $(document).unbind "mousemove", @cursorMove
+    @down = false
 
 
   getCoords: (e) ->
