@@ -12,10 +12,7 @@ room = window.location.pathname.substring(1) or "_main"
 
 $ ->
 
-  toolModel = new models.ToolModel
-  toolSettings = new views.ToolSettings
-    el: ".tool_settings"
-    model: toolModel
+  window.model = toolModel = new models.ToolModel
 
   if hasTtouch
     drawer = new drawers.TouchDrawer
@@ -29,7 +26,7 @@ $ ->
     tool = new tools[toolModel.get "tool"]
       el: ".whiteboard"
       model: toolModel
-    console.log "using now", tool
+    console.log "using now tool:", tool
 
     tool.bind "draw", (shape) ->
       socket.emit "draw",
@@ -39,7 +36,10 @@ $ ->
 
     drawer.use tool
 
-  toolModel.set tool: "Pencil"
+
+  toolSettings = new views.ToolSettings
+    el: ".tool_settings"
+    model: toolModel
 
 
   socket.on "draw", (draw) ->
@@ -70,6 +70,7 @@ $ ->
       i += 1
       tool = new tools[draw.shape.tool]
         el: ".whiteboard"
+        sketch: ".remoteSketch"
       tool.replay draw.shape
 
       if now() - start > 500
