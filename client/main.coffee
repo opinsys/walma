@@ -84,7 +84,7 @@ $ ->
 
     , (err) ->
         throw err if err
-        progress.text "#{ i } / #{ history.length } operation drawn"
+        progress.text "#{ i } / #{ history.length } operations drawn"
 
     null
 

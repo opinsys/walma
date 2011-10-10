@@ -43,8 +43,10 @@ class BaseTool extends Backbone.View
     @sketch.clearRect 0, 0, @mainCanvas.width, @mainCanvas.height
 
   begin: ->
+    @moves = []
 
   end: ->
+    console.log "END"
     @trigger "draw", @toJSON()
 
   down: notImplemented "down"
@@ -61,9 +63,11 @@ class BaseTool extends Backbone.View
     @setSize shape.size
 
     # TODO: Sanitize op
+    @begin()
     for point in shape.moves
       @[point.op] point
     @draw()
+    @end()
 
   toJSON: ->
     color: @getColor()
@@ -85,7 +89,6 @@ class tools.Pencil extends BaseTool
     # Start drawing
     point = _.clone point
     point.op = "down"
-    @moves = []
     @moves.push point
     @lastPoint = point
 
