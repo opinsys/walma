@@ -43,7 +43,9 @@ app.configure ->
   js.addFile clientFiles + "/drawers.tools.coffee"
   js.addFile clientFiles + "/drawers.models.coffee"
   js.addFile clientFiles + "/drawers.views.coffee"
-  js.addFile clientFiles + "/main.coffee"
+
+  js.addFile "paint", clientFiles + "/main.coffee"
+  js.addFile "frontpage", clientFiles + "/frontpage.coffee"
 
 
 # Drawing history "database"
@@ -51,11 +53,10 @@ db = {}
 
 app.get "/", (req, res) ->
 
-  rooms = _.map db, (room, name) ->
-    return {} unless room
-    console.log "mapping #{ room }"
+  rooms = _.map db, (history, name) ->
+    return {} unless history
     name: name
-    historySize: room.history?.length
+    historySize: history.length
 
   res.render "index.jade",
     rooms: rooms

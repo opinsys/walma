@@ -2,6 +2,22 @@
 
 h3 Avalaible rooms
 
-p= JSON.stringify(rooms)
+ul
+- each room in rooms
+  li
+    a(href=room.name) #{room.name} 
+    span with history of #{ room.historySize } operations
+
+
+h3 or create new
+
+form.new-room(method="post")
+  input.room(type="text", name="room")
+  input.go(type="submit") Go!
+
+
+
 p= process.ENV.NODE_ENV || "dev"
 
+
+!{renderScriptTags("frontpage")}
