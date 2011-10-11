@@ -1,6 +1,10 @@
 
 express = require "express"
 piler = require "piler"
+_  = require 'underscore'
+_.mixin require 'underscore.string'
+
+
 logClients = require "./clientlogger"
 
 css = piler.createCSSManager()
@@ -9,48 +13,60 @@ app = express.createServer()
 
 io = require('socket.io').listen app
 
-js.bind app
-css.bind app
-
 clientFiles = __dirname + "/../client"
+
+app.configure ->
+  app.use express.static __dirname + "/../public"
+
+  js.bind app
+  css.bind app
+
 
 app.configure "development", ->
   js.addFile clientFiles + "/remotelogger.coffee"
   js.liveUpdate css, io
   logClients io
 
+app.configure ->
 
-css.addFile clientFiles + "/stylesheets/style.styl"
+  css.addFile clientFiles + "/stylesheets/style.styl"
 
-js.addUrl "/socket.io/socket.io.js"
-js.addFile clientFiles + "/vendor/jquery.js"
-js.addFile clientFiles + "/vendor/async.js"
-js.addFile clientFiles + "/vendor/underscore.js"
-js.addFile clientFiles + "/vendor/underscore.string.js"
-js.addFile clientFiles + "/vendor/backbone.js"
+  js.addUrl "/socket.io/socket.io.js"
+  js.addFile clientFiles + "/vendor/jquery.js"
+  js.addFile clientFiles + "/vendor/async.js"
+  js.addFile clientFiles + "/vendor/underscore.js"
+  js.addFile clientFiles + "/vendor/underscore.string.js"
+  js.addFile clientFiles + "/vendor/backbone.js"
 
-js.addFile clientFiles + "/helpers.coffee"
-js.addFile clientFiles + "/drawers.coffee"
-js.addFile clientFiles + "/drawers.tools.coffee"
-js.addFile clientFiles + "/drawers.models.coffee"
-js.addFile clientFiles + "/drawers.views.coffee"
-js.addFile clientFiles + "/main.coffee"
-
-
-main = (req, res) ->
-  res.render "index.jade"
-
-
-
-app.get "/", main
-app.get "/:room", main
-
-
-app.listen 1337
+  js.addFile clientFiles + "/helpers.coffee"
+  js.addFile clientFiles + "/drawers.coffee"
+  js.addFile clientFiles + "/drawers.tools.coffee"
+  js.addFile clientFiles + "/drawers.models.coffee"
+  js.addFile clientFiles + "/drawers.views.coffee"
+  js.addFile clientFiles + "/main.coffee"
 
 
 # Drawing history "database"
 db = {}
+
+app.get "/", (req, res) ->
+
+  rooms = _.map db, (room, name) ->
+    return {} unless room
+    console.log "mapping #{ room }"
+    name: name
+    historySize: room.history?.length
+
+  res.render "index.jade",
+    rooms: rooms
+
+
+app.get "/:room", (req, res) ->
+  res.render "paint.jade"
+
+app.listen 1337
+
+
 
 sockets = io.of "/drawer"
 sockets.on "connection", (socket) ->

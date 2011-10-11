@@ -1,31 +1,7 @@
 
 
-.tool_settings
+h3 Avalaible rooms
 
-  .h2 Tools
-  .tool
-    button.selected(data-tool="Pencil") Pencil
-    button(data-tool="Eraser") Eraser
-
-  .h2 Colors
-  .color
-    button.selected(data-color="black") Black
-    button(data-color="white") White
-    button(data-color="red") Red
-    button(data-color="green") Green
-    button(data-color="blue") Blue
-
-
-  .size
-    input(type="text", value="20", size="2")
-    span px
-
-
-.whiteboard
-  canvas.sketch(width="600", height="400") Your browser does not support canvas
-  canvas.remoteSketch(width="600", height="400") Your browser does not support canvas
-  canvas.main(width="600", height="400") Your browser does not support canvas
-
-
-
+p= JSON.stringify(rooms)
+p= process.ENV.NODE_ENV || "dev"
 
