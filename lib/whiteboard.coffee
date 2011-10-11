@@ -57,7 +57,9 @@ app.get "/", (req, res) ->
   rooms = _.map db, (history, name) ->
     return {} unless history
     name: name
-    historySize: history.length
+    historySize:  _.reduce(history, (memo, draw) ->
+      memo + draw.shape.moves.length
+    , 0)
 
   res.render "index.jade",
     rooms: rooms
