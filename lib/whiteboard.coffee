@@ -37,12 +37,13 @@ app.configure ->
   js.addFile clientFiles + "/vendor/underscore.js"
   js.addFile clientFiles + "/vendor/underscore.string.js"
   js.addFile clientFiles + "/vendor/backbone.js"
-
+  js.addFile clientFiles + "/vendor/handlebars.js"
   js.addFile clientFiles + "/helpers.coffee"
-  js.addFile clientFiles + "/drawers.coffee"
-  js.addFile clientFiles + "/drawers.tools.coffee"
-  js.addFile clientFiles + "/drawers.models.coffee"
-  js.addFile clientFiles + "/drawers.views.coffee"
+
+  js.addFile "paint", clientFiles + "/drawers.coffee"
+  js.addFile "paint", clientFiles + "/drawers.tools.coffee"
+  js.addFile "paint", clientFiles + "/drawers.models.coffee"
+  js.addFile "paint", clientFiles + "/drawers.views.coffee"
 
   js.addFile "paint", clientFiles + "/main.coffee"
   js.addFile "frontpage", clientFiles + "/frontpage.coffee"

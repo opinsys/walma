@@ -14,6 +14,12 @@ $ ->
 
   window.model = toolModel = new models.ToolModel
 
+  statusModel = new models.StatusModel
+
+  status = new views.Status
+    el: ".status"
+    model: statusModel
+
   if hasTtouch
     drawer = new drawers.TouchDrawer
       el: "canvas.sketch"
@@ -26,9 +32,10 @@ $ ->
     tool = new tools[toolModel.get "tool"]
       el: ".whiteboard"
       model: toolModel
-    console.log "using now tool:", tool
 
     tool.bind "draw", (shape) ->
+      statusModel.addShape shape
+
       socket.emit "draw",
         shape: shape
         user: "esa"
@@ -43,6 +50,7 @@ $ ->
 
 
   socket.on "draw", (draw) ->
+    statusModel.addDraw draw
 
     tool = new tools[draw.shape.tool]
       el: ".whiteboard"
@@ -56,36 +64,35 @@ $ ->
   socket.on "disconnect", ->
     $("h1").html "disconneted :("
 
-  progress = $("h1")
-  progress.text "downloading history"
   socket.on "start", (history) ->
-    size = JSON.stringify(history).length
+    statusModel.loadOperations history
 
-    $("h1").after "<p>Loaded around #{ size / 1024 }kB from history</p>"
     now = -> new Date().getTime()
 
     start = now()
-    i = 0
+    operations = 0
     async.forEachSeries history, (draw, cb) ->
-      i += 1
+
       tool = new tools[draw.shape.tool]
         el: ".whiteboard"
         sketch: ".remoteSketch"
       tool.replay draw.shape
+      operations += draw.shape.moves.length
 
+      # If redrawing the history takes more than 500ms take a timeout and allow
+      # the UI to draw itself.
       if now() - start > 500
-        progress.text "#{ i+1 } / #{ history.length }"
         start = now()
-        setTimeout ->
-          cb()
-        , 10
+        statusModel.incDrawnFromHistory operations
+        operations = 0
+        setTimeout cb, 10
       else
         cb()
 
 
     , (err) ->
         throw err if err
-        progress.text "#{ i } / #{ history.length } operations drawn"
+        statusModel.drawnHistory()
 
     null
 

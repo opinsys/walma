@@ -38,3 +38,15 @@ class views.ToolSettings extends Backbone.View
     @model.set size: parseInt $(e.currentTarget).val(), 10
 
 
+class views.Status extends Backbone.View
+
+  constructor: ->
+    super
+    source = $(".status-template").html()
+    @template = Handlebars.compile source
+    @model.bind "change", => @render()
+
+  render: ->
+    $(@el).html @template @model.toJSON()
+
+
