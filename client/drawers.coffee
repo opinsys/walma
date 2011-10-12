@@ -88,21 +88,16 @@ class drawers.MouseDrawer extends BaseDrawer
       @tool.up @lastPoint
       @tool.end()
 
-      # if @mouseOnCanvas
-      #   @tool.up @getCoords e
-      # else
-      #   @tool.up @lastPoint
-
       # Stop drawing
     $(document).unbind "mousemove", @cursorMove
     @down = false
 
 
   getCoords: (e) ->
-    if e.offsetX
+    if e.offsetX?
       # Webkit
       x: e.offsetX,  y: e.offsetY
-    else if e.layerX
+    else if e.layerX?
       # Firefox
       x: e.layerX, y: e.layerY
     else
