@@ -1,4 +1,4 @@
-
+fs = require "fs"
 express = require "express"
 piler = require "piler"
 _  = require 'underscore'
@@ -49,8 +49,31 @@ app.configure ->
   js.addFile "frontpage", clientFiles + "/frontpage.coffee"
 
 
-# Drawing history "database"
-db = {}
+
+
+
+# Ghetto database
+#
+dbFile = __dirname + "/../db.json"
+try
+  db = JSON.parse fs.readFileSync dbFile
+  console.log "loaded db from", dbFile
+catch e
+  console.log "could not load db", e
+  db = {}
+
+dbDirty = false
+setInterval ->
+  return unless dbDirty
+  fs.writeFile dbFile, JSON.stringify(db), (err) ->
+    throw err if err
+    dbDirty = false
+    console.log "saved db to", dbFile
+, 5000
+
+
+
+# db.bug = (JSON.parse fs.readFileSync __dirname + "/bug.json")
 
 app.get "/", (req, res) ->
 
@@ -82,6 +105,7 @@ sockets.on "connection", (socket) ->
     socket.join room
 
     socket.on "draw", (draw) ->
+      dbDirty = true
       # got new shape from some client
 
       # Append change to the history
