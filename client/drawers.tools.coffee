@@ -35,6 +35,7 @@ class BaseTool extends Backbone.View
 
 
   draw:  ->
+    stats.update()
     @main.drawImage @sketchCanvas, 0, 0
     @clear()
 
@@ -53,7 +54,6 @@ class BaseTool extends Backbone.View
   move: notImplemented "move"
 
   updateCanvasSettings: =>
-    console.log "updating", this, @model, arguments
     @setColor @model.get "color"
     @setSize @model.get "size"
 

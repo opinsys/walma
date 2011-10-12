@@ -24,6 +24,7 @@ app.configure ->
 
 app.configure "development", ->
   js.addFile clientFiles + "/remotelogger.coffee"
+  js.addFile clientFiles + "/vendor/Stats.js"
   js.liveUpdate css, io
   logClients io
 

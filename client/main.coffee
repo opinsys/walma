@@ -3,13 +3,6 @@
 {tools} = NS "PWB.drawers"
 {views} = NS "PWB.drawers"
 {models} = NS "PWB.drawers"
-`function stacktrace() { 
-  function st2(f) {
-      return !f ? [] : 
-              st2(f.caller).concat([f.toString().split('(')[0].substring(9) + '(' + f.arguments.join(',') + ')']);
-                }
-                  return st2(arguments.callee.caller);
-                  }`
 
 
 socket = io.connect().of("/drawer")
@@ -19,6 +12,15 @@ hasTtouch = 'ontouchstart' of window
 room = window.location.pathname.substring(1) or "_main"
 
 $ ->
+  if Stats?
+    window.stats = new Stats
+    stats.domElement.style.position = 'absolute'
+    stats.domElement.style.left = '0px'
+    stats.domElement.style.top = '0px'
+    $("body").append stats.domElement
+  else
+    window.stats =
+      update: ->
 
   window.model = toolModel = new models.ToolModel
   $("canvas").addClass("loading")
