@@ -1,6 +1,9 @@
 
+
 script.status-template(type="x-handlebars-template")
-  .h2 Status
+  .attr
+    span.name Status:
+    span.value  {{status}}
   .attr
     span.name Loaded:
     span.value  {{drawnFromHistory}} / {{inHistory}} operations in {{historyDrawTime}}s

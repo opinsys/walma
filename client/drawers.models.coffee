@@ -9,6 +9,7 @@ class models.ToolModel extends Backbone.Model
 class models.StatusModel extends Backbone.Model
 
   defaults:
+    status: "starting"
     operationCount: 0
     inHistory: 0
     drawnFromHistory: 0
@@ -21,7 +22,6 @@ class models.StatusModel extends Backbone.Model
       if @start
         diff = (now() - @start) / 1000
         diff or= "under 1"
-        console.log "diff", diff
         @set historyDrawTime: diff, silent: true
 
 
