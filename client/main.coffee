@@ -123,6 +123,6 @@ $ ->
 $ ->
   $("[data-color]").each ->
     that = $ @
-    that.css "color", that.data "color"
+    that.css "background-color", that.data "color"
 
 
