@@ -24,12 +24,13 @@ app.configure ->
 
 app.configure "development", ->
   js.addFile clientFiles + "/remotelogger.coffee"
-  js.addFile clientFiles + "/vendor/Stats.js"
+  # js.addFile clientFiles + "/vendor/Stats.js"
   js.liveUpdate css, io
   logClients io
 
 app.configure ->
 
+  css.addFile clientFiles + "/stylesheets/reset.css"
   css.addFile clientFiles + "/stylesheets/style.styl"
 
   js.addUrl "/socket.io/socket.io.js"
@@ -39,7 +40,7 @@ app.configure ->
   js.addFile clientFiles + "/vendor/underscore.string.js"
   js.addFile clientFiles + "/vendor/backbone.js"
   js.addFile clientFiles + "/vendor/handlebars.js"
-  js.addFile clientFiles + "/vendor/spine-touch.coffee"
+  # js.addFile clientFiles + "/vendor/spine-touch.coffee"
   js.addFile clientFiles + "/helpers.coffee"
 
   js.addFile "paint", clientFiles + "/drawers.coffee"
