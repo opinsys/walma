@@ -14,8 +14,8 @@ class views.ToolSettings extends Backbone.View
 
 
   events:
-    "click .color button": "changeColor"
-    "click .tool button": "changeTool"
+    "tap .color button": "changeColor"
+    "tap .tool button": "changeTool"
     "keyup .size input": "changeSize"
 
   changeTool: (e) =>
@@ -27,7 +27,7 @@ class views.ToolSettings extends Backbone.View
 
   changeColor: (e) =>
     setting = $(e.currentTarget)
-    @model.set color: setting.data("color")
+    @model.set color: color = setting.data("color")
 
     @$(".color .selected").removeClass "selected"
     setting.addClass "selected"

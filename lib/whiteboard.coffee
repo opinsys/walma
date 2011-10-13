@@ -39,6 +39,7 @@ app.configure ->
   js.addFile clientFiles + "/vendor/underscore.string.js"
   js.addFile clientFiles + "/vendor/backbone.js"
   js.addFile clientFiles + "/vendor/handlebars.js"
+  js.addFile clientFiles + "/vendor/spine-touch.coffee"
   js.addFile clientFiles + "/helpers.coffee"
 
   js.addFile "paint", clientFiles + "/drawers.coffee"
