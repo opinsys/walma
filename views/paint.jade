@@ -11,28 +11,42 @@ script.status-template(type="x-handlebars-template")
     span.name Operations drawn:
     span.value  {{operationCount}}
 
+
+h1
+
 .status
 
 .tool_settings
 
-  .h2 Tools
-  .tool
-    button.selected(data-tool="Pencil") Pencil
-    button(data-tool="Eraser") Eraser
+  .top
 
-  .h2 Colors
-  .color
-    button.selected(data-color="black") Black
-    button(data-color="white") White
-    button(data-color="red") Red
-    button(data-color="green") Green
-    button(data-color="blue") Blue
+    .color
+      button.selected(data-color="black") Black
+      button(data-color="white") White
+      button(data-color="red") Red
+      button(data-color="green") Green
+      button(data-color="blue") Blue
+      button(data-color="yellow") Yellow
+      button(data-color="brown") Brown
+
+  .left
+
+    .tool
+      button.selected(data-tool="Pencil") Pencil
+      button(data-tool="Eraser") Eraser
+
+    .size
+      input.size-value(type="text", value="50", size="2")
+      span px
+      div
+        button.smaller &lt;
+        button.bigger &gt;
 
 
-  .size
-    input(type="text", value="20", size="2")
-    span px
 
+
+.loading
+  p Loading...
 
 .whiteboard
   canvas.sketch(width="1000", height="600") Your browser does not support canvas

@@ -3,7 +3,9 @@ html
   head
     !{renderStyleTags()}
   body
-    h1 whiteboard.opinsys.fi
+    .navigation
       a.home-link(href="/") home
-      a.home-link(href=".") reload
+      a.reload-page(href="#") reload
+      a(href="https://whiteboard.opinsys.fi/") stable
+
     #container !{body}

@@ -11,21 +11,20 @@ socket = io.connect().of("/drawer")
 hasTtouch = 'ontouchstart' of window
 room = window.location.pathname.substring(1) or "_main"
 
+
+
 $ ->
+  $("h1").text _.capitalize room
   if Stats?
     window.stats = new Stats
-    stats.domElement.style.position = 'absolute'
-    stats.domElement.style.left = '0px'
-    stats.domElement.style.top = '0px'
     $("body").append stats.domElement
   else
     window.stats =
       update: ->
 
   window.model = toolModel = new models.ToolModel
-  $("canvas").addClass("loading")
   startup = []
-  startup.push -> $("canvas").removeClass "loading"
+  startup.push -> $(".loading").remove()
 
   statusModel = new models.StatusModel
 
