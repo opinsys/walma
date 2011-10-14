@@ -3,12 +3,13 @@ tools = NS "PWB.drawers.tools"
 {notImplemented} = NS "PWB.helpers"
 
 
-class BaseTool extends Backbone.View
+class BaseTool
+  _.extend @::, Backbone.Events
 
   name: "BaseTool" # Must match the class name
 
   constructor: (@opts) ->
-    super
+    @model = @opts.model
 
     @sketchCanvas = @opts.sketch
     @mainCanvas = @opts.main
@@ -55,6 +56,7 @@ class BaseTool extends Backbone.View
   move: notImplemented "move"
 
   updateCanvasSettings: =>
+    console.log "change settigns", @model.get("color")
     @setColor @model.get "color"
     @setSize @model.get "size"
 

@@ -80,10 +80,9 @@ $ ->
   socket.on "draw", (draw) ->
     statusModel.addDraw draw
 
-    # TODO: buffer during history draw
     return unless draw
     tool = new tools[draw.shape.tool]
-      sketch: $("canvas.sketch").get(0)
+      sketch: $("canvas.remoteSketch").get(0)
       main: $("canvas.main").get(0)
 
     tool.replay draw.shape
@@ -109,7 +108,7 @@ $ ->
 
       return cb() unless draw
       tool = new tools[draw.shape.tool]
-        sketch: $("canvas.sketch").get(0)
+        sketch: $("canvas.remoteSketch").get(0)
         main: $("canvas.main").get(0)
 
       tool.replay draw.shape
