@@ -84,6 +84,7 @@ app.get "/", (req, res) ->
     return {} unless history
     name: name
     historySize:  _.reduce(history, (memo, draw) ->
+      return memo unless draw?.shape?.moves
       memo + draw.shape.moves.length
     , 0)
 

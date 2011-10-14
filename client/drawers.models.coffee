@@ -28,6 +28,7 @@ class models.StatusModel extends Backbone.Model
   loadOperations: (history) ->
 
     operationCount = _.reduce history, (memo, draw) ->
+      return memo unless draw?.shape?.moves
       memo + draw.shape.moves.length
     , 0
 

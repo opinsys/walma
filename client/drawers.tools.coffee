@@ -10,11 +10,12 @@ class BaseTool extends Backbone.View
   constructor: (@opts) ->
     super
 
-    @sketchCanvas = @$( @opts.sketch or "canvas.sketch").get 0
-    @mainCanvas = @$("canvas.main").get 0
+    @sketchCanvas = @opts.sketch
+    @mainCanvas = @opts.main
 
-    @sketch = @sketchCanvas.getContext("2d")
-    @main = @mainCanvas.getContext("2d")
+
+    @sketch = @sketchCanvas.getContext "2d"
+    @main = @mainCanvas.getContext "2d"
 
     if @model
       @model.bind "change", @updateCanvasSettings

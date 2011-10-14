@@ -8,7 +8,7 @@
 socket = io.connect().of("/drawer")
 
 # http://modernizr.github.com/Modernizr/touch.html
-hasTtouch = 'ontouchstart' of window
+hasTouch = 'ontouchstart' of window
 room = window.location.pathname.substring(1) or "_main"
 
 
@@ -21,6 +21,8 @@ $ ->
   else
     window.stats =
       update: ->
+
+$ ->
 
   canvases = $ "canvas"
   main = $("canvas.main").get 0
@@ -38,6 +40,8 @@ $ ->
 
   keepMaximized()
 
+$ ->
+
   window.model = toolModel = new models.ToolModel
   startup = []
   startup.push -> $(".loading").remove()
@@ -48,28 +52,24 @@ $ ->
     el: ".status"
     model: statusModel
 
-  if hasTtouch
-    drawer = new drawers.TouchDrawer
-      el: "canvas.sketch"
+  if hasTouch
+    Drawer = drawers.TouchDrawer
   else
-    drawer = new drawers.MouseDrawer
-      el: "canvas.sketch"
+    Drawer = drawers.MouseDrawer
+
+  drawer = new Drawer
+    el: ".whiteboard"
+    model: toolModel
+    user: "Esa"
+
+
+  drawer.bind "draw", (draw) ->
+    statusModel.addShape draw.shape
+    socket.emit "draw", draw
 
 
   toolModel.bind "change:tool", ->
-    tool = new tools[toolModel.get "tool"]
-      el: ".whiteboard"
-      model: toolModel
-
-    tool.bind "draw", (shape) ->
-      statusModel.addShape shape
-
-      socket.emit "draw",
-        shape: shape
-        user: "esa"
-        time: (new Date()).getTime()
-
-    drawer.use tool
+    drawer.use tools[toolModel.get "tool"]
 
 
   toolSettings = new views.ToolSettings
@@ -80,11 +80,12 @@ $ ->
   socket.on "draw", (draw) ->
     statusModel.addDraw draw
 
-    tool = new tools[draw.shape.tool]
-      el: ".whiteboard"
-      sketch: ".remoteSketch"
-
     # TODO: buffer during history draw
+    return unless draw
+    tool = new tools[draw.shape.tool]
+      sketch: $("canvas.sketch").get(0)
+      main: $("canvas.main").get(0)
+
     tool.replay draw.shape
 
 
@@ -106,9 +107,10 @@ $ ->
     operations = 0
     async.forEachSeries history, (draw, cb) ->
 
+      return cb() unless draw
       tool = new tools[draw.shape.tool]
-        el: ".whiteboard"
-        sketch: ".remoteSketch"
+        sketch: $("canvas.sketch").get(0)
+        main: $("canvas.main").get(0)
 
       tool.replay draw.shape
       operations += draw.shape.moves.length

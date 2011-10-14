@@ -17,8 +17,10 @@
       , "piler": ""
       , "socket.io": "0.8.2"
       , "stylus": "0.15.1"
+      , "backbone": ""
       , "underscore": "1.1.7"
       , "underscore.string": "1.1.6"
+      , "canvas": ""
       , "socket.io": ""
       , "async": ""
   }

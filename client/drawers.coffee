@@ -23,40 +23,55 @@ sanitizePoint = (fn) -> (e) ->
 
 class BaseDrawer extends Backbone.View
 
-  use: (tool) ->
-    @tool = tool
-    @activate()
+  constructor: (@opts) ->
+    super
+    @sketchCanvas = @$("canvas.sketch")
+    @mainCanvas = @$("canvas.main")
+    @user = @opts.user
 
-  activate: notImplemented "activate"
+
+  use: (Tool) ->
+    if @tool
+      @tool.unbind()
+      delete @tool
+
+    @tool = new Tool
+      model: model
+      sketch: @sketchCanvas.get(0)
+      main: @mainCanvas.get(0)
+
+    @tool.bind "draw", (shape) =>
+      @trigger "draw",
+        shape: shape
+        user: @user
+        time: (new Date()).getTime()
 
 
+
+
+class drawers.ReplayDrawer extends BaseDrawer
+
+  replay: (draw) ->
+    @tool.replay draw.shape
 
 
 class drawers.MouseDrawer extends BaseDrawer
+
+  events:
+    "mousedown canvas.sketch": "startDrawing"
 
   constructor: ->
     super
     $(window).mouseup @stopDrawing
     $(window).mousemove @cursorMove
+    @positionEl = @sketchCanvas.get 0
 
-  events:
-    "mousedown": "startDrawing"
-    # "mouseout": "mouseOut"
-
-
-  mouseOut: =>
-    @mouseOnCanvas = false
-
-  activate: ->
-    if not @active
-      @active = true
 
   startDrawing: (e) =>
     @out = false
     @down = true
     @tool.begin()
     @tool.down @lastPoint = @getCoords e
-    console.log "user is drawing", @tool.sketch.strokeStyle
     false
 
   cursorMove: (e) =>
@@ -64,13 +79,14 @@ class drawers.MouseDrawer extends BaseDrawer
     return if not @down
 
     # Mouse went ouf of canvas. 
-    if e.target isnt @el and not @out
+    if e.target isnt @positionEl and not @out
       # Lift up the cursor from last know point
       @tool.up @lastPoint
       @out = true
       return
 
-    if e.target is @el
+
+    if e.target is @positionEl
       if @out
         # Came back to canvas! Put cursor down
         @tool.down @lastPoint = @getCoords e
@@ -115,7 +131,6 @@ class drawers.TouchDrawer extends BaseDrawer
     "touchend": "fingerUp"
     "touchmove": "fingerMove"
 
-  activate:  => drawers.MouseDrawer::activate.apply @, arguments
 
   fingerMove: (e) =>
     @tool.move @lastTouch = @getCoords e
@@ -133,6 +148,6 @@ class drawers.TouchDrawer extends BaseDrawer
 
   getCoords: (e) ->
     e = e.originalEvent.touches[0]
-    x: e.pageX - @el.offsetLeft
-    y: e.pageY - @el.offsetTop
+    x: e.pageX - @sketchCanvas.offsetLeft
+    y: e.pageY - @sketchCanvas.offsetTop
 
