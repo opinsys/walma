@@ -22,6 +22,22 @@ $ ->
     window.stats =
       update: ->
 
+  canvases = $ "canvas"
+  main = $("canvas.main").get 0
+  keepMaximized = ->
+    # console.log "redeize"
+    # snapshot = new Image
+    # snapshot.src = main.toDataURL("image/png", "")
+    # snapshot.onload = ->
+    #   console.log "drawing", x, y
+    #   main.getContext("2d").drawImage snapshot, 0, 0
+
+    canvases.attr "width", x = $(document).width() - 350
+    canvases.attr "height", y = $(document).height() - 150
+
+
+  keepMaximized()
+
   window.model = toolModel = new models.ToolModel
   startup = []
   startup.push -> $(".loading").remove()
