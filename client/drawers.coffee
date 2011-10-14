@@ -27,18 +27,27 @@ class BaseDrawer extends Backbone.View
     super
     @sketchCanvas = @$("canvas.sketch")
     @mainCanvas = @$("canvas.main")
+    @positionEl = @sketchCanvas.get 0
     @user = @opts.user
 
+    @model.bind "change", @updateToolSettings
+
+  updateToolSettings: =>
+    return unless @tool
+    @tool.setColor @model.get "color"
+    @tool.setSize @model.get "size"
 
   use: (Tool) ->
+    console.log "Using tool", Tool
     if @tool
       @tool.unbind()
       delete @tool
 
     @tool = new Tool
-      model: model
       sketch: @sketchCanvas.get(0)
       main: @mainCanvas.get(0)
+
+    @updateToolSettings()
 
     @tool.bind "draw", (shape) =>
       @trigger "draw",
@@ -64,7 +73,6 @@ class drawers.MouseDrawer extends BaseDrawer
     super
     $(window).mouseup @stopDrawing
     $(window).mousemove @cursorMove
-    @positionEl = @sketchCanvas.get 0
 
 
   startDrawing: (e) =>
@@ -127,27 +135,30 @@ class drawers.TouchDrawer extends BaseDrawer
     super
 
   events:
-    "touchstart": "fingerDown"
-    "touchend": "fingerUp"
-    "touchmove": "fingerMove"
+    "touchstart canvas.sketch": "fingerDown"
+    "touchend canvas.sketch": "fingerUp"
+    "touchmove canvas.sketch": "fingerMove"
 
 
   fingerMove: (e) =>
     @tool.move @lastTouch = @getCoords e
+    console.log "finger moving", @lastTouch
 
   fingerDown: (e) =>
+    console.log "finger down", @lastTouch
     @tool.begin()
     @tool.down @lastTouch = @getCoords e
 
     false
 
   fingerUp: (e) =>
+    console.log "finger up", @lastTouch
     @tool.up @lastTouch
     @tool.end()
     false
 
   getCoords: (e) ->
     e = e.originalEvent.touches[0]
-    x: e.pageX - @sketchCanvas.offsetLeft
-    y: e.pageY - @sketchCanvas.offsetTop
+    x: e.pageX - @positionEl.offsetLeft
+    y: e.pageY - @positionEl.offsetTop
 

@@ -18,9 +18,6 @@ class BaseTool
     @sketch = @sketchCanvas.getContext "2d"
     @main = @mainCanvas.getContext "2d"
 
-    if @model
-      @model.bind "change", @updateCanvasSettings
-      @updateCanvasSettings()
 
 
 
@@ -36,7 +33,7 @@ class BaseTool
   getSize: -> @sketch.lineWidth
 
 
-  draw:  ->
+  draw: ->
     stats.update()
     @main.drawImage @sketchCanvas, 0, 0
     @clear()
@@ -55,10 +52,6 @@ class BaseTool
   up: notImplemented "up"
   move: notImplemented "move"
 
-  updateCanvasSettings: =>
-    console.log "change settigns", @model.get("color")
-    @setColor @model.get "color"
-    @setSize @model.get "size"
 
   replay: (shape) ->
     @begin()
@@ -87,6 +80,7 @@ class tools.Pencil extends BaseTool
 
 
   down: (point) ->
+    console.log "pencil down"
     # Start drawing
     point = _.clone point
     point.op = "down"
@@ -103,6 +97,7 @@ class tools.Pencil extends BaseTool
 
 
   move: (to) ->
+    console.log "pencil move"
     to = _.clone to
     to.op = "move"
     @moves.push to
@@ -118,6 +113,7 @@ class tools.Pencil extends BaseTool
     @lastPoint = to
 
   up: (point) ->
+    console.log "pencil up"
     @move point
     @draw()
 

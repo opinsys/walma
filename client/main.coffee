@@ -69,6 +69,8 @@ $ ->
 
 
   toolModel.bind "change:tool", ->
+    console.log "changeing too to", toolModel.get "tool"
+    console.log "ool is", _.keys(tools), tools[toolModel.get "tool"]
     drawer.use tools[toolModel.get "tool"]
 
 
