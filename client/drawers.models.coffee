@@ -13,7 +13,7 @@ class models.StatusModel extends Backbone.Model
     operationCount: 0
     inHistory: 0
     drawnFromHistory: 0
-    historyDrawTime: "under 1"
+    historyDrawTime: 0
 
   constructor: ->
     super
@@ -21,9 +21,12 @@ class models.StatusModel extends Backbone.Model
     @bind "change", =>
       if @start
         diff = (now() - @start) / 1000
-        diff or= "under 1"
         @set historyDrawTime: diff, silent: true
 
+  toJSON: ->
+    json = super
+    json.speed = parseInt json.operationCount / json.historyDrawTime
+    json
 
   loadOperations: (history) ->
 

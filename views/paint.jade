@@ -6,7 +6,10 @@ script.status-template(type="x-handlebars-template")
     span.value  {{status}}
   .attr
     span.name Loaded:
-    span.value  {{drawnFromHistory}} / {{inHistory}} operations in {{historyDrawTime}}s
+    span.value  {{drawnFromHistory}} / {{inHistory}} ops in {{historyDrawTime}}s
+  .attr
+    span.name Speed:
+    span.value {{speed}} ops/s
   .attr
     span.name Operations drawn:
     span.value  {{operationCount}}
