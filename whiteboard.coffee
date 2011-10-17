@@ -5,7 +5,7 @@ _  = require 'underscore'
 _.mixin require 'underscore.string'
 
 
-logClients = require "./clientlogger"
+logClients = require "./lib/clientlogger"
 
 css = piler.createCSSManager()
 js = piler.createJSManager()
@@ -13,10 +13,10 @@ app = express.createServer()
 
 io = require('socket.io').listen app
 
-clientFiles = __dirname + "/../client"
+clientFiles = __dirname + "/client"
 
 app.configure ->
-  app.use express.static __dirname + "/../public"
+  app.use express.static __dirname + "/public"
 
   js.bind app
   css.bind app
@@ -42,7 +42,7 @@ app.configure ->
   js.addFile clientFiles + "/helpers.coffee"
 
   js.addFile clientFiles + "/drawers.coffee"
-  js.addFile clientFiles + "/drawers.tools.coffee"
+  js.addFile __dirname + "/shared/drawers.tools.coffee"
   js.addFile clientFiles + "/drawers.models.coffee"
   js.addFile clientFiles + "/drawers.views.coffee"
 
@@ -55,7 +55,7 @@ app.configure "development", ->
 
   js.addFile "spec", clientFiles + "/vendor/jasmine/jasmine.js"
   js.addFile "spec", clientFiles + "/vendor/jasmine/jasmine-html.js"
-  js.addFile "spec", __dirname + "/../spec/tools.spec.coffee"
+  js.addFile "spec", __dirname + "/spec/tools.spec.coffee"
   js.addFile "spec", clientFiles + "/specrunner.js"
 
   app.get "/spec", (req, res) ->
