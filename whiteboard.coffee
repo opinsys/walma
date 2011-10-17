@@ -1,67 +1,12 @@
 fs = require "fs"
 express = require "express"
-piler = require "piler"
 _  = require 'underscore'
 _.mixin require 'underscore.string'
 
-
-logClients = require "./lib/clientlogger"
-
-css = piler.createCSSManager()
-js = piler.createJSManager()
 app = express.createServer()
-
 io = require('socket.io').listen app
 
-clientFiles = __dirname + "/client"
-
-app.configure ->
-  app.use express.static __dirname + "/public"
-
-  js.bind app
-  css.bind app
-
-
-app.configure "development", ->
-  js.addFile clientFiles + "/remotelogger.coffee"
-  js.liveUpdate css, io
-  logClients io
-
-app.configure ->
-
-  css.addFile "main", clientFiles + "/stylesheets/reset.css"
-  css.addFile "main", clientFiles + "/stylesheets/style.styl"
-
-  js.addUrl "/socket.io/socket.io.js"
-  js.addFile clientFiles + "/vendor/jquery.js"
-  js.addFile clientFiles + "/vendor/async.js"
-  js.addFile clientFiles + "/vendor/underscore.js"
-  js.addFile clientFiles + "/vendor/underscore.string.js"
-  js.addFile clientFiles + "/vendor/backbone.js"
-  js.addFile clientFiles + "/vendor/handlebars.js"
-  js.addFile clientFiles + "/helpers.coffee"
-
-  js.addFile clientFiles + "/drawers.coffee"
-  js.addFile __dirname + "/shared/drawers.tools.coffee"
-  js.addFile clientFiles + "/drawers.models.coffee"
-  js.addFile clientFiles + "/drawers.views.coffee"
-
-  js.addFile "paint", clientFiles + "/main.coffee"
-  js.addFile "frontpage", clientFiles + "/frontpage.coffee"
-
-
-app.configure "development", ->
-  css.addFile "spec", clientFiles + "/vendor/jasmine/jasmine.css"
-
-  js.addFile "spec", clientFiles + "/vendor/jasmine/jasmine.js"
-  js.addFile "spec", clientFiles + "/vendor/jasmine/jasmine-html.js"
-  js.addFile "spec", __dirname + "/spec/tools.spec.coffee"
-  js.addFile "spec", clientFiles + "/specrunner.js"
-
-  app.get "/spec", (req, res) ->
-    res.render "spec.jade",
-      layout: false
-
+require("./configure") app, io
 
 
 # Ghetto database
@@ -104,7 +49,7 @@ app.get "/", (req, res) ->
 app.get "/:room", (req, res) ->
   res.render "paint.jade"
 
-app.listen 1337
+
 
 
 

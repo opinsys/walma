@@ -1,12 +1,7 @@
 
-if NS?
-  tools = NS "PWB.drawers.tools"
-  {notImplemented} = NS "PWB.helpers"
-else
-  tools = exports
-  notImplemented = (f) -> f # TODO
-  Backbone = require "backbone"
-  _  = require 'underscore'
+Backbone = require "backbone"
+_  = require 'underscore'
+notImplemented = (f) -> f
 
 
 class BaseTool
@@ -84,7 +79,7 @@ class BaseTool
     size: @getSize()
     moves: @moves
 
-class tools.Pencil extends BaseTool
+class exports.Pencil extends BaseTool
 
   name: "Pencil"
 
@@ -123,7 +118,7 @@ class tools.Pencil extends BaseTool
 
 
 # Eraser is basically just a pencil where compositing is turned inside out
-class tools.Eraser extends tools.Pencil
+class exports.Eraser extends exports.Pencil
   name: "Eraser"
 
   draw:  ->
@@ -138,7 +133,7 @@ class tools.Eraser extends tools.Pencil
     @draw()
 
 
-class tools.Line extends BaseTool
+class exports.Line extends BaseTool
 
   name: "Line"
 

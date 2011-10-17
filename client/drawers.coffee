@@ -1,4 +1,7 @@
 
+Backbone = require "backbone"
+_  = require 'underscore'
+
 drawers = NS "PWB.drawers"
 {notImplemented} = NS "PWB.helpers"
 

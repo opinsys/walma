@@ -1,3 +1,5 @@
+Backbone = require "backbone"
+_  = require 'underscore'
 
 models = NS "PWB.drawers.models"
 

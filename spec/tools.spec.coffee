@@ -1,12 +1,13 @@
 
-if NS?
-  tools = NS "PWB.drawers.tools"
+
+
+if document?.createElement?
   createCanvas = -> document.createElement "canvas"
 else
-  tools = require "../shared/drawtools"
   Canvas = require "canvas"
   createCanvas = -> new Canvas
 
+tools = require "drawtools"
 
 describe "Pencil", ->
   beforeEach ->

@@ -1,4 +1,5 @@
 
+Backbone = require "backbone"
 
 views = NS "PWB.drawers.views"
 

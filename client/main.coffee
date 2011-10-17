@@ -1,6 +1,10 @@
 
+_  = require 'underscore' unless _
+# _.mixin require 'underscore.string'
+
+tools = require "drawtools"
+
 {drawers} = NS "PWB"
-{tools} = NS "PWB.drawers"
 {views} = NS "PWB.drawers"
 {models} = NS "PWB.drawers"
 
@@ -15,7 +19,7 @@ room = window.location.pathname.substring(1) or "_main"
 
 
 $ ->
-  $("h1").text _.capitalize room
+  $("h1").text room
 
   canvases = $ "canvas"
   main = $("canvas.main").get 0

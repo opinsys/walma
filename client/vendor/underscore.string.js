@@ -451,10 +451,5 @@
   // Integrate with Underscore.js
   } else if (typeof root._ !== 'undefined') {
     root._.mixin(_s);
-
-  // Or define it
-  } else {
-    root._ = _s;
   }
-
 }(this || window));

@@ -4,7 +4,7 @@
   , "private": true
   , "scripts": {
      "start": "node server.js"
-     , "test": "node_modules/.bin/jasmine-node --coffee spec/"
+     , "test": "NODE_PATH=shared/ node_modules/.bin/jasmine-node --coffee spec/"
     }
   , "devDependencies": {
       "supervisor": ""
