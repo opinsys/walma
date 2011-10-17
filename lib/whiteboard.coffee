@@ -24,14 +24,13 @@ app.configure ->
 
 app.configure "development", ->
   js.addFile clientFiles + "/remotelogger.coffee"
-  # js.addFile clientFiles + "/vendor/Stats.js"
   js.liveUpdate css, io
   logClients io
 
 app.configure ->
 
-  css.addFile clientFiles + "/stylesheets/reset.css"
-  css.addFile clientFiles + "/stylesheets/style.styl"
+  css.addFile "main", clientFiles + "/stylesheets/reset.css"
+  css.addFile "main", clientFiles + "/stylesheets/style.styl"
 
   js.addUrl "/socket.io/socket.io.js"
   js.addFile clientFiles + "/vendor/jquery.js"
@@ -40,18 +39,28 @@ app.configure ->
   js.addFile clientFiles + "/vendor/underscore.string.js"
   js.addFile clientFiles + "/vendor/backbone.js"
   js.addFile clientFiles + "/vendor/handlebars.js"
-  # js.addFile clientFiles + "/vendor/spine-touch.coffee"
   js.addFile clientFiles + "/helpers.coffee"
 
-  js.addFile "paint", clientFiles + "/drawers.coffee"
-  js.addFile "paint", clientFiles + "/drawers.tools.coffee"
-  js.addFile "paint", clientFiles + "/drawers.models.coffee"
-  js.addFile "paint", clientFiles + "/drawers.views.coffee"
+  js.addFile clientFiles + "/drawers.coffee"
+  js.addFile clientFiles + "/drawers.tools.coffee"
+  js.addFile clientFiles + "/drawers.models.coffee"
+  js.addFile clientFiles + "/drawers.views.coffee"
 
   js.addFile "paint", clientFiles + "/main.coffee"
   js.addFile "frontpage", clientFiles + "/frontpage.coffee"
 
 
+app.configure "development", ->
+  css.addFile "spec", clientFiles + "/vendor/jasmine/jasmine.css"
+
+  js.addFile "spec", clientFiles + "/vendor/jasmine/jasmine.js"
+  js.addFile "spec", clientFiles + "/vendor/jasmine/jasmine-html.js"
+  js.addFile "spec", __dirname + "/../spec/tools.spec.coffee"
+  js.addFile "spec", clientFiles + "/specrunner.js"
+
+  app.get "/spec", (req, res) ->
+    res.render "spec.jade",
+      layout: false
 
 
 

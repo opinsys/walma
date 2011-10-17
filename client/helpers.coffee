@@ -16,6 +16,14 @@ window.NS = (nsString) ->
 
 
 
+$ ->
+  if Stats?
+    window.stats = new Stats
+    $("body").append stats.domElement
+  else
+    window.stats =
+      update: ->
+
 
 
 # Smoother navigation for touch devices

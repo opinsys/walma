@@ -83,11 +83,6 @@ class tools.Pencil extends BaseTool
 
   name: "Pencil"
 
-  constructor: ->
-    super
-    @sketch.lineCap = "round"
-
-
 
   down: (point) ->
     # Start drawing

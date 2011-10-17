@@ -13,16 +13,9 @@ room = window.location.pathname.substring(1) or "_main"
 
 
 
-$ ->
-  $("h1").text _.capitalize room
-  if Stats?
-    window.stats = new Stats
-    $("body").append stats.domElement
-  else
-    window.stats =
-      update: ->
 
 $ ->
+  $("h1").text _.capitalize room
 
   canvases = $ "canvas"
   main = $("canvas.main").get 0
