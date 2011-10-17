@@ -39,6 +39,7 @@ h1
 
     .tool
       button.selected(data-tool="Pencil") Pencil
+      button(data-tool="Line") Line
       button(data-tool="Eraser") Eraser
 
     .size
@@ -52,9 +53,9 @@ h1
   p Loading...
 
 .whiteboard
-  canvas.sketch Your browser does not support canvas
-  canvas.remoteSketch Your browser does not support canvas
-  canvas.main Your browser does not support canvas
+  canvas.loading.sketch Your browser does not support canvas
+  canvas.loading.remoteSketch Your browser does not support canvas
+  canvas.loading.main Your browser does not support canvas
 
 
 

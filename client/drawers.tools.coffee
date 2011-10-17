@@ -53,6 +53,16 @@ class BaseTool
   move: notImplemented "move"
 
 
+  drawLine: (from, to) ->
+    @sketch.lineCap = "round"
+    @sketch.beginPath()
+    @sketch.moveTo from.x, from.y
+    @sketch.lineTo to.x, to.y
+
+    @sketch.stroke()
+    @sketch.closePath()
+
+
   replay: (shape) ->
     @begin()
     @setColor shape.color
@@ -80,7 +90,6 @@ class tools.Pencil extends BaseTool
 
 
   down: (point) ->
-    console.log "pencil down"
     # Start drawing
     point = _.clone point
     point.op = "down"
@@ -97,23 +106,16 @@ class tools.Pencil extends BaseTool
 
 
   move: (to) ->
-    console.log "pencil move"
     to = _.clone to
     to.op = "move"
     @moves.push to
     from = @lastPoint
 
-    @sketch.beginPath()
-    @sketch.moveTo from.x, from.y
-    @sketch.lineTo to.x, to.y
-
-    @sketch.stroke()
-    @sketch.closePath()
+    @drawLine from, to
 
     @lastPoint = to
 
   up: (point) ->
-    console.log "pencil up"
     @move point
     @draw()
 
@@ -134,5 +136,34 @@ class tools.Eraser extends tools.Pencil
   move: ->
     super
     @draw()
+
+
+class tools.Line extends BaseTool
+
+  name: "Line"
+
+  down: (point) ->
+    # Start drawing
+    point = _.clone point
+    point.op = "down"
+    @moves.push @startPoint = point
+    @lastPoint = point
+
+
+
+  move: (to) ->
+    from = @startPoint
+    @clear()
+    @drawLine from, to
+
+    to = _.clone to
+    to.op = "move"
+    @lastPoint = to
+
+  up:   ->
+    # @drawLine @startPoint, @lastPoint
+    @moves[1] = @lastPoint
+    @draw()
+
 
 

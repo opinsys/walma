@@ -44,7 +44,8 @@ $ ->
 
   window.model = toolModel = new models.ToolModel
   startup = []
-  startup.push -> $(".loading").remove()
+  startup.push -> $("canvas.loading").removeClass "loading"
+  startup.push -> $("div.loading").remove()
 
   statusModel = new models.StatusModel
 
