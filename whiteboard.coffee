@@ -11,7 +11,7 @@ require("./configure") app, io
 
 # Ghetto database
 #
-dbFile = __dirname + "/../db.json"
+dbFile = __dirname + "/db.json"
 try
   db = JSON.parse fs.readFileSync dbFile
   console.log "loaded db from", dbFile
