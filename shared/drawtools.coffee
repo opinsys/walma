@@ -54,6 +54,8 @@ class BaseTool
 
 
   drawLine: (from, to) ->
+    if not from.x? or not to.x?
+      return
     @sketch.lineCap = "round"
     @sketch.beginPath()
     @sketch.moveTo from.x, from.y

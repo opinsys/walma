@@ -31,8 +31,10 @@ $ ->
     #   console.log "drawing", x, y
     #   main.getContext("2d").drawImage snapshot, 0, 0
 
-    canvases.attr "width", x = $(document).width() - 350
-    canvases.attr "height", y = $(document).height() - 150
+    # canvases.attr "width", x = $(document).width() - 350
+    # canvases.attr "height", y = $(document).height() - 150
+    canvases.attr "width", 800
+    canvases.attr "height", 800
 
 
   keepMaximized()
