@@ -51,15 +51,29 @@ app.get "/:room", (req, res) ->
 
 
 
+cachers = {}
 
 
 sockets = io.of "/drawer"
 sockets.on "connection", (socket) ->
+
+  socket.on "cacher", (id) ->
+    console.log "I #{ id } can cache"
+    cachers[id] =
+      jobs: []
+      socket: socket
+
   socket.on "join", (room) ->
 
     # Send history to the new client
-    socket.emit "start", db[room] ?= []
+    if not db[room]
+      db[room] =
+        history: []
+        cacher:  _.min(cachers, (c) -> c.jobs.length)
 
+    socket.emit "start", db[room].history
+
+    cacher.join room
     socket.join room
 
     socket.on "draw", (draw) ->
