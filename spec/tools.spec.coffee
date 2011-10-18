@@ -71,3 +71,30 @@ describe "Line", ->
   it "records only start and end point", ->
     expect(@line.toJSON().moves.length).toBe 2
 
+describe "Circle", ->
+  beforeEach ->
+    @circle = new tools.Circle
+      main: createCanvas()
+      sketch: createCanvas()
+
+    @circle.begin()
+
+    @circle.down
+      x: 100
+      y: 100
+
+    @circle.move
+      x: 200
+      y: 200
+
+    @circle.up
+      x: 200
+      y: 200
+
+    @circle.end()
+
+
+  it "has drawn a circle", ->
+    expect(@circle.moves).toEqual  [ { x : 100, y : 100, op : 'down' }, { x : 200, y : 200, op : 'move' } ]
+
+

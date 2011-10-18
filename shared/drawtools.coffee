@@ -147,11 +147,12 @@ class exports.Line extends BaseTool
     @lastPoint = point
 
 
+  drawShape: @::drawLine
 
   move: (to) ->
     from = @startPoint
     @clear()
-    @drawLine from, to
+    @drawShape from, to
 
     to = _.clone to
     to.op = "move"
@@ -161,6 +162,19 @@ class exports.Line extends BaseTool
     # @drawLine @startPoint, @lastPoint
     @moves[1] = @lastPoint
     @draw()
+
+
+class exports.Circle extends exports.Line
+
+  name: "Circle"
+
+  drawShape: (from, to) ->
+    @sketch.beginPath()
+    @sketch.moveTo @startPoint.x, @startPoint.y
+    radius = Math.sqrt( Math.pow(@startPoint.x - to.x, 2) + Math.pow(@startPoint.y - to.y, 2) )
+    @sketch.arc(@startPoint.x, @startPoint.y, radius, 0, (Math.PI/180)*360, true);
+    @sketch.fill()
+    @sketch.closePath()
 
 
 
