@@ -84,6 +84,10 @@ describe "Circle", ->
       y: 100
 
     @circle.move
+      x: 150
+      y: 150
+
+    @circle.move
       x: 200
       y: 200
 

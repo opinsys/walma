@@ -169,11 +169,13 @@ class exports.Circle extends exports.Line
   name: "Circle"
 
   drawShape: (from, to) ->
-    @sketch.beginPath()
-    @sketch.moveTo @startPoint.x, @startPoint.y
     radius = Math.sqrt( Math.pow(@startPoint.x - to.x, 2) + Math.pow(@startPoint.y - to.y, 2) )
+    @sketch.moveTo @startPoint.x, @startPoint.y + radius
+
+    @sketch.beginPath()
     @sketch.arc(@startPoint.x, @startPoint.y, radius, 0, (Math.PI/180)*360, true);
     @sketch.fill()
+    # @sketch.stroke()
     @sketch.closePath()
 
 
