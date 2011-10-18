@@ -3,7 +3,6 @@ model = require "../lib/drawmodel"
 async = require "async"
 
 {Db, Connection, Server} = require "mongodb"
-
 {Drawing} = require "../lib/drawmodel"
 
 prepare = (cb) ->
@@ -66,28 +65,28 @@ describe "Drawing in MongoDB", ->
     console.log "loading collection"
     this.db.collection "testdrawings", (err, coll) =>
       throw err if err
-      this.collection = coll
+      Drawing.collection = coll
       asyncSpecDone()
 
-  it "gets collection", ->
-    drawing = new Drawing "test", this.collection
-    expect(drawing.collection).toBeTruthy()
+  it "can be created", ->
+    drawing = new Drawing "test"
 
   it "gets initialized if not existing", ->
     asyncSpecWait()
-    drawing = new Drawing "not existing", this.collection
+    drawing = new Drawing "not existing"
     drawing.fetch (err, doc) ->
       expect(err).toBeFalsy()
       expect(doc.created).toBeTruthy()
+      expect(doc.history).toEqual []
       asyncSpecDone()
 
   it "does not create twice", ->
     asyncSpecWait()
-    drawing = new Drawing "test2", this.collection
+    drawing = new Drawing "test2"
     drawing.fetch (err, doc) =>
       throw err if err
       expect(doc.created).toBeTruthy()
-      drawing2 = new Drawing "test2", this.collection
+      drawing2 = new Drawing "test2"
       drawing2.fetch (err, doc2) ->
         throw err if err
         expect(doc2.created).toEqual doc.created
@@ -96,7 +95,7 @@ describe "Drawing in MongoDB", ->
   it "can append draws", ->
     asyncSpecWait()
     name = "test3"
-    drawing = new Drawing name, this.collection
+    drawing = new Drawing name
     drawing.fetch (err, doc) =>
       throw err if err
       expect(doc.created).toBeTruthy()
@@ -106,7 +105,7 @@ describe "Drawing in MongoDB", ->
         y: 200
       , (err) =>
         throw err if err
-        drawing3 = new Drawing name, this.collection
+        drawing3 = new Drawing name
         drawing3.fetch (err, doc) =>
           throw err if err
           expect(doc.history[0]).toEqual

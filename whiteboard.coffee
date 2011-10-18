@@ -3,37 +3,37 @@ express = require "express"
 _  = require 'underscore'
 _.mixin require 'underscore.string'
 
+{Db, Connection, Server} = require "mongodb"
+
 app = express.createServer()
 io = require('socket.io').listen app
 
+
+{Drawing} = require "./lib/drawmodel"
+
+db = new Db('whiteboard', new Server("localhost", Connection.DEFAULT_PORT))
+db.open (err) ->
+  if err
+    console.log "Could not open the database", err.trace
+    process.exit(1)
+
+  db.collection "drawings", (err, collection) ->
+    Drawing.collection = collection
+    console.log "got collection"
+
+# db.collection "drawings", (err, collection) ->
+#   return console.log err if err
+#   Drawing.collection = collection
+
+
+
 require("./configure") app, io
+rooms = {}
 
-
-# Ghetto database
-#
-dbFile = __dirname + "/db.json"
-try
-  db = JSON.parse fs.readFileSync dbFile
-  console.log "loaded db from", dbFile
-catch e
-  console.log "could not load db", e
-  db = {}
-
-dbDirty = false
-setInterval ->
-  return unless dbDirty
-  fs.writeFile dbFile, JSON.stringify(db), (err) ->
-    throw err if err
-    dbDirty = false
-    console.log "saved db to", dbFile
-, 5000
-
-
-
-# db.bug = (JSON.parse fs.readFileSync __dirname + "/bug.json")
 
 app.get "/", (req, res) ->
 
+  # TODO:
   rooms = _.map db, (history, name) ->
     return {} unless history
     name: name
@@ -63,27 +63,25 @@ sockets.on "connection", (socket) ->
       jobs: []
       socket: socket
 
-  socket.on "join", (room) ->
+  socket.on "join", (roomName) ->
 
     # Send history to the new client
-    if not db[room]
-      db[room] =
-        history: []
-        cacher:  _.min(cachers, (c) -> c.jobs.length)
+    if not room = rooms[roomName]
+      rooms[roomName] = room = new Drawing roomName
 
-    socket.emit "start", db[room].history
-
-    cacher.join room
-    socket.join room
+    room.fetch (err, doc) ->
+      if err
+        console.log "Error when fetching room #{ roomName }", err
+      else
+        socket.emit "start", doc.history
+        socket.join roomName
 
     socket.on "draw", (draw) ->
-      dbDirty = true
       # got new shape from some client
 
       # Append change to the history
-      db[room].push draw
+      room.addDraw draw
 
-      # console.log "got #{ room }", JSON.stringify draw
       # Send new shape to all clients in the room
       socket.broadcast.to(room).emit "draw", draw
 
