@@ -83,7 +83,7 @@ sockets.on "connection", (socket) ->
       room.addDraw draw
 
       # Send new shape to all clients in the room
-      socket.broadcast.to(room).emit "draw", draw
+      socket.broadcast.to(roomName).emit "draw", draw
 
 
 
