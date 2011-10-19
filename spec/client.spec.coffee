@@ -41,4 +41,24 @@ describe "client", ->
     runs ->
       expect(@client.state).toEqual "teststate"
 
+  it "can be asked for bitmap", ->
+    asyncSpecWait()
+
+    # Browser simulator
+    @fakeSocket.on "getbitmap", =>
+      @fakeSocket.emit "bitmap", "bitmapdata"
+
+    @client.fetchBitmap (err, data) ->
+      expect(err).toBeFalsy()
+      expect(data).toEqual "bitmapdata"
+      asyncSpecDone()
+
+  it "bitmap request can timeout", ->
+    asyncSpecWait()
+    @client.timeoutTime = 50
+    @client.fetchBitmap (err, data) ->
+      expect(err.reason).toEqual "timeout"
+      expect(data).toBeUndefined()
+      asyncSpecDone()
+
 
