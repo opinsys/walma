@@ -1,17 +1,22 @@
 
-model = require "../lib/drawmodel"
+{EventEmitter} = require "events"
 async = require "async"
+_  = require 'underscore'
 
 {Db, Connection, Server} = require "mongodb"
 {Drawing} = require "../lib/drawmodel"
+
+{Client} = require "../lib/client"
+model = require "../lib/drawmodel"
 
 prepare = (cb) ->
   this.db = db = new Db('whiteboard-test', new Server("localhost", Connection.DEFAULT_PORT))
   db.open (err, db) ->
     if err
-      console.log "Could not open the db", err
-      throw err
-    db.dropDatabase (err, result) -> cb()
+      console.log "Could not open the db"
+      cb null
+    else
+      db.dropDatabase (err, result) -> cb()
 
 beforeEach ->
   asyncSpecWait()
@@ -62,7 +67,6 @@ describe "Drawing in MongoDB", ->
 
   beforeEach ->
     asyncSpecWait()
-    console.log "loading collection"
     this.db.collection "testdrawings", (err, coll) =>
       throw err if err
       Drawing.collection = coll
@@ -98,6 +102,7 @@ describe "Drawing in MongoDB", ->
     drawing = new Drawing name
     drawing.fetch (err, doc) =>
       throw err if err
+      created = doc.created
       expect(doc.created).toBeTruthy()
       drawing.addDraw
         op: "move"
@@ -112,10 +117,48 @@ describe "Drawing in MongoDB", ->
             op: "move"
             x: 100
             y: 200
+          expect(doc.created).toBe created, "the document should not change"
           asyncSpecDone()
 
 
 
+  it "initializes client with history", ->
+    fakeSocket = new EventEmitter
+    console.log "MY TEST!!"
+
+    client = new Client fakeSocket,
+      id: "testclient"
+      userAgent: "sdafds"
+    drawing = new Drawing "inittest"
+
+    asyncSpecWait()
+
+    fakeSocket.on "start", (history) ->
+      console.log "GOT START", history, _.isArray history
+      expect(_.isArray history).toBe true
+      expect(history.length).toBe 0
+      asyncSpecDone()
+
+    drawing.addClient client
+    expect(_.size drawing.clients).toBe 1
+
+  it "send draws to the database via clients", ->
+    fakeSocket = new EventEmitter
+    console.log "MY TEST!!"
+
+    client = new Client fakeSocket,
+      id: "testclient2"
+      userAgent: "sdafds"
+    drawing = new Drawing "emittest"
+    drawing.addClient client
+
+    spyOn(drawing, "addDraw")
+
+    fakeSocket.emit "draw",
+      user: "epeli"
+      moves: []
 
 
+
+    expect(drawing.addDraw).toHaveBeenCalled()
 

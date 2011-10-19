@@ -7,13 +7,16 @@ tools = require "drawtools"
 {drawers} = NS "PWB"
 {views} = NS "PWB.drawers"
 {models} = NS "PWB.drawers"
+helpers = NS "PWB.helpers"
 
 
 socket = io.connect().of("/drawer")
 
 # http://modernizr.github.com/Modernizr/touch.html
 hasTouch = 'ontouchstart' of window
+
 room = window.location.pathname.substring(1) or "_main"
+clientId = helpers.guidGenerator()
 
 
 
@@ -91,7 +94,10 @@ $ ->
   statusModel.set status: "connecting"
   socket.on "connect", ->
     statusModel.set status: "downloading history"
-    socket.emit "join", room
+    socket.emit "join",
+      room: room
+      useragent: navigator.userAgent
+      id: clientId
 
   socket.on "disconnect", ->
     statusModel.set status: "server disconnected"

@@ -6,11 +6,27 @@ class exports.Drawing
 
   constructor: (@name) ->
     throw "Collection must be set" unless Drawing.collection
+    @clients = {}
 
   addDraw: (draw, cb) ->
     Drawing.collection.update name: @name,
       $push: history: draw
     , (err, coll) -> cb? err
+
+
+  addClient: (client, cb) ->
+    @clients[client.id] = client
+
+    client.on "draw", (draw) =>
+      @addDraw draw
+
+    client.on "disconnect", =>
+      delete @clients[client.id]
+
+    @fetch (err, doc) =>
+      return cb? err if err
+      console.log "starting with 1", doc.history, client.startWith
+      client.startWith doc.history
 
 
   fetch: (cb) ->

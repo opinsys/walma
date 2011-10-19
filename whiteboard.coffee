@@ -8,8 +8,8 @@ _.mixin require 'underscore.string'
 app = express.createServer()
 io = require('socket.io').listen app
 
-
 {Drawing} = require "./lib/drawmodel"
+{Client} = require "./lib/client"
 
 db = new Db('whiteboard', new Server("localhost", Connection.DEFAULT_PORT))
 db.open (err) ->
@@ -21,14 +21,9 @@ db.open (err) ->
     Drawing.collection = collection
     console.log "got collection"
 
-# db.collection "drawings", (err, collection) ->
-#   return console.log err if err
-#   Drawing.collection = collection
-
 
 
 require("./configure") app, io
-rooms = {}
 
 
 app.get "/", (req, res) ->
@@ -49,37 +44,25 @@ app.get "/", (req, res) ->
 app.get "/:room", (req, res) ->
   res.render "paint.jade"
 
-
-
-cachers = {}
-
+rooms = {}
 
 sockets = io.of "/drawer"
 sockets.on "connection", (socket) ->
 
-  socket.on "cacher", (id) ->
-    console.log "I #{ id } can cache"
-    cachers[id] =
-      jobs: []
-      socket: socket
 
-  socket.on "join", (roomName) ->
+  socket.on "join", (opts) ->
+    roomName = opts.room
 
     # Send history to the new client
     if not room = rooms[roomName]
+      console.log "Creating new room"
       rooms[roomName] = room = new Drawing roomName
 
-    room.fetch (err, doc) ->
-      if err
-        console.log "Error when fetching room #{ roomName }", err
-      else
-        socket.emit "start", doc.history
-        socket.join roomName
+    room.addClient client = new Client socket, opts
 
-    socket.on "draw", (draw) ->
+    client.on "draw", (draw) ->
       # got new shape from some client
 
-      # Append change to the history
       room.addDraw draw
 
       # Send new shape to all clients in the room

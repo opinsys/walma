@@ -16,6 +16,7 @@ window.NS = (nsString) ->
 
 
 
+
 $ ->
   if Stats?
     window.stats = new Stats
@@ -58,3 +59,8 @@ helpers = NS "PWB.helpers"
 
 helpers.notImplemented = (msg) -> ->
   throw new Error "Not implemented: #{ msg } for #{ @constructor.name }"
+
+helpers.guidGenerator = ->
+  S4 = ->
+    (((1 + Math.random()) * 65536) | 0).toString(16).substring(1)
+  (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4())
