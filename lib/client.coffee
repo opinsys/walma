@@ -23,6 +23,9 @@ class exports.Client extends EventEmitter
       console.log "Disconnect: #{ @userAgent }"
       @emit "disconect", @
 
+  join: (roomName) ->
+    @_socket.join roomName
+
   startWith: (history) ->
     console.log "starting with 2", history
     @_socket.emit "start", history
@@ -38,7 +41,5 @@ class exports.Client extends EventEmitter
       cb null, data unless timeout
 
     @_socket.emit "getbitmap"
-
-
 
 

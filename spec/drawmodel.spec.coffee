@@ -9,6 +9,10 @@ _  = require 'underscore'
 {Client} = require "../lib/client"
 model = require "../lib/drawmodel"
 
+
+class FakeSocket extends EventEmitter
+  join: ->
+
 prepare = (cb) ->
   this.db = db = new Db('whiteboard-test', new Server("localhost", Connection.DEFAULT_PORT))
   db.open (err, db) ->
@@ -123,7 +127,7 @@ describe "Drawing in MongoDB", ->
 
 
   it "initializes client with history", ->
-    fakeSocket = new EventEmitter
+    fakeSocket = new FakeSocket
     console.log "MY TEST!!"
 
     client = new Client fakeSocket,
@@ -143,7 +147,7 @@ describe "Drawing in MongoDB", ->
     expect(_.size drawing.clients).toBe 1
 
   it "send draws to the database via clients", ->
-    fakeSocket = new EventEmitter
+    fakeSocket = new FakeSocket
     console.log "MY TEST!!"
 
     client = new Client fakeSocket,
