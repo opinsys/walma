@@ -90,6 +90,9 @@ $ ->
 
     tool.replay draw.shape
 
+  socket.on "getbitmap", ->
+    console.log "I should send bitmap!"
+
 
   statusModel.set status: "connecting"
   socket.on "connect", ->

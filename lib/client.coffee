@@ -20,14 +20,13 @@ class exports.Client extends EventEmitter
       @emit "draw", draw
 
     @_socket.on "disconect", =>
-      console.log "Disconnect: #{ @userAgent }"
+      console.log "Disconnect: #{ @id }"
       @emit "disconect", @
 
   join: (roomName) ->
     @_socket.join roomName
 
   startWith: (history) ->
-    console.log "starting with 2", history
     @_socket.emit "start", history
 
   fetchBitmap: (cb) ->
@@ -40,6 +39,7 @@ class exports.Client extends EventEmitter
     @_socket.once "bitmap", (data) ->
       cb null, data unless timeout
 
+    console.log "emiting!"
     @_socket.emit "getbitmap"
 
 

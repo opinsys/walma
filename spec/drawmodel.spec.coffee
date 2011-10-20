@@ -112,6 +112,7 @@ describe "Drawing in MongoDB", ->
         op: "move"
         x: 100
         y: 200
+      , {id: "fakeclient"}
       , (err) =>
         throw err if err
         drawing3 = new Drawing name
@@ -128,7 +129,6 @@ describe "Drawing in MongoDB", ->
 
   it "initializes client with history", ->
     fakeSocket = new FakeSocket
-    console.log "MY TEST!!"
 
     client = new Client fakeSocket,
       id: "testclient"
@@ -138,7 +138,6 @@ describe "Drawing in MongoDB", ->
     asyncSpecWait()
 
     fakeSocket.on "start", (history) ->
-      console.log "GOT START", history, _.isArray history
       expect(_.isArray history).toBe true
       expect(history.length).toBe 0
       asyncSpecDone()
@@ -148,7 +147,6 @@ describe "Drawing in MongoDB", ->
 
   it "send draws to the database via clients", ->
     fakeSocket = new FakeSocket
-    console.log "MY TEST!!"
 
     client = new Client fakeSocket,
       id: "testclient2"
@@ -162,7 +160,43 @@ describe "Drawing in MongoDB", ->
       user: "epeli"
       moves: []
 
-
-
     expect(drawing.addDraw).toHaveBeenCalled()
+
+  it "asks for cache bitmap from time to time", ->
+    fakeSocket = new FakeSocket
+    fakeSocket.on "getbitmap", ->
+
+      console.log "getbitmap -------------------"
+
+      fakeSocket.emit "bitmap",
+        pos: 3
+        data: "sdfadfas"
+
+    client = new Client fakeSocket,
+      id: "cachetest"
+      userAgent: "sdafds"
+
+
+    drawing = new Drawing "cachetest"
+    drawing.addClient client
+
+    spyOn client, "fetchBitmap"
+    # spyOn drawing, "saveCachePoint"
+
+    for i in [0...150]
+      fakeSocket.emit "draw",
+        user: "epeli"
+
+    asyncSpecWait()
+
+    setTimeout ->
+      expect(client.fetchBitmap).toHaveBeenCalled()
+      # expect(drawing.saveCachePoint).toHaveBeenCalled()
+      asyncSpecDone()
+    , 500
+
+
+
+
+
 
