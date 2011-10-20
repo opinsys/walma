@@ -3,7 +3,7 @@
 class exports.Drawing
 
   Drawing.collection = null
-  cacheInterval: 10
+  cacheInterval: 100
 
   constructor: (@name) ->
     throw "Collection must be set" unless Drawing.collection
@@ -26,7 +26,8 @@ class exports.Drawing
           if err
             console.log "Could not get cache bitmap #{ err.message } #{ client.id }"
           else
-            @saveCachePoint bitmap.post, bitmap.data
+            @saveCachePoint bitmap.pos, bitmap.data
+            @drawsAfterLastCache = 0
 
 
   saveCachePoint: (pos, bitmap) ->

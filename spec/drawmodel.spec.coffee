@@ -164,24 +164,17 @@ describe "Drawing in MongoDB", ->
 
   it "asks for cache bitmap from time to time", ->
     fakeSocket = new FakeSocket
-    fakeSocket.on "getbitmap", ->
-
-      console.log "getbitmap -------------------"
-
-      fakeSocket.emit "bitmap",
-        pos: 3
-        data: "sdfadfas"
 
     client = new Client fakeSocket,
-      id: "cachetest"
+      id: "ask cache"
       userAgent: "sdafds"
+    client.timeoutTime = 50
 
 
     drawing = new Drawing "cachetest"
     drawing.addClient client
 
     spyOn client, "fetchBitmap"
-    # spyOn drawing, "saveCachePoint"
 
     for i in [0...150]
       fakeSocket.emit "draw",
@@ -195,6 +188,36 @@ describe "Drawing in MongoDB", ->
       asyncSpecDone()
     , 500
 
+  it "saves cache point when asked", ->
+    fakeSocket = new FakeSocket
+
+    fakeSocket.on "getbitmap", ->
+      console.log "getbitmap!"
+      fakeSocket.emit "bitmap",
+        pos: 3
+        data: "sdfadfas"
+
+    client = new Client fakeSocket,
+      id: "cache save test"
+      userAgent: "sdafds"
+
+
+    drawing = new Drawing "cache point test"
+    drawing.addClient client
+
+    spyOn drawing, "saveCachePoint"
+
+    for i in [0...150]
+      fakeSocket.emit "draw",
+        user: "epeli"
+
+    asyncSpecWait()
+
+    setTimeout ->
+      expect(drawing.saveCachePoint).toHaveBeenCalledWith 3, "sdfadfas"
+      expect(drawing.saveCachePoint.callCount).toEqual 1
+      asyncSpecDone()
+    , 500
 
 
 

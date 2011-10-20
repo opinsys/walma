@@ -1,4 +1,4 @@
-
+_  = require 'underscore'
 {EventEmitter} = require "events"
 
 class exports.Client extends EventEmitter
@@ -30,13 +30,16 @@ class exports.Client extends EventEmitter
     @_socket.emit "start", history
 
   fetchBitmap: (cb) ->
+    cb = _.once cb
     timeout = false
-    setTimeout ->
+
+    timer = setTimeout ->
       timeout = true
       cb message: "Fetching timeout", reason: "timeout"
     , @timeoutTime
 
     @_socket.once "bitmap", (data) ->
+      clearTimeout timer
       cb null, data unless timeout
 
     console.log "emiting!"
