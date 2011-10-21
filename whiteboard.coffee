@@ -11,7 +11,7 @@ io = require('socket.io').listen app
 {Drawing} = require "./lib/drawmodel"
 {Client} = require "./lib/client"
 
-db = new Db('whiteboard', new Server("localhost", Connection.DEFAULT_PORT))
+db = new Db('whiteboard2', new Server("localhost", Connection.DEFAULT_PORT))
 db.open (err) ->
   if err
     console.log "Could not open the database", err.trace
@@ -46,30 +46,19 @@ app.get "/:room", (req, res) ->
   res.render "paint.jade"
 
 app.get "/:room/pic", (req, res) ->
-  res.header('Content-Type', 'text/plain')
+  res.header('Content-Type', 'image/png')
+  # res.header('Content-Type', 'text/plain')
 
-  room = new Drawing req.param.room
+  console.log "fetching room", req.params
 
-  room.getLatestCache (err, gs) ->
+  room = new Drawing req.params.room
+
+  room.getLatestCache (err, bitmap) ->
     throw err if err
-    console.log "have #{ gs.length }b"
 
-    # gs.read gs.length, (err, data) ->
-    #   console.log "got #{ data.length }"
-    #   res.send data
-    #   gs.close ->
 
-    stream = gs.stream autoclose: true
-    stream.pipe res
-    # pic = ""
-    # stream.on "data", (data) ->
-    #   console.log "getting"
-    #   pic += data.toString()
-
-    stream.on "end", ->
-      # console.log "ED", pic.length
-      gs.close ->
-      # res.send pic
+    [__, pngData] = bitmap.data.split ","
+    res.send new Buffer(pngData, "base64")
 
 
 rooms = {}

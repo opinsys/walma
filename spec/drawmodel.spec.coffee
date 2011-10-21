@@ -15,12 +15,21 @@ class FakeSocket extends EventEmitter
 
 prepare = (cb) ->
   this.db = db = new Db('whiteboard-test', new Server("localhost", Connection.DEFAULT_PORT))
-  db.open (err, db) ->
-    if err
-      console.log "Could not open the db"
-      cb null
-    else
-      db.dropDatabase (err, result) -> cb()
+  db.open  do ->
+    count = 0
+    (err, db )->
+
+      if ++count isnt 1
+        console.log "Called twice open", err
+        cb null
+        return
+
+      if err
+        console.log "Could not open the db", err
+        cb err
+      else
+        cb null
+        # db.dropDatabase (err, result) -> cb()
 
 beforeEach ->
   asyncSpecWait()
@@ -36,33 +45,38 @@ describe "Just playing with mongodb driver.", ->
   it "has it", ->
     expect(this.db).toBeTruthy()
 
-  it "can insert", ->
-    asyncSpecWait()
-    db = this.db
-    async.series [
-      (cb) ->
-        db.collection "testingcollection", (err, coll) ->
-          throw err if err
-          coll.insert
-            name: "foobar"
-          , cb
-      (cb) ->
-        db.collection "testingcollection", (err, coll) ->
-          coll.update name: "foobar",
-            $push:
-              foo:
-                x: 100
-                y: 200
-                op: "move"
-          , cb
-      (cb) ->
-        db.collection "testingcollection", (err, coll) ->
-          coll.find(name: "foobar").nextObject (err, doc) ->
-            throw err if err
-            expect(doc.foo[0].x).toBe 100
-            cb()
-    ], ->
-      asyncSpecDone()
+  # it "can insert", ->
+  #   asyncSpecWait()
+  #   db = this.db
+  #   async.series [
+  #     (cb) ->
+  #       db.collection "testingcollection", (err, coll) ->
+  #         throw err if err
+  #         coll.insert
+  #           name: "foobar"
+  #         , (err) ->
+  #           console.log "inserting", err
+  #           cb()
+  #     (cb) ->
+  #       db.collection "testingcollection", (err, coll) ->
+  #         coll.update name: "foobar",
+  #           $push:
+  #             foo:
+  #               x: 100
+  #               y: 200
+  #               op: "move"
+  #         , (err) ->
+  #           console.log "pushed", err
+  #           cb()
+  #     (cb) ->
+  #       console.log "finding push"
+  #       db.collection "testingcollection", (err, coll) ->
+  #         coll.find(name: "foobar").nextObject (err, doc) ->
+  #           throw err if err
+  #           expect(doc.foo?[0].x).toBe 100
+  #           cb()
+  #   ], ->
+  #     asyncSpecDone()
 
 
 
@@ -127,13 +141,14 @@ describe "Drawing in MongoDB", ->
 
 
 
-  it "initializes client with history", ->
+  it "initializes client with empty history", ->
     fakeSocket = new FakeSocket
 
     client = new Client fakeSocket,
       id: "testclient"
       userAgent: "sdafds"
-    drawing = new Drawing "inittest"
+
+    drawing = new Drawing "init_test"
 
     asyncSpecWait()
 
@@ -144,6 +159,39 @@ describe "Drawing in MongoDB", ->
 
     drawing.addClient client
     expect(_.size drawing.clients).toBe 1
+
+  it "initialized client with small history", ->
+    asyncSpecWait()
+    fakeSocket = new FakeSocket
+    fakeSocket.on "start", (history) ->
+      expect(_.isArray history).toBe true
+      expect(history.length).toBe 5
+      asyncSpecDone()
+
+    client = new Client fakeSocket,
+      id: "smallhistory"
+      userAgent: "sdafds"
+
+    drawing = new Drawing "smallhistory"
+    drawing.cacheInterval = 10
+    for i in [0...5]
+      drawing.addDraw {
+        shape: {
+          color: '#000000',
+          tool: 'Pencil',
+          size: 50,
+          moves: [ { x: i, x: 10, op: "down" }, { x: i, x: 10*i, op: "up" } ], }
+        user: 'Esa',
+        time: 1319195315736 }
+    waits 200
+
+
+    runs ->
+      drawing.addClient client
+
+
+
+
 
   it "send draws to the database via clients", ->
     fakeSocket = new FakeSocket
@@ -223,9 +271,17 @@ describe "Drawing in MongoDB", ->
 
 
   it "can save cache points", ->
-    asyncSpecWait()
     drawing = new Drawing "cache_point_save"
-    testData = "mypicturedata"
+    testData = "mytestpicdata"
+
+    asyncSpecWait()
+    mydata = null
+
+    # waits 500
+
+    # runs ->
+    #   console.log "waiting done"
+    #   expect(mydata).toEqual 2
 
     drawing.saveCachePoint
       pos: 5
@@ -233,22 +289,11 @@ describe "Drawing in MongoDB", ->
     , (err, result) ->
 
       expect(err).toBeFalsy()
-      expect(result).toBe "wrote"
 
-      drawing.getLatestCache (err, gs) ->
+      drawing.getLatestCache (err, bitmap) ->
         expect(err).toBeFalsy()
-        mydata = null
-
-        stream = gs.stream autoclose: true
-        stream.on "data", (data) ->
-          if mydata is null
-            mydata = ""
-          mydata += data.toString()
-
-        stream.on "end", ->
-          expect(mydata).toBe testData
-          gs.close ->
-            asyncSpecDone()
+        expect(bitmap.data.toString()).toEqual testData
+        asyncSpecDone()
 
 
   it "finds latest cache point", ->
@@ -266,16 +311,10 @@ describe "Drawing in MongoDB", ->
 
     async.series pointsGenerators, (err) ->
       expect(err).toBeFalsy()
-      drawing.getLatestCache (err, gs) ->
+      drawing.getLatestCache (err, bitmap) ->
         expect(err).toBeFalsy()
-        stream = gs.stream autoclose: true
-        mydata = ""
-        stream.on "data", (data) ->
-          mydata += data.toString()
-        stream.on "end", ->
-          expect(mydata.toString()).toEqual lastData
-          gs.close ->
-            asyncSpecDone()
+        expect(bitmap.data.toString()).toEqual lastData
+        asyncSpecDone()
 
 
 

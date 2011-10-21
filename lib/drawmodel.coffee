@@ -16,6 +16,7 @@ class exports.Drawing
     @drawsAfterLastCache = 0
 
   addDraw: (draw, client, cb) ->
+    console.log "adding draw", draw
     Drawing.collection.update name: @name,
       $push: history: draw
     , (err, coll) =>
@@ -36,35 +37,20 @@ class exports.Drawing
 
 
   saveCachePoint: (bitmap, cb) ->
-    filename = @name + bitmap.pos
-    gs = new GridStore Drawing.db, filename, "w"
-      content_type: "image/png"
-      chunk_size: 1024*4
+    console.log "Saving at pos #{ bitmap.pos }"
+    Drawing.collection.update name: @name,
+      $push: cache: bitmap
+    , (err) ->
 
-    gs.open (err) =>
       return cb? err if err
-      gs.write bitmap.data, (err, result) =>
-        return cb? err if err
-        gs.close ->
-          Drawing.collection.update name: @name,
-            $push: cache: bitmap.pos
-          , (err) ->
-            cb? err, "wrote"
+      cb? null
 
 
-
-  getLatestCache: (cb) ->
+  getLatestCache: (cb) =>
     @fetch (err, doc) =>
-      return cb? err if err
-      lastPos = _.last doc.cache
-      filename = @name + lastPos
-      gs = new GridStore Drawing.db, filename, "r"
-      gs.open (err) ->
-        gs.close ->
-        return cb? err if err
-        cb null, gs
-
-
+      return cb err if err
+      bitmap = _.last doc.cache
+      cb null, bitmap
 
 
   addClient: (client, cb) ->
@@ -79,7 +65,7 @@ class exports.Drawing
       delete @clients[client.id]
 
     client.on "bitmap", (bitmap) =>
-      console.log "Client sending bitmap #{ bitmap } #{ client.id }"
+      console.log "Client sending bitmap #{ client.id }"
 
     @fetch (err, doc) =>
       return cb? err if err
@@ -99,7 +85,7 @@ class exports.Drawing
     @drawsAfterLastCache
 
 
-  fetch: (cb) ->
+  fetch: (cb) =>
     Drawing.collection.find(name: @name).nextObject (err, doc) =>
       return cb? err if err
       if doc

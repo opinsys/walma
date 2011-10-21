@@ -26,6 +26,7 @@ $ ->
 
   canvases = $ "canvas"
   main = $("canvas.main").get 0
+
   keepMaximized = ->
     # console.log "redeize"
     # snapshot = new Image
