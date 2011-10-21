@@ -20,7 +20,8 @@ prepare = (cb) ->
       console.log "Could not open the db"
       cb null
     else
-      db.dropDatabase (err, result) -> cb()
+      # db.dropDatabase (err, result) -> cb()
+      cb()
 
 beforeEach ->
   asyncSpecWait()
@@ -31,8 +32,7 @@ afterEach ->
   this.db.close()
 
 
-# Just playing with mongodb driver.
-describe "created mongodb connection", ->
+describe "Just playing with mongodb driver.", ->
 
   it "has it", ->
     expect(this.db).toBeTruthy()
@@ -74,6 +74,7 @@ describe "Drawing in MongoDB", ->
     this.db.collection "testdrawings", (err, coll) =>
       throw err if err
       Drawing.collection = coll
+      Drawing.db = this.db
       asyncSpecDone()
 
   it "can be created", ->
@@ -192,7 +193,6 @@ describe "Drawing in MongoDB", ->
     fakeSocket = new FakeSocket
 
     fakeSocket.on "getbitmap", ->
-      console.log "getbitmap!"
       fakeSocket.emit "bitmap",
         pos: 3
         data: "sdfadfas"
@@ -203,7 +203,9 @@ describe "Drawing in MongoDB", ->
 
 
     drawing = new Drawing "cache point test"
+    drawing.cacheInterval = 100
     drawing.addClient client
+
 
     spyOn drawing, "saveCachePoint"
 
@@ -214,11 +216,37 @@ describe "Drawing in MongoDB", ->
     asyncSpecWait()
 
     setTimeout ->
-      expect(drawing.saveCachePoint).toHaveBeenCalledWith 3, "sdfadfas"
+      expect(drawing.saveCachePoint).toHaveBeenCalledWith { pos: 3, data: "sdfadfas" }
       expect(drawing.saveCachePoint.callCount).toEqual 1
       asyncSpecDone()
     , 500
 
+
+
+  it "can save cache points", ->
+    asyncSpecWait()
+    drawing = new Drawing "cache_point_save"
+
+    drawing.saveCachePoint
+      pos: 5
+      data: "picturedata"
+    , (err, result) ->
+
+      expect(err).toBeFalsy()
+      expect(result).toBe "wrote"
+
+      drawing.getLatestCache (err, gs) ->
+        expect(err).toBeFalsy()
+        mydata = ""
+
+        stream = gs.stream autoclose: true
+        stream.on "data", (data) ->
+          mydata += data.toString()
+
+        stream.on "end", ->
+          expect(mydata).toBe "picturedata"
+          gs.close ->
+            asyncSpecDone()
 
 
 

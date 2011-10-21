@@ -1,9 +1,12 @@
 
+{GridStore} = require "mongodb"
 
 class exports.Drawing
 
   Drawing.collection = null
-  cacheInterval: 100
+  Drawing.db = null
+
+  cacheInterval: 10
 
   constructor: (@name) ->
     throw "Collection must be set" unless Drawing.collection
@@ -26,12 +29,38 @@ class exports.Drawing
           if err
             console.log "Could not get cache bitmap #{ err.message } #{ client.id }"
           else
-            @saveCachePoint bitmap.pos, bitmap.data
+            @saveCachePoint bitmap
             @drawsAfterLastCache = 0
 
 
-  saveCachePoint: (pos, bitmap) ->
-    console.log "saving bitmap"
+  saveCachePoint: (bitmap, cb) ->
+    console.log "saving bitmap", bitmap.pos, bitmap.data.length
+    filename = @name + bitmap.pos
+    gs = new GridStore Drawing.db, filename, "w"
+      content_type: "image/png"
+      chunk_size: 1024*4
+
+    gs.open (err) =>
+      return cb? err if err
+
+      gs.write bitmap.data, (err, result) =>
+        return cb? err if err
+        gs.close ->
+        Drawing.collection.update name: @name,
+          $push: cache: @last = bitmap.pos
+        , (err) ->
+          cb? err, "wrote"
+
+
+
+  getLatestCache: (cb) ->
+    filename = @name + @last
+    gs = new GridStore Drawing.db, filename, "r"
+    gs.open (err) ->
+      return cb? err if err
+      cb null, gs
+
+
 
 
   addClient: (client, cb) ->

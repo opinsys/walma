@@ -48,6 +48,7 @@ $ ->
   startup = []
   startup.push -> $("canvas.loading").removeClass "loading"
   startup.push -> $("div.loading").remove()
+  position = 0
 
   statusModel = new models.StatusModel
 
@@ -69,6 +70,7 @@ $ ->
   drawer.bind "draw", (draw) ->
     statusModel.addShape draw.shape
     socket.emit "draw", draw
+    position += 1
 
 
   toolModel.bind "change:tool", ->
@@ -82,6 +84,7 @@ $ ->
 
   socket.on "draw", (draw) ->
     statusModel.addDraw draw
+    position += 1
 
     return unless draw
     tool = new tools[draw.shape.tool]
@@ -91,7 +94,10 @@ $ ->
     tool.replay draw.shape
 
   socket.on "getbitmap", ->
-    console.log "I should send bitmap!"
+    console.log "I should send bitmap! pos:#{ position }", clientId
+    socket.emit "bitmap",
+      pos: position
+      data: $("canvas.main").get(0).toDataURL()
 
 
   statusModel.set status: "connecting"
@@ -106,6 +112,9 @@ $ ->
     statusModel.set status: "server disconnected"
 
   socket.on "start", (history) ->
+
+    position = history.length
+
     statusModel.set status: "drawing history"
     statusModel.loadOperations history
 

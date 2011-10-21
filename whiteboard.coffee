@@ -19,6 +19,7 @@ db.open (err) ->
 
   db.collection "drawings", (err, collection) ->
     Drawing.collection = collection
+    Drawing.db = db
     console.log "got collection"
 
 
