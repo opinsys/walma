@@ -45,6 +45,33 @@ app.get "/", (req, res) ->
 app.get "/:room", (req, res) ->
   res.render "paint.jade"
 
+app.get "/:room/pic", (req, res) ->
+  res.header('Content-Type', 'text/plain')
+
+  room = new Drawing req.param.room
+
+  room.getLatestCache (err, gs) ->
+    throw err if err
+    console.log "have #{ gs.length }b"
+
+    # gs.read gs.length, (err, data) ->
+    #   console.log "got #{ data.length }"
+    #   res.send data
+    #   gs.close ->
+
+    stream = gs.stream autoclose: true
+    stream.pipe res
+    # pic = ""
+    # stream.on "data", (data) ->
+    #   console.log "getting"
+    #   pic += data.toString()
+
+    stream.on "end", ->
+      # console.log "ED", pic.length
+      gs.close ->
+      # res.send pic
+
+
 rooms = {}
 
 sockets = io.of "/drawer"

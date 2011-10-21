@@ -1,4 +1,6 @@
 
+_  = require 'underscore'
+
 {GridStore} = require "mongodb"
 
 class exports.Drawing
@@ -34,7 +36,6 @@ class exports.Drawing
 
 
   saveCachePoint: (bitmap, cb) ->
-    console.log "saving bitmap", bitmap.pos, bitmap.data.length
     filename = @name + bitmap.pos
     gs = new GridStore Drawing.db, filename, "w"
       content_type: "image/png"
@@ -42,23 +43,26 @@ class exports.Drawing
 
     gs.open (err) =>
       return cb? err if err
-
       gs.write bitmap.data, (err, result) =>
         return cb? err if err
         gs.close ->
-        Drawing.collection.update name: @name,
-          $push: cache: @last = bitmap.pos
-        , (err) ->
-          cb? err, "wrote"
+          Drawing.collection.update name: @name,
+            $push: cache: bitmap.pos
+          , (err) ->
+            cb? err, "wrote"
 
 
 
   getLatestCache: (cb) ->
-    filename = @name + @last
-    gs = new GridStore Drawing.db, filename, "r"
-    gs.open (err) ->
+    @fetch (err, doc) =>
       return cb? err if err
-      cb null, gs
+      lastPos = _.last doc.cache
+      filename = @name + lastPos
+      gs = new GridStore Drawing.db, filename, "r"
+      gs.open (err) ->
+        gs.close ->
+        return cb? err if err
+        cb null, gs
 
 
 

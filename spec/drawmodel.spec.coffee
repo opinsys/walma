@@ -20,8 +20,7 @@ prepare = (cb) ->
       console.log "Could not open the db"
       cb null
     else
-      # db.dropDatabase (err, result) -> cb()
-      cb()
+      db.dropDatabase (err, result) -> cb()
 
 beforeEach ->
   asyncSpecWait()
@@ -226,10 +225,11 @@ describe "Drawing in MongoDB", ->
   it "can save cache points", ->
     asyncSpecWait()
     drawing = new Drawing "cache_point_save"
+    testData = "mypicturedata"
 
     drawing.saveCachePoint
       pos: 5
-      data: "picturedata"
+      data: testData
     , (err, result) ->
 
       expect(err).toBeFalsy()
@@ -237,17 +237,45 @@ describe "Drawing in MongoDB", ->
 
       drawing.getLatestCache (err, gs) ->
         expect(err).toBeFalsy()
-        mydata = ""
+        mydata = null
 
         stream = gs.stream autoclose: true
         stream.on "data", (data) ->
+          if mydata is null
+            mydata = ""
           mydata += data.toString()
 
         stream.on "end", ->
-          expect(mydata).toBe "picturedata"
+          expect(mydata).toBe testData
           gs.close ->
             asyncSpecDone()
 
+
+  it "finds latest cache point", ->
+    asyncSpecWait()
+    drawing = new Drawing "latest_cache_point"
+    lastData = null
+    pointsGenerators = for i in [1...100] by 10 then do (i) ->
+      (cb) ->
+        drawing.saveCachePoint
+          pos: i
+          data: lastData = "picturedata#{ i }"
+        , (err) ->
+          return cb? err if err
+          cb null
+
+    async.series pointsGenerators, (err) ->
+      expect(err).toBeFalsy()
+      drawing.getLatestCache (err, gs) ->
+        expect(err).toBeFalsy()
+        stream = gs.stream autoclose: true
+        mydata = ""
+        stream.on "data", (data) ->
+          mydata += data.toString()
+        stream.on "end", ->
+          expect(mydata.toString()).toEqual lastData
+          gs.close ->
+            asyncSpecDone()
 
 
 

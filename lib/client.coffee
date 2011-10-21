@@ -24,7 +24,7 @@ class exports.Client extends EventEmitter
       @emit "disconect", @
 
     @_socket.on "bitmap", (bitmap) =>
-      console.log "#{ @id } sent a bitmap", bitmap.length, "k"
+      console.log "#{ @id } sent a bitmap", bitmap.data?.length, "k"
 
   join: (roomName) ->
     @_socket.join roomName
@@ -45,7 +45,6 @@ class exports.Client extends EventEmitter
       clearTimeout timer
       cb null, bitmap unless timeout
 
-    console.log "emiting!"
     @_socket.emit "getbitmap"
 
 
