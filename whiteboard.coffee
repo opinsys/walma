@@ -45,20 +45,34 @@ app.get "/", (req, res) ->
 app.get "/:room", (req, res) ->
   res.render "paint.jade"
 
-app.get "/:room/pic", (req, res) ->
+# app.get "/:room/bitmap/latest", (req, res) ->
+#   res.header('Content-Type', 'image/png')
+#   # res.header('Content-Type', 'text/plain')
+# 
+#   console.log "fetching room", req.params
+# 
+#   room = new Drawing req.params.room
+#   room.getLatestCachePosition (err, position) ->
+#     throw err if err
+#     room.getCache position, (err, data) ->
+#       throw err if err
+#       [__, pngData] = data.split ","
+#       res.send new Buffer(pngData, "base64")
+
+
+app.get "/:room/bitmap/:pos", (req, res) ->
   res.header('Content-Type', 'image/png')
   # res.header('Content-Type', 'text/plain')
 
   console.log "fetching room", req.params
 
   room = new Drawing req.params.room
-
-  room.getLatestCache (err, bitmap) ->
+  room.getCache req.params.pos, (err, data) ->
     throw err if err
-
-
-    [__, pngData] = bitmap.data.split ","
+    [__, pngData] = data.split ","
     res.send new Buffer(pngData, "base64")
+
+
 
 
 rooms = {}
@@ -75,7 +89,9 @@ sockets.on "connection", (socket) ->
       console.log "Creating new room"
       rooms[roomName] = room = new Drawing roomName
 
-    room.addClient client = new Client socket, opts
+    console.log "Adding client"
+    room.addClient (client = new Client socket, opts), (err) ->
+      console.log "failed to add client #{ opts.id } to room #{ roomName }"
 
     client.on "draw", (draw) ->
       # got new shape from some client

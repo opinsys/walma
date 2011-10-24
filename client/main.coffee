@@ -112,48 +112,68 @@ $ ->
   socket.on "disconnect", ->
     statusModel.set status: "server disconnected"
 
+  console.log "waiting for start"
   socket.on "start", (history) ->
 
-    position = history.length
+    position = history.draws.length
+    position += history.latestCachePosition or 0
 
-    statusModel.set status: "drawing history"
-    statusModel.loadOperations history
 
-    now = -> new Date().getTime()
+    startHistoryDrawing = ->
 
-    start = now()
-    operations = 0
-    async.forEachSeries history, (draw, cb) ->
+      statusModel.set status: "drawing history"
+      statusModel.loadOperations history.draws
 
-      return cb() unless draw
-      tool = new tools[draw.shape.tool]
-        sketch: $("canvas.remoteSketch").get(0)
-        main: $("canvas.main").get(0)
+      now = -> new Date().getTime()
 
-      tool.replay draw.shape
-      operations += draw.shape.moves.length
+      start = now()
 
-      # If redrawing the history takes more than 500ms take a timeout and allow
-      # the UI to draw itself.
-      if now() - start > 400
-        start = now()
-        statusModel.incDrawnFromHistory operations
-        operations = 0
-        setTimeout ->
+      if history.latestCachePosition
+        mainCtx.drawImage cacheImage, 0, 0
+
+      operations = 0
+      async.forEachSeries history.draws, (draw, cb) ->
+
+        return cb() unless draw
+        tool = new tools[draw.shape.tool]
+          sketch: $("canvas.remoteSketch").get(0)
+          main: $("canvas.main").get(0)
+
+        tool.replay draw.shape
+        operations += draw.shape.moves.length
+
+        # If redrawing the history takes more than 500ms take a timeout and allow
+        # the UI to draw itself.
+        if now() - start > 400
+          start = now()
+          statusModel.incDrawnFromHistory operations
+          operations = 0
+          setTimeout ->
+            cb()
+          , 5
+        else
           cb()
-        , 5
-      else
-        cb()
 
 
-    , (err) ->
-        throw err if err
-        statusModel.drawnHistory()
-        fn() for fn in startup
-        statusModel.set status: "ready"
+      , (err) ->
+          throw err if err
+          statusModel.drawnHistory()
+          fn() for fn in startup
+          statusModel.set status: "ready"
 
-    null
+      null
 
+    mainCtx = $("canvas.main").get(0).getContext "2d"
+
+    if history.latestCachePosition
+      cacheImage = new Image
+      cacheImage.src = p = "/#{ room }/bitmap/#{ history.latestCachePosition }"
+      console.log "loadin", p
+      cacheImage.onload = ->
+        console.log "loaded image"
+        startHistoryDrawing()
+    else
+      startHistoryDrawing()
 
 # Just some styling
 $ ->

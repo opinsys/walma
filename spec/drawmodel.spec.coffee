@@ -158,7 +158,7 @@ describe "Drawing in MongoDB", ->
     fakeSocket.on "start", (history) ->
       expect(_.isArray history).toBe false
       expect(history.draws.length).toBe 0
-      expect(history.cache).toBe null
+      expect(history.latestCachePosition).toBeUndefined()
       asyncSpecDone()
 
     drawing.addClient client
@@ -244,7 +244,6 @@ describe "Drawing in MongoDB", ->
 
     setTimeout ->
       expect(client.fetchBitmap).toHaveBeenCalled()
-      # expect(drawing.saveCachePoint).toHaveBeenCalled()
       asyncSpecDone()
     , 500
 
@@ -267,7 +266,7 @@ describe "Drawing in MongoDB", ->
     drawing.addClient client
 
 
-    spyOn drawing, "saveCachePoint"
+    spyOn drawing, "setCache"
 
     for i in [0...150]
       fakeSocket.emit "draw",
@@ -276,8 +275,8 @@ describe "Drawing in MongoDB", ->
     asyncSpecWait()
 
     setTimeout ->
-      expect(drawing.saveCachePoint).toHaveBeenCalledWith { pos: 3, data: "sdfadfas" }
-      expect(drawing.saveCachePoint.callCount).toEqual 1
+      expect(drawing.setCache).toHaveBeenCalledWith 3, "sdfadfas"
+      expect(drawing.setCache.callCount).toEqual 1
       asyncSpecDone()
     , 500
 
@@ -297,20 +296,17 @@ describe "Drawing in MongoDB", ->
       #   console.log "waiting done"
       #   expect(mydata).toEqual 2
 
-      drawing.saveCachePoint
-        pos: 5
-        data: testData
-      , (err, result) ->
+      drawing.setCache 5, testData , (err, result) ->
         console.log err
         throw err if err
 
         expect(err).toBeFalsy()
 
-        drawing.getLatestCache (err, bitmap) ->
+        drawing.getLatestCachePosition (err, position) ->
           console.log err
           throw err if err
           expect(err).toBeFalsy()
-          expect(bitmap?.data?.toString()).toEqual testData
+          expect(position).toEqual 5
           asyncSpecDone()
 
 
@@ -320,17 +316,15 @@ describe "Drawing in MongoDB", ->
     waitsFor -> testMe isnt null
     runs ->
       bitmap = testMe
-      expect(bitmap.data).toBeDefined()
-      expect(bitmap.data?.toString()).toEqual lastData
+      expect(bitmap).toBeDefined()
+      expect(bitmap).toEqual 91
 
     drawing = new Drawing "latest_cache_point"
     drawing.fetch ->
 
       pointsGenerators = for i in [1...100] by 10 then do (i) ->
         (cb) ->
-          drawing.saveCachePoint
-            pos: i
-            data: lastData = "picturedata#{ i }"
+          drawing.setCache i, lastData = "picturedata#{ i }"
           , (err) ->
             expect(err).toBeFalsy()
             return cb? err if err
@@ -338,21 +332,29 @@ describe "Drawing in MongoDB", ->
 
       async.series pointsGenerators, (err) ->
         expect(err).toBeFalsy()
-        drawing.getLatestCache (err, bitmap) ->
+        drawing.getLatestCachePosition (err, position) ->
           expect(err).toBeFalsy()
-          testMe = bitmap
+          testMe = position
 
+  it "persists cache data", ->
+    asyncSpecWait()
+    drawing = new Drawing "cache_persist_test"
+    drawing.cacheInterval = 10
+    drawing.fetch ->
+      drawing.setCache 5, "foobar", (err) ->
+        expect(err).toBeFalsy()
+        drawing.getCache 5, (err, data) ->
+          expect(err).toBeFalsy()
+          expect(data.toString()).toEqual "foobar", "should get the saved data from cache"
+          asyncSpecDone()
 
   it "gets only partial history when picture is cached", ->
     testHistory = null
     waitsFor -> testHistory isnt null
     runs ->
-      # expect(testHistory).toBe 2
-      console.log testHistory
-      console.log testHistory
-      expect(testHistory.cache).toBeDefined "should have cache"
+      expect(testHistory.latestCachePosition).toBeDefined "should have cache"
 
-      expect(testHistory.cache.pos).toBe 10, "last cache pos should be 10"
+      expect(testHistory.latestCachePosition).toBe 10, "last cache pos should be 10"
 
       expect(testHistory.draws).toBeDefined "should have draws"
 

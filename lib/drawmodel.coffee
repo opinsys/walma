@@ -15,15 +15,15 @@ class exports.Drawing
     @clients = {}
     @drawsAfterLastCache = 0
 
-  addDraw: (draw, client, cb) ->
+  addDraw: (draw, client, cb=->) ->
     if not client
       throw new Error "addDraw requires client as param"
 
     Drawing.collection.update name: @name,
       $push: history: draw
     , (err, coll) =>
-      return cb? err if err
-      cb? null
+      return cb err if err
+      cb null
       @drawsAfterLastCache += 1
       if not @fethingBitmap and @drawsAfterLastCache >= @cacheInterval
         console.log "Asking for bitmap from #{ client.id }"
@@ -34,33 +34,47 @@ class exports.Drawing
           if err
             console.log "Could not get cache bitmap #{ err.message } #{ client.id }"
           else
-            @saveCachePoint bitmap
+            @setCache bitmap.pos, bitmap.data
             @drawsAfterLastCache = 0
 
 
-  saveCachePoint: (bitmap, cb) ->
-    Drawing.collection.update name: @name,
-      $push: cache: bitmap
-    , (err) ->
+  setCache: (position, data, cb=->) ->
+    gs = new GridStore Drawing.db, "#{ @name }-#{ position }", "w"
+    gs.open (err) =>
+      return cb err if err
+      gs.write data, (err, result) =>
+        return cb err if err
+        # console.log "gs write", result
+        gs.close =>
+          Drawing.collection.update name: @name,
+            $push: cache: position
+          , (err) ->
+            return cb err if err
+            cb null
 
-      return cb? err if err
-      cb? null
+
+  getCache: (position, cb=->) ->
+    gs = new GridStore Drawing.db, "#{ @name }-#{ position }", "r"
+    gs.open (err) =>
+      return cb err if err
+      console.log "gs read pos", gs.length
+      gs.read gs.length, (err, data) ->
+        return cb err if err
+        cb null, data
 
 
-  getLatestCache: (cb) =>
+  getLatestCachePosition: (cb=->) =>
     @fetch (err, doc) =>
 
       return cb err if err
 
-      if not doc.cache
+      if doc.cache.length is 0
         return cb message: "no cache"
 
-      bitmap = _.last doc.cache
-
-      cb null, bitmap
+      cb null, _.last doc.cache
 
 
-  addClient: (client, cb) ->
+  addClient: (client, cb=->) ->
     @clients[client.id] = client
 
     client.join @name
@@ -75,18 +89,18 @@ class exports.Drawing
       console.log "Client sending bitmap #{ client.id }"
 
     @fetch (err, doc) =>
-      return cb? err if err
+      return cb err if err
 
-      if doc.cache.length isnt 0
-        bitmap = _.last doc.cache
-        history = doc.history.slice bitmap.pos
+      latest = _.last doc.cache
+      if latest
+        history = doc.history.slice latest
       else
-        bitmap = null
         history = doc.history
 
+      console.log "sending start"
       client.startWith
         draws: history
-        cache: bitmap
+        latestCachePosition: latest
 
   addCachePoint: (pos, bitmap) ->
 
@@ -102,9 +116,9 @@ class exports.Drawing
     @drawsAfterLastCache
 
 
-  fetch: (cb) =>
+  fetch: (cb=->) =>
     Drawing.collection.find(name: @name).nextObject (err, doc) =>
-      return cb? err if err
+      return cb err if err
       if doc
         @_doc = doc
         @setDrawsAfterCachePoint doc.history
@@ -118,7 +132,7 @@ class exports.Drawing
         ,
           safe: true
         , (err, docs) =>
-          return cb? err if err
+          return cb err if err
           @_doc = doc
           cb null, docs[0]
 
