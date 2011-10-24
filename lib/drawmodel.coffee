@@ -25,7 +25,7 @@ class exports.Drawing
       return cb? err if err
       cb? null
       @drawsAfterLastCache += 1
-      if not @fethingBitmap and @drawsAfterLastCache > @cacheInterval
+      if not @fethingBitmap and @drawsAfterLastCache >= @cacheInterval
         console.log "Asking for bitmap from #{ client.id }"
         @fethingBitmap = true
 
@@ -76,7 +76,16 @@ class exports.Drawing
 
     @fetch (err, doc) =>
       return cb? err if err
-      client.startWith doc.history
+
+      if doc.cache.length isnt 0
+        point = _.last doc.cache
+        history = doc.history.slice point.pos
+      else
+        history = doc.history
+
+      client.startWith
+        draws: history
+        cache: doc.cache
 
   addCachePoint: (pos, bitmap) ->
 
@@ -103,6 +112,7 @@ class exports.Drawing
         Drawing.collection.insert
           name: @name
           history: []
+          cache: []
           created: Date.now()
         ,
           safe: true

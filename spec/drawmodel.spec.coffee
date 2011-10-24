@@ -14,7 +14,10 @@ class FakeSocket extends EventEmitter
   join: ->
 
 prepare = (cb) ->
-  this.db = db = new Db('whiteboard-test', new Server("localhost", Connection.DEFAULT_PORT, { auto_reconnect: true }))
+  this.db = db = new Db 'whiteboard-test',
+    new Server "localhost", Connection.DEFAULT_PORT,
+      auto_reconnect: true
+
   db.open (err) ->
     throw err if err
     db.dropDatabase (err, done) ->
@@ -153,8 +156,9 @@ describe "Drawing in MongoDB", ->
     asyncSpecWait()
 
     fakeSocket.on "start", (history) ->
-      expect(_.isArray history).toBe true
-      expect(history.length).toBe 0
+      expect(_.isArray history).toBe false
+      expect(history.draws.length).toBe 0
+      expect(history.cache.length).toBe 0
       asyncSpecDone()
 
     drawing.addClient client
@@ -170,8 +174,8 @@ describe "Drawing in MongoDB", ->
 
     testHistory = null
     fakeSocket.on "start", (history) ->
-      expect(_.isArray history).toBe true
-      expect(history.length).toBe testHistory.length
+      expect(_.isArray history.draws).toBe true
+      expect(history.draws.length).toBe testHistory.length
       # expect(history).toEqual testHistory
       asyncSpecDone()
 
@@ -316,10 +320,8 @@ describe "Drawing in MongoDB", ->
     waitsFor -> testMe isnt null
     runs ->
       bitmap = testMe
-      console.log "#####################", bitmap
       expect(bitmap.data).toBeDefined()
       expect(bitmap.data?.toString()).toEqual lastData
-      console.log "DIONE"
 
     drawing = new Drawing "latest_cache_point"
     drawing.fetch ->
@@ -331,17 +333,69 @@ describe "Drawing in MongoDB", ->
             data: lastData = "picturedata#{ i }"
           , (err) ->
             expect(err).toBeFalsy()
-            console.log "saved for test"
             return cb? err if err
             cb null
 
       async.series pointsGenerators, (err) ->
         expect(err).toBeFalsy()
-        console.log "--------------------------"
         drawing.getLatestCache (err, bitmap) ->
           expect(err).toBeFalsy()
           testMe = bitmap
-          asyncSpecDone()
 
 
+  it "gets only partial history when picture is cached", ->
+    testHistory = null
+    waitsFor -> testHistory isnt null
+    runs ->
+      # expect(testHistory).toBe 2
+      console.log testHistory
+      expect(testHistory.cache).toBeDefined "should have cache"
+
+      expect(testHistory.cache.length).toBe 1, "should have on pic in cache"
+
+      expect(_.last(testHistory.cache).pos).toBe 10, "last cache pos should be 10"
+
+      expect(testHistory.draws).toBeDefined "should have draws"
+
+      expect(testHistory.draws.length).toEqual 5, "should have 5 draws"
+
+      expect(_.last(_.last(testHistory.draws).shape.moves).x).toEqual 15, "last draw x should be 15"
+
+    fakeSocket = new FakeSocket
+
+    client = new Client fakeSocket,
+      id: "partial_history_client"
+      userAgent: "sdafds"
+
+    counter = 0
+
+    fakeSocket.on "getbitmap", ->
+      fakeSocket.emit "bitmap",
+        pos: counter
+        data: "partialcachepic"
+
+    fakeSocket.on "start", (history) ->
+      testHistory = history
+
+    drawing = new Drawing "partial_history_drawing"
+    drawing.cacheInterval = 10
+    drawing.fetch ->
+      for i in [1...16]
+        counter += 1
+        drawing.addDraw draw = {
+          shape: {
+            color: '#000000',
+            tool: 'Pencil',
+            size: 50,
+            moves: [ { x: i, x: 10, op: "down" }, { x: i, x: i, op: "up" } ], }
+          user: 'Esa3',
+          time: 1319195315736 }
+        , client, (err) ->
+          throw err if err
+
+        draw
+
+      setTimeout ->
+        drawing.addClient client
+      , 400
 
