@@ -16,7 +16,9 @@ class exports.Drawing
     @drawsAfterLastCache = 0
 
   addDraw: (draw, client, cb) ->
-    console.log "adding draw", draw
+    if not client
+      throw new Error "addDraw requires client as param"
+
     Drawing.collection.update name: @name,
       $push: history: draw
     , (err, coll) =>
@@ -37,7 +39,6 @@ class exports.Drawing
 
 
   saveCachePoint: (bitmap, cb) ->
-    console.log "Saving at pos #{ bitmap.pos }"
     Drawing.collection.update name: @name,
       $push: cache: bitmap
     , (err) ->
@@ -48,8 +49,14 @@ class exports.Drawing
 
   getLatestCache: (cb) =>
     @fetch (err, doc) =>
+
       return cb err if err
+
+      if not doc.cache
+        return cb message: "no cache"
+
       bitmap = _.last doc.cache
+
       cb null, bitmap
 
 
