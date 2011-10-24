@@ -158,7 +158,7 @@ describe "Drawing in MongoDB", ->
     fakeSocket.on "start", (history) ->
       expect(_.isArray history).toBe false
       expect(history.draws.length).toBe 0
-      expect(history.cache.length).toBe 0
+      expect(history.cache).toBe null
       asyncSpecDone()
 
     drawing.addClient client
@@ -349,11 +349,10 @@ describe "Drawing in MongoDB", ->
     runs ->
       # expect(testHistory).toBe 2
       console.log testHistory
+      console.log testHistory
       expect(testHistory.cache).toBeDefined "should have cache"
 
-      expect(testHistory.cache.length).toBe 1, "should have on pic in cache"
-
-      expect(_.last(testHistory.cache).pos).toBe 10, "last cache pos should be 10"
+      expect(testHistory.cache.pos).toBe 10, "last cache pos should be 10"
 
       expect(testHistory.draws).toBeDefined "should have draws"
 

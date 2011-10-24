@@ -78,14 +78,15 @@ class exports.Drawing
       return cb? err if err
 
       if doc.cache.length isnt 0
-        point = _.last doc.cache
-        history = doc.history.slice point.pos
+        bitmap = _.last doc.cache
+        history = doc.history.slice bitmap.pos
       else
+        bitmap = null
         history = doc.history
 
       client.startWith
         draws: history
-        cache: doc.cache
+        cache: bitmap
 
   addCachePoint: (pos, bitmap) ->
 
