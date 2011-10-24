@@ -139,12 +139,17 @@ class exports.Line extends BaseTool
 
   name: "Line"
 
+  begin: ->
+    super
+    @lastPoint = null
+
   down: (point) ->
     # Start drawing
-    point = _.clone point
-    point.op = "down"
-    @moves.push @startPoint = point
-    @lastPoint = point
+    if @lastPoint is null
+      point = _.clone point
+      point.op = "down"
+      @moves.push @startPoint = point
+      @lastPoint = point
 
 
   drawShape: @::drawLine
@@ -161,7 +166,10 @@ class exports.Line extends BaseTool
   up:   ->
     # @drawLine @startPoint, @lastPoint
     @moves[1] = @lastPoint
+
+  end: ->
     @draw()
+    super
 
 
 class exports.Circle extends exports.Line
