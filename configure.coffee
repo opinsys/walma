@@ -40,10 +40,11 @@ module.exports = (app, io) ->
     js.addFile clientFiles + "/vendor/handlebars.js"
     js.addFile clientFiles + "/helpers.coffee"
 
-    js.addFile clientFiles + "/drawers.coffee"
+    js.addFile clientFiles + "/inputs.coffee"
     js.addFile clientFiles + "/drawers.models.coffee"
     js.addFile clientFiles + "/drawers.views.coffee"
     js.addModule __dirname + "/shared/drawtools.coffee"
+    js.addFile clientFiles + "/maindrawer.coffee"
 
     js.addFile "paint", clientFiles + "/main.coffee"
     js.addFile "frontpage", clientFiles + "/frontpage.coffee"

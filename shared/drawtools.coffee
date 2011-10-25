@@ -9,18 +9,25 @@ class BaseTool
 
   name: "BaseTool" # Must match the class name
 
-  constructor: (@opts) ->
-    @model = @opts.model
+  constructor: (opts) ->
+    {@model} = opts
+    {@bufferCanvas} = opts
+    {@mainCanvas} = opts
 
-    @sketchCanvas = @opts.sketch
-    @mainCanvas = @opts.main
-
-
-    @sketch = @sketchCanvas.getContext "2d"
+    @sketch = @bufferCanvas.getContext "2d"
     @main = @mainCanvas.getContext "2d"
 
+    @updateSettings()
+
+    if @model
+      @model.bind "change", =>
+        @updateSettings()
 
 
+  updateSettings: ->
+    if @model
+      @setColor @model.get "color"
+      @setSize @model.get "size"
 
   setColor: (color) ->
     @sketch.strokeStyle = color
@@ -35,18 +42,18 @@ class BaseTool
 
 
   draw: ->
-    @main.drawImage @sketchCanvas, 0, 0
+    @main.drawImage @bufferCanvas, 0, 0
     @clear()
 
 
   clear: ->
-    @sketch.clearRect 0, 0, @mainCanvas.width, @mainCanvas.height
+    @sketch.clearRect 0, 0, @bufferCanvas.width, @bufferCanvas.height
 
   begin: ->
     @moves = []
 
   end: ->
-    @trigger "draw", @toJSON()
+    @trigger "shape", @toJSON()
 
   down: notImplemented "down"
   up: notImplemented "up"

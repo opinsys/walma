@@ -116,6 +116,7 @@ class exports.Drawing
         history = doc.history
 
       client.startWith
+        resolution: @resolution
         draws: history
         latestCachePosition: latest
 

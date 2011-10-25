@@ -5,7 +5,11 @@ models = NS "PWB.drawers.models"
 
 now = -> new Date().getTime()
 
-class models.ToolModel extends Backbone.Model
+class models.SettingsModel extends Backbone.Model
+
+  defaults:
+    size: 20
+    color: "cyan"
 
 
 class models.StatusModel extends Backbone.Model
@@ -51,7 +55,7 @@ class models.StatusModel extends Backbone.Model
     amount ?= 0
     @set drawnFromHistory: @get("drawnFromHistory") + amount
 
-  drawnHistory: ->
+  setDrawnHistory: ->
     @start = null
     @set drawnFromHistory: @get("inHistory")
 
