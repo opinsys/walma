@@ -128,9 +128,11 @@ describe "Drawing in MongoDB", ->
       created = doc.created
       expect(doc.created).toBeTruthy()
       drawing.addDraw
-        op: "move"
-        x: 100
-        y: 200
+        shape:
+          moves: [
+            op: "move"
+            x: 100
+            y: 200 ]
       , {id: "fakeclient"}
       , (err) =>
         throw err if err
@@ -138,9 +140,12 @@ describe "Drawing in MongoDB", ->
         drawing3.fetch (err, doc) =>
           throw err if err
           expect(doc.history[0]).toEqual
-            op: "move"
-            x: 100
-            y: 200
+            shape:
+              moves: [
+                op: "move"
+                x: 100
+                y: 200 ]
+
           expect(doc.created).toBe created, "the document should not change"
           asyncSpecDone()
 
@@ -152,6 +157,7 @@ describe "Drawing in MongoDB", ->
       userAgent: "sdafds"
 
     drawing = new Drawing "init_test"
+    drawing.init()
 
     asyncSpecWait()
 
@@ -218,7 +224,8 @@ describe "Drawing in MongoDB", ->
 
     fakeSocket.emit "draw",
       user: "epeli"
-      moves: []
+      shape:
+        moves: []
 
     expect(drawing.addDraw).toHaveBeenCalled()
 
@@ -232,6 +239,7 @@ describe "Drawing in MongoDB", ->
 
 
     drawing = new Drawing "cachetest"
+    drawing.init()
     drawing.addClient client
 
     spyOn client, "fetchBitmap"
@@ -239,6 +247,8 @@ describe "Drawing in MongoDB", ->
     for i in [0...150]
       fakeSocket.emit "draw",
         user: "epeli"
+        shape:
+          moves: []
 
     asyncSpecWait()
 
@@ -262,6 +272,7 @@ describe "Drawing in MongoDB", ->
 
 
     drawing = new Drawing "cache point test"
+    drawing.init()
     drawing.cacheInterval = 100
     drawing.addClient client
 
@@ -271,6 +282,8 @@ describe "Drawing in MongoDB", ->
     for i in [0...150]
       fakeSocket.emit "draw",
         user: "epeli"
+        shape:
+          moves: []
 
     asyncSpecWait()
 
@@ -290,20 +303,12 @@ describe "Drawing in MongoDB", ->
       asyncSpecWait()
       mydata = null
 
-      # waits 500
-
-      # runs ->
-      #   console.log "waiting done"
-      #   expect(mydata).toEqual 2
-
       drawing.setCache 5, testData , (err, result) ->
-        console.log err
         throw err if err
 
         expect(err).toBeFalsy()
 
         drawing.getLatestCachePosition (err, position) ->
-          console.log err
           throw err if err
           expect(err).toBeFalsy()
           expect(position).toEqual 5
@@ -347,6 +352,7 @@ describe "Drawing in MongoDB", ->
           expect(err).toBeFalsy()
           expect(data.toString()).toEqual "foobar", "should get the saved data from cache"
           asyncSpecDone()
+
 
   it "gets only partial history when picture is cached", ->
     testHistory = null
@@ -399,4 +405,39 @@ describe "Drawing in MongoDB", ->
       setTimeout ->
         drawing.addClient client
       , 400
+
+
+  it "knows the size of canvas", ->
+    asyncSpecWait()
+    drawingName = "canvasize"
+
+    fakeSocket = new FakeSocket
+    client = new Client fakeSocket,
+      id: "canvas_size"
+      userAgent: "sdafds"
+
+    drawing = new Drawing drawingName
+    drawing.cacheInterval = 10
+    drawing.fetch ->
+      drawers = for i in [0...20] then do (i) -> (cb) ->
+        drawing.addDraw draw = {
+          shape: {
+            color: '#000000',
+            tool: 'Pencil',
+            size: 50,
+            moves: [ { x: i, y: 10, op: "down" }, { x: i, y: 10*i, op: "up" } ], }
+          user: 'Esa',
+          time: 1319195315736 }
+        , client, cb
+
+      async.series drawers, (err) ->
+        throw err if err
+        expect(drawing.resolution).toEqual { x: 19, y: 190 }, "resolution is set when draws are added"
+
+        d2 = new Drawing drawingName
+        d2.fetch ->
+          expect(d2.resolution).toEqual { x: 19, y: 190 }, "resolution is set when drawing is loaded from db"
+          asyncSpecDone()
+
+
 

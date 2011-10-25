@@ -3,6 +3,12 @@ _  = require 'underscore'
 
 {GridStore} = require "mongodb"
 
+mustBeOpened = (fn ) -> ->
+  if not @_doc
+    throw new Error "Cannot call before doc is loaded"
+
+  fn.apply this, arguments
+
 class exports.Drawing
 
   Drawing.collection = null
@@ -11,13 +17,27 @@ class exports.Drawing
   cacheInterval: 10
 
   constructor: (@name) ->
+    @resolution =
+      x: 0
+      y: 0
+
     throw "Collection must be set" unless Drawing.collection
     @clients = {}
     @drawsAfterLastCache = 0
 
-  addDraw: (draw, client, cb=->) ->
+  updateCanvasSize: (point) ->
+    @resolution.x = point.x if point.x > @resolution.x
+    @resolution.y = point.y if point.y > @resolution.y
+
+  addDraw: mustBeOpened (draw, client, cb=->) ->
     if not client
       throw new Error "addDraw requires client as param"
+
+    if not draw?.shape?.moves
+      console.log "missing moves", draw
+    else
+      for point in draw.shape.moves
+        @updateCanvasSize point
 
     Drawing.collection.update name: @name,
       $push: history: draw
@@ -44,7 +64,6 @@ class exports.Drawing
       return cb err if err
       gs.write data, (err, result) =>
         return cb err if err
-        # console.log "gs write", result
         gs.close =>
           Drawing.collection.update name: @name,
             $push: cache: position
@@ -57,7 +76,6 @@ class exports.Drawing
     gs = new GridStore Drawing.db, "#{ @name }-#{ position }", "r"
     gs.open (err) =>
       return cb err if err
-      console.log "gs read pos", gs.length
       gs.read gs.length, (err, data) ->
         return cb err if err
         cb null, data
@@ -97,43 +115,34 @@ class exports.Drawing
       else
         history = doc.history
 
-      console.log "sending start"
       client.startWith
         draws: history
         latestCachePosition: latest
 
-  addCachePoint: (pos, bitmap) ->
 
-  setDrawsAfterCachePoint: (history) ->
-    return @drawsAfterLastCache in @drawsAfterLastCache
-
-    i = 0
-    for draw in history
-      if draw.cache
-        @drawsAfterLastCache = i
-        i = 0
-
-    @drawsAfterLastCache
-
+  init: (cb=->) ->
+    Drawing.collection.insert @_doc =
+      name: @name
+      history: []
+      cache: []
+      created: Date.now()
+    ,
+      safe: true
+    , (err, docs) =>
+      return cb err if err
+      cb null, docs[0]
 
   fetch: (cb=->) =>
     Drawing.collection.find(name: @name).nextObject (err, doc) =>
       return cb err if err
       if doc
         @_doc = doc
-        @setDrawsAfterCachePoint doc.history
+        for draw in doc.history
+          console.log draw
+          for point in draw.shape.moves
+            @updateCanvasSize point
         cb null, doc
       else
-        Drawing.collection.insert
-          name: @name
-          history: []
-          cache: []
-          created: Date.now()
-        ,
-          safe: true
-        , (err, docs) =>
-          return cb err if err
-          @_doc = doc
-          cb null, docs[0]
+        @init cb
 
 
