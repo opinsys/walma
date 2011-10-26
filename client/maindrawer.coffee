@@ -12,13 +12,11 @@ else
 
 tools = require "drawtools"
 
-# http://modernizr.github.com/Modernizr/touch.html
-hasTouch = 'ontouchstart' of window
 now = -> new Date().getTime()
 
 resizeCanvas = (width, height, canvas, cb=->) ->
   img = new Image
-  data = canvas.toDataURL()
+  data = canvas.toDataURL("image/png")
   canvas.width = width
   canvas.height = height
   img.onload = =>
@@ -93,19 +91,20 @@ class maindrawer.Main
         startDraws: history.draws.length
 
       @drawCount = history.latestCachePosition or 0
-      console.log "Need to draw", history.draws.length, "shapes"
-      console.log "Got", history.latestCachePosition, "for free from cache"
+      console.log "Need to draw #{history.draws.length} shapes"
+      console.log "Got #{history.latestCachePosition} for free from cache"
 
       @updateResolution history.resolution
+      console.log "updated res #{ JSON.stringify history.resolution }"
 
       @resizeMainCanvas =>
         if history.latestCachePosition
           bitmapUrl = "/#{ @roomName }/bitmap/#{ history.latestCachePosition }"
-          console.log "Downloading cache from", bitmapUrl
           @status.set status: "downloading cache"
           cacheImage = new Image
+          cacheImage.onload = =>
+            @drawHistory history.draws, cacheImage
           cacheImage.src = bitmapUrl
-          cacheImage.onload = => @drawHistory history.draws, cacheImage
         else
           @drawHistory history.draws
 
@@ -121,7 +120,7 @@ class maindrawer.Main
       console.log "I should send bitmap! pos:#{ @drawCount }", @id
       @socket.emit "bitmap",
         pos: @drawCount
-        data: @mainCanvas.toDataURL()
+        data: @mainCanvas.toDataURL("image/png")
 
 
   drawHistory: (draws, img) =>
