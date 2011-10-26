@@ -8,9 +8,6 @@ script.status-template(type="x-handlebars-template")
     span.name Loaded:
     span.value  {{drawnFromHistory}} / {{inHistory}} ops in {{historyDrawTime}}s
   .attr
-    span.name Speed:
-    span.value {{speed}} ops/s
-  .attr
     span.name Operations drawn:
     span.value  {{operationCount}}
 
@@ -38,7 +35,7 @@ h1
   .left
 
     .tool
-      button.selected(data-tool="Pencil") Pencil
+      button.selected(data-tool="Pencil") Pen
       button(data-tool="Line") Line
       button(data-tool="Eraser") Eraser
       button(data-tool="Circle") Circle

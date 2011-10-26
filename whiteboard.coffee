@@ -20,7 +20,6 @@ db.open (err) ->
   db.collection "drawings", (err, collection) ->
     Drawing.collection = collection
     Drawing.db = db
-    console.log "got collection"
 
 
 
@@ -64,7 +63,6 @@ app.get "/:room/bitmap/:pos", (req, res) ->
   res.header('Content-Type', 'image/png')
   # res.header('Content-Type', 'text/plain')
 
-  console.log "fetching room", req.params
 
   room = new Drawing req.params.room
   room.getCache req.params.pos, (err, data) ->

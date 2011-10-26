@@ -139,7 +139,6 @@ class exports.Drawing
       if doc
         @_doc = doc
         for draw in doc.history
-          console.log draw
           for point in draw.shape.moves
             @updateCanvasSize point
         cb null, doc

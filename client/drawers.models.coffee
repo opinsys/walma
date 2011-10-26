@@ -29,10 +29,6 @@ class models.StatusModel extends Backbone.Model
         diff = (now() - @start) / 1000
         @set historyDrawTime: diff, silent: true
 
-  toJSON: ->
-    json = super
-    json.speed = parseInt json.operationCount / json.historyDrawTime
-    json
 
   loadOperations: (history) ->
 

@@ -76,9 +76,10 @@ class maindrawer.Main
 
     tool.bind "shape", (shape) =>
       @drawCount += 1
-      @socket.emit "draw",
+      @socket.emit "draw", draw =
         shape: shape
         user: "Epeli"
+      @status.addDraw draw
 
     @input.use tool
 
