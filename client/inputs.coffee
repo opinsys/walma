@@ -81,6 +81,7 @@ class drawers.TouchInput extends BaseInput
   constructor: ->
     super
 
+
   events:
     "touchstart": "down"
     "touchend": "up"
@@ -89,13 +90,14 @@ class drawers.TouchInput extends BaseInput
   move: (e) =>
     @tool.move @lastTouch = @getCoords e
     console.log "finger moving", @lastTouch
+    false
 
   down: (e) =>
     console.log "finger down", @lastTouch
     @tool.begin()
     @tool.down @lastTouch = @getCoords e
-
     false
+
 
   up: (e) =>
     console.log "finger up", @lastTouch
