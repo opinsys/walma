@@ -182,15 +182,15 @@ class maindrawer.Main
   # Keep main canvas size as big as needed
   updateResolution: (point) ->
 
-    if point.x > @resolution.width
-      @resolution.width = point.x
-      @bufferCanvasRemote.width = point.x
-      @bufferCanvas.width = point.x
+    newWidth = point.x
+    newHeight = point.y
+
+    if newWidth > @resolution.width
+      @resolution.width = @bufferCanvasRemote.width = @bufferCanvas.width = newWidth
       @dirtyCanvasSize = true
-    if point.y > @resolution.height
-      @resolution.height = point.y
-      @bufferCanvasRemote.height = point.y
-      @bufferCanvas.height = point.y
+
+    if newHeight > @resolution.height
+      @resolution.height = @bufferCanvasRemote.height = @bufferCanvas.height = newHeight
       @dirtyCanvasSize = true
 
     if @dirtyCanvasSize
