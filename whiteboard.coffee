@@ -27,6 +27,13 @@ require("./configure") app, io
 
 
 app.get "/", (req, res) ->
+  res.send '''
+  <h1>Whiteboard</h1>
+
+  <a href="/toimisto">/toimisto</a>
+
+  '''
+  return
 
   # TODO:
   rooms = _.map db, (history, name) ->
