@@ -19,7 +19,6 @@ if not hasTouch
 
 
 
-
 $ ->
 
   toolSettings = new models.SettingsModel
@@ -61,6 +60,8 @@ $ ->
   main.bind "ready", ->
     $("canvas.loading").removeClass "loading"
     $("div.loading").remove()
+    # http://www.html5rocks.com/en/mobile/mobifying.html#toc-optimizations-scrolling
+    window.scrollTo 0, 100
 
 
 
