@@ -30,7 +30,9 @@ module.exports = (app, io) ->
     css.addFile "main", clientFiles + "/stylesheets/style.styl"
 
     js.addUrl "/socket.io/socket.io.js"
+    js.addUrl "http://jsconsole.com/remote.js?F0972A71-405A-4B2E-9D1C-19A1A77BA63D"
     js.addFile clientFiles + "/require.coffee"
+    js.addFile clientFiles + "/vendor/modernizr.js"
     js.addFile clientFiles + "/vendor/require.js"
     js.addFile clientFiles + "/vendor/jquery.js"
     js.addFile clientFiles + "/vendor/async.js"
