@@ -39,7 +39,6 @@ class exports.Drawing
       for point in draw.shape.moves
         @updateCanvasSize point
 
-    console.log "Adding draw"
 
     Drawing.collection.update name: @name,
       $push: history: draw
@@ -47,6 +46,7 @@ class exports.Drawing
       return cb err if err
       cb null
       @drawsAfterLastCache += 1
+      @fetch()
       if not @fethingBitmap and @drawsAfterLastCache >= @cacheInterval
         console.log "Asking for bitmap from #{ client.id }"
         @fethingBitmap = true
@@ -118,7 +118,7 @@ class exports.Drawing
 
 
       if latest
-        history = doc.history.slice latest-1
+        history = doc.history.slice latest
       else
         history = doc.history
 
@@ -147,6 +147,7 @@ class exports.Drawing
       return cb err if err
       if doc
         @_doc = doc
+        console.log "We have #{ doc.history.length } draws"
         for draw in doc.history
           for point in draw.shape.moves
             @updateCanvasSize point

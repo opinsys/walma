@@ -8,14 +8,17 @@ script.status-template(type="x-handlebars-template")
     span.name Cached:
     span.value  {{cachedDraws}} draws
   .attr
-    span.name Drawn on start:
-    span.value  {{historyDraws}} draws
+    span.name Start:
+    span.value  {{startDraws}} draws
   .attr
-    span.name Loaded:
-    span.value  {{drawnFromHistory}} / {{inHistory}} ops in {{historyDrawTime}}s
+    span.name You:
+    span.value  {{userDraws}} draws
   .attr
-    span.name Operations drawn:
-    span.value  {{operationCount}}
+    span.name Remote:
+    span.value  {{remoteDraws}} draws
+  .attr
+    span.name Total:
+    span.value  {{totalDraws}} draws
 
 
 h1

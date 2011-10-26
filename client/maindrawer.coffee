@@ -76,25 +76,25 @@ class maindrawer.Main
 
     tool.bind "shape", (shape) =>
       @drawCount += 1
-      @socket.emit "draw", draw =
+      console.log "We have #{ @drawCount } draws"
+      @socket.emit "draw",
         shape: shape
         user: "Epeli"
-      @status.addDraw draw
+      @status.addUserDraw()
 
     @input.use tool
 
   bindEvents: ->
     @socket.on "draw", @replay
-    @status.set status: "Downloading history"
+    @status.set status: "downloading history"
     @socket.on "start", (history) =>
       @status.set
         cachedDraws: history.latestCachePosition or 0
-        historyDraws: history.draws.length
+        startDraws: history.draws.length
 
-      @drawCount = history.draws.length
+      @drawCount = history.latestCachePosition or 0
       console.log "Need to draw", history.draws.length, "shapes"
       console.log "Got", history.latestCachePosition, "for free from cache"
-      @drawCount += history.latestCachePosition or 0
 
       @updateResolution history.resolution
 
@@ -102,7 +102,7 @@ class maindrawer.Main
         if history.latestCachePosition
           bitmapUrl = "/#{ @roomName }/bitmap/#{ history.latestCachePosition }"
           console.log "Downloading cache from", bitmapUrl
-          @status.set status: "Downloading bitmap"
+          @status.set status: "downloading cache"
           cacheImage = new Image
           cacheImage.src = bitmapUrl
           cacheImage.onload = => @drawHistory history.draws, cacheImage
@@ -126,13 +126,15 @@ class maindrawer.Main
 
   drawHistory: (draws, img) =>
     @status.set status: "drawing history"
-    @status.loadOperations draws
 
     if img
       @mainCanvas.getContext("2d").drawImage img, 0, 0
 
     operations = 0
     start = now()
+
+    @status.set startDraws: draws.length
+
     async.forEachSeries draws, (draw, cb) =>
 
       return cb() unless draw
@@ -145,7 +147,6 @@ class maindrawer.Main
       # the UI to draw itself.
       if now() - start > 400
         start = now()
-        @status.incDrawnFromHistory operations
         operations = 0
         setTimeout =>
           cb()
@@ -156,14 +157,12 @@ class maindrawer.Main
 
     , (err) =>
         throw err if err
-        @status.setDrawnHistory()
         @status.set status: "ready"
         @trigger "ready"
 
     null
 
   replay: (draw) =>
-    @status.addDraw draw
 
     for point in draw.shape.moves
       @updateResolution point
@@ -176,6 +175,7 @@ class maindrawer.Main
 
     @resizeMainCanvas =>
       tool.replay draw.shape
+      @status.addRemoteDraw()
 
 
 
