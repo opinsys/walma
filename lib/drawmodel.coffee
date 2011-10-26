@@ -39,6 +39,8 @@ class exports.Drawing
       for point in draw.shape.moves
         @updateCanvasSize point
 
+    console.log "Adding draw"
+
     Drawing.collection.update name: @name,
       $push: history: draw
     , (err, coll) =>
@@ -109,11 +111,18 @@ class exports.Drawing
     @fetch (err, doc) =>
       return cb err if err
 
-      latest = _.last doc.cache
+      while (latest = doc.cache.pop()) > doc.history.length
+        console.log "We have newer cache than history!", latest, ">", doc.history.length
+
+      console.log "History is", doc.history.length, "cache:", latest
+
+
       if latest
-        history = doc.history.slice latest
+        history = doc.history.slice latest-1
       else
         history = doc.history
+
+      console.log "Sending history ", history.length
 
       client.startWith
         resolution: @resolution

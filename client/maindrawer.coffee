@@ -87,6 +87,10 @@ class maindrawer.Main
     @socket.on "draw", @replay
     @status.set status: "Downloading history"
     @socket.on "start", (history) =>
+      @status.set
+        cachedDraws: history.latestCachePosition or 0
+        historyDraws: history.draws.length
+
       @drawCount = history.draws.length
       console.log "Need to draw", history.draws.length, "shapes"
       console.log "Got", history.latestCachePosition, "for free from cache"

@@ -5,6 +5,12 @@ script.status-template(type="x-handlebars-template")
     span.name Status:
     span.value  {{status}}
   .attr
+    span.name Cached:
+    span.value  {{cachedDraws}} draws
+  .attr
+    span.name Drawn on start:
+    span.value  {{historyDraws}} draws
+  .attr
     span.name Loaded:
     span.value  {{drawnFromHistory}} / {{inHistory}} ops in {{historyDrawTime}}s
   .attr
