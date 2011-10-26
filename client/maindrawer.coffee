@@ -172,8 +172,10 @@ class maindrawer.Main
       bufferCanvas: @bufferCanvasRemote
       mainCanvas: @mainCanvas
 
-    tool.replay draw.shape
     @drawCount += 1
+
+    @resizeMainCanvas =>
+      tool.replay draw.shape
 
 
 
@@ -182,10 +184,17 @@ class maindrawer.Main
 
     if point.x > @resolution.width
       @resolution.width = point.x
+      @bufferCanvasRemote.width = point.x
+      @bufferCanvas.width = point.x
       @dirtyCanvasSize = true
     if point.y > @resolution.height
       @resolution.height = point.y
+      @bufferCanvasRemote.height = point.y
+      @bufferCanvas.height = point.y
       @dirtyCanvasSize = true
+
+    if @dirtyCanvasSize
+      @input.tool.updateSettings()
 
   resizeMainCanvas: (cb=->) ->
       # Main canvas should not ever get smaller
@@ -197,16 +206,12 @@ class maindrawer.Main
     else
       cb()
 
-  resizeDrawingArea: (width, height) ->
-    @bufferCanvas.width = width
-    @bufferCanvas.height = height
-    @bufferCanvasRemote.width = width
-    @bufferCanvasRemote.height = height
-    @input.tool.updateSettings()
+  resizeDrawingArea: (width, height, cb=->) ->
     @updateResolution
       x: width
       y: height
-    @resizeMainCanvas()
+
+    @resizeMainCanvas cb
 
 
 
