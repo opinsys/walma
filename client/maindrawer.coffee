@@ -25,7 +25,6 @@ resizeCanvas = (width, height, canvas, cb=->) ->
     canvas.getContext("2d").drawImage img, 0, 0
     cb()
   img.src = data
-  console.log "canvas resized"
 
 
 class maindrawer.Main
@@ -33,7 +32,8 @@ class maindrawer.Main
   _.extend @::, Backbone.Events
 
   constructor: (opts) ->
-    console.log "created main"
+    {@id} = opts
+
     # Draw count
     @drawCount = 0
 
@@ -75,6 +75,7 @@ class maindrawer.Main
       mainCanvas: @mainCanvas
 
     tool.bind "shape", (shape) =>
+      @drawCount += 1
       @socket.emit "draw",
         shape: shape
         user: "Epeli"
@@ -86,15 +87,19 @@ class maindrawer.Main
     @status.set status: "Downloading history"
     @socket.on "start", (history) =>
       @drawCount = history.draws.length
+      console.log "Need to draw", history.draws.length, "shapes"
+      console.log "Got", history.latestCachePosition, "for free from cache"
       @drawCount += history.latestCachePosition or 0
 
       @updateResolution history.resolution
 
       @resizeMainCanvas =>
         if history.latestCachePosition
+          bitmapUrl = "/#{ @roomName }/bitmap/#{ history.latestCachePosition }"
+          console.log "Downloading cache from", bitmapUrl
           @status.set status: "Downloading bitmap"
           cacheImage = new Image
-          cacheImage.src = "/#{ @roomName }/bitmap/#{ history.latestCachePosition }"
+          cacheImage.src = bitmapUrl
           cacheImage.onload = => @drawHistory history.draws, cacheImage
         else
           @drawHistory history.draws
@@ -107,10 +112,14 @@ class maindrawer.Main
         room: @roomName
         id: @id
         useragent: navigator.userAgent
+    @socket.on "getbitmap", =>
+      console.log "I should send bitmap! pos:#{ @drawCount }", @id
+      @socket.emit "bitmap",
+        pos: @drawCount
+        data: @mainCanvas.toDataURL()
 
 
   drawHistory: (draws, img) =>
-    console.log "drawing history"
     @status.set status: "drawing history"
     @status.loadOperations draws
 
@@ -176,7 +185,8 @@ class maindrawer.Main
   resizeMainCanvas: (cb=->) ->
       # Main canvas should not ever get smaller
     if @dirtyCanvasSize
-      console.log "resizing", JSON.stringify @resolution
+      @bufferCanvasRemote.width = @resolution.width
+      @bufferCanvasRemote.height = @resolution.height
       resizeCanvas @resolution.width, @resolution.height, @mainCanvas, cb
       @dirtyCanvasSize = false
     else

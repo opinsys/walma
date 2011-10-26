@@ -50,13 +50,14 @@ $ ->
       el: "canvas.buffer"
       user: "Esa"
 
+  main.resizeDrawingArea window.innerWidth, window.innerHeight
+  $(window).resize ->
+    main.resizeDrawingArea window.innerWidth, window.innerHeight
+
   main.bind "ready", ->
     $("canvas.loading").removeClass "loading"
     $("div.loading").remove()
-    main.resizeDrawingArea window.innerWidth, window.innerHeight
 
-  $(window).resize ->
-    main.resizeDrawingArea window.innerWidth, window.innerHeight
 
 
 

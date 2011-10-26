@@ -30,7 +30,6 @@ class exports.Client extends EventEmitter
     @_socket.join roomName
 
   startWith: (history) ->
-    console.log "emitting", history
     @_socket.emit "start", history
 
   fetchBitmap: (cb=->) ->
