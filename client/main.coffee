@@ -1,6 +1,4 @@
 
-
-
 {drawers} = NS "PWB"
 {views} = NS "PWB.drawers"
 {models} = NS "PWB.drawers"
@@ -8,6 +6,7 @@ helpers = NS "PWB.helpers"
 
 maindrawer = NS "PWB.maindrawer"
 
+Backbone = require "backbone"
 
 socket = io.connect().of("/drawer")
 
@@ -40,6 +39,10 @@ $ ->
 
 
   console.log  "creaign main"
+  bg = new Background
+    el: "canvas.main"
+    socket: socket
+
   main = new maindrawer.Main
     roomName: window.location.pathname.substring(1) or "_main"
     id: helpers.guidGenerator()
@@ -62,6 +65,47 @@ $ ->
     # http://www.html5rocks.com/en/mobile/mobifying.html#toc-optimizations-scrolling
     window.scrollTo 0, 100
 
+
+
+class Background extends Backbone.View
+
+  constructor: (opts) ->
+    super
+    {@socket} = opts
+    @bindDrag()
+    @socket.on "background", (url) =>
+      console.log "got bg client"
+      @setBackground url
+
+    @socket.on "start", (history) =>
+      if history.backgroundURL
+        @setBackground history.backgroundURL
+
+  bindDrag: ->
+
+    $(document).bind "dragenter", (e) ->
+      e.preventDefault()
+      e.originalEvent.dataTransfer.dropEffect = 'copy'
+
+    $(document).bind "dragover", (e) ->
+      e.preventDefault()
+      e.originalEvent.dataTransfer.dropEffect = 'copy'
+
+    $(document).bind "dragleave", (e) -> e.preventDefault()
+    $(document).bind "dragend", (e) -> e.preventDefault()
+    $(document).bind "drop", (e) =>
+      e.preventDefault()
+      reader = new FileReader
+      reader.onload = @fileRead
+      reader.readAsDataURL e.originalEvent.dataTransfer.files[0]
+
+  fileRead: (e) =>
+    dataURL = e.target.result
+    @setBackground dataURL
+    @socket.emit "background", dataURL
+
+  setBackground: (url) ->
+    $(@el).css "background-image", "url(#{ url })"
 
 
 

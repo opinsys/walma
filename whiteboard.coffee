@@ -98,6 +98,12 @@ sockets.on "connection", (socket) ->
     room.addClient (client = new Client socket, opts), (err) ->
       console.log "failed to add client #{ opts.id } to room #{ roomName }"
 
+    socket.on "background", (data) ->
+      console.log "got bg"
+      room.setBackground data
+      socket.broadcast.to(roomName).emit "background", data
+
+
     client.on "draw", (draw) ->
       # got new shape from some client
 

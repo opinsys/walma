@@ -29,6 +29,12 @@ class exports.Drawing
     @resolution.x = point.x if point.x > @resolution.x
     @resolution.y = point.y if point.y > @resolution.y
 
+  setBackground: (data, cb=->) ->
+    Drawing.collection.update name: @name,
+      $set: background: data
+    , cb
+
+
   addDraw: mustBeOpened (draw, client, cb=->) ->
     if not client
       throw new Error "addDraw requires client as param"
@@ -102,6 +108,7 @@ class exports.Drawing
     client.on "draw", (draw) =>
       @addDraw draw, client
 
+
     client.on "disconnect", =>
       delete @clients[client.id]
 
@@ -126,6 +133,7 @@ class exports.Drawing
 
       client.startWith
         resolution: @resolution
+        backgroundURL: doc.background
         draws: history
         latestCachePosition: latest
 
