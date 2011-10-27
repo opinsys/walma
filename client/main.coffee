@@ -13,9 +13,8 @@ socket = io.connect().of("/drawer")
 
 # http://modernizr.github.com/Modernizr/touch.html
 hasTouch = 'ontouchstart' of window
-if not hasTouch
-  # F U FF
-  hasTouch = !! navigator.userAgent.match(/Fennec/)
+if not hasTouch and typeof DocumentTouch isnt "undefined"
+  hasTouch = document instanceof DocumentTouch
 
 
 
