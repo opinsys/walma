@@ -12,8 +12,8 @@ tools = require "drawtools"
 describe "Pencil", ->
   beforeEach ->
     @pencil = new tools.Pencil
-      main: createCanvas()
-      sketch: createCanvas()
+      mainCanvas: createCanvas()
+      bufferCanvas: createCanvas()
 
     @pencil.begin()
 
@@ -45,8 +45,8 @@ describe "Pencil", ->
 describe "Line", ->
   beforeEach ->
     @line = new tools.Line
-      main: createCanvas()
-      sketch: createCanvas()
+      mainCanvas: createCanvas()
+      bufferCanvas: createCanvas()
 
     @line.begin()
 
@@ -74,8 +74,8 @@ describe "Line", ->
 describe "Circle", ->
   beforeEach ->
     @circle = new tools.Circle
-      main: createCanvas()
-      sketch: createCanvas()
+      mainCanvas: createCanvas()
+      bufferCanvas: createCanvas()
 
     @circle.begin()
 
