@@ -154,14 +154,9 @@ class exports.Eraser extends BaseTool
     @origStoreStyle = @main.strokeStyle
     @main.strokeStyle = "rgba(0,0,0,0)"
 
-  down: (point) ->
-    @drawDot point
-
-  move: (point) ->
-    @drawDot point
-
-  up: (point) ->
-    @drawDot point
+  down: (point) -> @drawDot point
+  move: (point) -> @drawDot point
+  up: (point) -> @drawDot point
 
   end: ->
     @main.globalCompositeOperation = "source-over"
