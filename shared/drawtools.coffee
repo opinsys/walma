@@ -42,6 +42,7 @@ class BaseTool
 
 
   draw: ->
+    @main.globalCompositeOperation = "source-over"
     @main.drawImage @bufferCanvas, 0, 0
     @clear()
 
@@ -80,6 +81,8 @@ class BaseTool
     # TODO: Sanitize op
     for point in shape.moves
       @[point.op] point
+
+    @end()
     @draw()
 
   toJSON: ->
@@ -103,6 +106,9 @@ class exports.Pencil extends BaseTool
     # Draw a dot at the begining of the path. This is not required for Firefox,
     # but Webkits (Chrome & Android) won't draw anything if user just clicks
     # the canvas.
+    @drawDot point
+
+  drawDot: (point) ->
     @sketch.beginPath()
     @sketch.arc(point.x, point.y, @getSize() / 2, 0, (Math.PI/180)*360, true);
     @sketch.fill()
@@ -127,19 +133,40 @@ class exports.Pencil extends BaseTool
 
 
 # Eraser is basically just a pencil where compositing is turned inside out
-class exports.Eraser extends exports.Pencil
+class exports.Eraser extends BaseTool
   name: "Eraser"
 
-  draw:  ->
+  draw: ->
+
+  drawDot: (point) ->
+    point = _.clone point
+    point.op = "move"
+
+    @main.beginPath()
+    @main.arc(point.x, point.y, @getSize() / 2, 0, (Math.PI/180)*360, true);
+    @main.fill()
+    @main.closePath()
+    @moves.push point
+
+  begin: ->
+    super
     @main.globalCompositeOperation = "destination-out"
-    super
+    @origStoreStyle = @main.strokeStyle
+    @main.strokeStyle = "rgba(0,0,0,0)"
+
+  down: (point) ->
+    @drawDot point
+
+  move: (point) ->
+    @drawDot point
+
+  up: (point) ->
+    @drawDot point
+
+  end: ->
     @main.globalCompositeOperation = "source-over"
-
-
-  # Draw always on movement so that we can immediately see what we erase
-  move: ->
+    @main.strokeStyle = @origStoreStyle
     super
-    @draw()
 
 
 class exports.Line extends BaseTool
