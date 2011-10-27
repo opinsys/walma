@@ -18,6 +18,8 @@ if not hasTouch and typeof DocumentTouch isnt "undefined"
 
 
 $ ->
+  $(window).bind "touchstart", false
+  $(window).bind "touchmove", false
 
   toolSettings = new models.SettingsModel
   toolSettingsView = new views.ToolSettings
