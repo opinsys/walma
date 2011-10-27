@@ -110,18 +110,35 @@ canvas.buffer
   .left
     z-index 50
     position fixed
-    top toolLevel + buttonSize + 16px
+    top toolLevel
     left toolLevel
 
-  .top
-    position fixed
-    z-index 50
-    top toolLevel
-    left 6em
 
-    button
-      display inline !important
-      margin-left 1em
+  .top
+
+    .colorSelector button
+      border 1px solid black
+      background-color cyan
+      width red
+      position fixed
+      top toolLevel
+      left 1em
+      z-index 50
+
+
+    .color
+      .wrapper
+        width 30em
+
+      display none
+      overflow none
+      position fixed
+      z-index 50
+      top toolLevel
+      left 4em
+      button
+        display inline !important
+        margin-left 1em
 
   .selected
     box-shadow 0px 0px 20px white

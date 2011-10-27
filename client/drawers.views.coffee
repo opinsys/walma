@@ -9,14 +9,18 @@ class views.ToolSettings extends Backbone.View
 
   constructor: ->
     super
-    currentSize = parseInt @$(".size input").val(), 10
-    @model.set size: currentSize or @defaults.size
-    @model.set color: @$(".color .selected").data("color")
-    @model.set tool: @$(".tool .selected").data("tool")
+
+    @model.bind "change:color", =>
+      @setButtonColor @model.get "color"
 
     @sizeInput = $ ".size input"
     @model.bind "change:size", =>
       @sizeInput.val @model.get "size"
+
+    currentSize = parseInt @$(".size input").val(), 10
+    @model.set size: currentSize or @defaults.size
+    @model.set color: @$(".color .selected").data("color")
+    @model.set tool: @$(".tool .selected").data("tool")
 
 
   events:
@@ -24,7 +28,16 @@ class views.ToolSettings extends Backbone.View
     "tap .tool button": "changeTool"
     "tap .size button.bigger": "increaseSize"
     "tap .size button.smaller": "decreaseSize"
+    "tap .colorSelector button": "openColorSelection"
+
     "keyup .size input": "changeSize"
+
+
+  openColorSelection: ->
+    @$(".color").animate(width: "toggle", 350)
+
+  setButtonColor: (color) ->
+    @$(".colorSelector button").css "background-color", color
 
   changeTool: (e) =>
     setting = $(e.currentTarget)
@@ -34,9 +47,9 @@ class views.ToolSettings extends Backbone.View
     setting.addClass "selected"
 
   changeColor: (e) =>
-    console.log "Changing color"
     setting = $(e.currentTarget)
     @model.set color: color = setting.data("color")
+    @openColorSelection()
 
     @$(".color .selected").removeClass "selected"
     setting.addClass "selected"
