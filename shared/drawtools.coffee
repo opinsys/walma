@@ -138,9 +138,13 @@ class exports.Eraser extends BaseTool
 
   draw: ->
 
-  drawDot: (point) ->
+  eraseDot: (point) ->
     point = _.clone point
     point.op = "move"
+
+    # Set compositing back to destination-out if some remote user changes it.
+    if @main.globalCompositeOperation isnt "destination-out"
+      @setErasing()
 
     @main.beginPath()
     @main.arc(point.x, point.y, @getSize() / 2, 0, (Math.PI/180)*360, true);
@@ -148,15 +152,18 @@ class exports.Eraser extends BaseTool
     @main.closePath()
     @moves.push point
 
-  begin: ->
-    super
+  setErasing: ->
     @main.globalCompositeOperation = "destination-out"
     @origStoreStyle = @main.strokeStyle
     @main.strokeStyle = "rgba(0,0,0,0)"
 
-  down: (point) -> @drawDot point
-  move: (point) -> @drawDot point
-  up: (point) -> @drawDot point
+  begin: ->
+    super
+    @setErasing()
+
+  down: (point) -> @eraseDot point
+  move: (point) -> @eraseDot point
+  up: (point) -> @eraseDot point
 
   end: ->
     @main.globalCompositeOperation = "source-over"
