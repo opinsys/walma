@@ -25,6 +25,41 @@ h1
 
 .status
 
+.toolSettings2
+
+  .colorSelector.group
+    button.toggle color
+    .options
+      button(data-color="black").selected
+      button(data-color="white")
+      button(data-color="green")
+      button(data-color="blue")
+      button(data-color="yellow")
+      button(data-color="brown")
+      button(data-color="red")
+      button(data-color="purple")
+
+  .clear
+
+  .sizeSelector.group
+    button.toggle size
+    .options
+        button(data-size="5")
+        button(data-size="15")
+        button(data-size="30").selected
+        button(data-size="60")
+        button(data-size="100")
+
+  .clear
+
+  .toolSelection
+    button.toggle Tool
+    .options
+      button.selected(data-tool="Pencil") Pen
+      button(data-tool="Line") Line
+      button(data-tool="Circle") Circle
+      button(data-tool="Eraser") Eraser
+
 
 
 .tool_settings
