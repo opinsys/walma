@@ -34,7 +34,11 @@ class views.ToolSettings extends Backbone.View
 
 
   openColorSelection: ->
-    @$(".color").animate(width: "toggle", 350)
+    @$(".color").animate width: "show", 350, =>
+      $(window).one "tap", => @closeColorSelection()
+
+  closeColorSelection: ->
+    @$(".color").animate(width: "hide", 350)
 
   setButtonColor: (color) ->
     @$(".colorSelector button").css "background-color", color
@@ -49,8 +53,6 @@ class views.ToolSettings extends Backbone.View
   changeColor: (e) =>
     setting = $(e.currentTarget)
     @model.set color: color = setting.data("color")
-    @openColorSelection()
-
     @$(".color .selected").removeClass "selected"
     setting.addClass "selected"
 
