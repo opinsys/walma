@@ -5,32 +5,74 @@ class exports.Client extends EventEmitter
 
   timeoutTime: 1000 * 5
 
-  constructor: (@_socket, opts) ->
+  constructor: (opts) ->
     super
-    @id = opts.id
-    @userAgent = opts.userAgent
+    {@socket} = opts
+    {@model} = opts
+
+    {@id} = opts
+    {@userAgent} = opts
 
     @state = "created"
 
-    @_socket.on "state", (state) =>
+    @socket.on "state", (state) =>
       @state = state
-      @emit "state", state, @
 
-    @_socket.on "draw", (draw) =>
-      @emit "draw", draw
+    @socket.on "background", (background) =>
+      # Should emit the background url. Currently we have dataURL in
+      # background-variable
+      @socket.broadcast.to(@model.name).emit "background", background
+      @model.setBackground background
 
-    @_socket.on "disconect", =>
+    @socket.on "draw", (draw) =>
+      @socket.broadcast.to(@model.name).emit "draw", draw
+      @model.addDraw draw, (err, status) =>
+        if err
+          console.log "Failed to save draw to db: #{ err }"
+          return
+        if status?.needCache
+          @fetchBitmap (err, bitmap) =>
+            if err
+              console.log "Could not get cache bitmap #{ err.message } #{ client.id }"
+            else
+              @model.setCache bitmap.pos, bitmap.data
+
+
+    @socket.on "disconect", =>
       console.log "Disconnect: #{ @id }"
-      @emit "disconect", @
 
-    @_socket.on "bitmap", (bitmap) =>
+    @socket.on "bitmap", (bitmap) =>
       console.log "#{ @id } sent a bitmap", bitmap.data?.length, "k"
 
-  join: (roomName) ->
-    @_socket.join roomName
+  join: ->
+    @socket.join @model.name
+
+    @model.fetch (err, doc) =>
+      return cb err if err
+
+      while (latest = doc.cache.pop()) > doc.history.length
+        console.log "We have newer cache than history!", latest, ">", doc.history.length
+
+      console.log "History is", doc.history.length, "cache:", latest
+
+      if latest
+        history = doc.history.slice latest
+      else
+        history = doc.history
+
+      console.log "Sending history ", history.length
+
+      @startWith
+        resolution: @model.resolution
+        backgroundURL: doc.background
+        draws: history
+        latestCachePosition: latest
+
+
 
   startWith: (history) ->
-    @_socket.emit "start", history
+    @socket.emit "start", history
+
 
   fetchBitmap: (cb=->) ->
     cb = _.once cb
@@ -41,10 +83,10 @@ class exports.Client extends EventEmitter
       cb message: "Fetching timeout", reason: "timeout"
     , @timeoutTime
 
-    @_socket.once "bitmap", (bitmap) ->
+    @socket.once "bitmap", (bitmap) ->
       clearTimeout timer
       cb null, bitmap unless timeout
 
-    @_socket.emit "getbitmap"
+    @socket.emit "getbitmap"
 
 

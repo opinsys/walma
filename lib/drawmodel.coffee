@@ -25,7 +25,7 @@ class exports.Drawing
     @clients = {}
     @drawsAfterLastCache = 0
 
-  updateCanvasSize: (point) ->
+  updateResolution: (point) ->
     @resolution.x = point.x if point.x > @resolution.x
     @resolution.y = point.y if point.y > @resolution.y
 
@@ -35,15 +35,13 @@ class exports.Drawing
     , cb
 
 
-  addDraw: mustBeOpened (draw, client, cb=->) ->
-    if not client
-      throw new Error "addDraw requires client as param"
+  addDraw: mustBeOpened (draw, cb=->) ->
 
     if not draw?.shape?.moves
       console.log "missing moves", draw
     else
       for point in draw.shape.moves
-        @updateCanvasSize point
+        @updateResolution point
 
 
     Drawing.collection.update name: @name,
@@ -52,21 +50,17 @@ class exports.Drawing
       return cb err if err
       cb null
       @drawsAfterLastCache += 1
-      @fetch()
       if not @fethingBitmap and @drawsAfterLastCache >= @cacheInterval
-        console.log "Asking for bitmap from #{ client.id }"
         @fethingBitmap = true
+        cb null, needCache: true
+      else
+        cb null
 
-        client.fetchBitmap (err, bitmap) =>
-          @fethingBitmap = false
-          if err
-            console.log "Could not get cache bitmap #{ err.message } #{ client.id }"
-          else
-            @setCache bitmap.pos, bitmap.data
-            @drawsAfterLastCache = 0
 
 
   setCache: (position, data, cb=->) ->
+    @fethingBitmap = false
+    @drawsAfterLastCache = 0
     gs = new GridStore Drawing.db, "#{ @name }-#{ position }", "w"
     gs.open (err) =>
       return cb err if err
@@ -100,42 +94,6 @@ class exports.Drawing
       cb null, _.last doc.cache
 
 
-  addClient: (client, cb=->) ->
-    @clients[client.id] = client
-
-    client.join @name
-
-    client.on "draw", (draw) =>
-      @addDraw draw, client
-
-
-    client.on "disconnect", =>
-      delete @clients[client.id]
-
-    client.on "bitmap", (bitmap) =>
-      console.log "Client sending bitmap #{ client.id }"
-
-    @fetch (err, doc) =>
-      return cb err if err
-
-      while (latest = doc.cache.pop()) > doc.history.length
-        console.log "We have newer cache than history!", latest, ">", doc.history.length
-
-      console.log "History is", doc.history.length, "cache:", latest
-
-
-      if latest
-        history = doc.history.slice latest
-      else
-        history = doc.history
-
-      console.log "Sending history ", history.length
-
-      client.startWith
-        resolution: @resolution
-        backgroundURL: doc.background
-        draws: history
-        latestCachePosition: latest
 
 
   init: (cb=->) ->
@@ -158,7 +116,7 @@ class exports.Drawing
         console.log "We have #{ doc.history.length } draws"
         for draw in doc.history
           for point in draw.shape.moves
-            @updateCanvasSize point
+            @updateResolution point
         cb null, doc
       else
         @init cb

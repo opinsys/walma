@@ -95,13 +95,12 @@ sockets.on "connection", (socket) ->
       rooms[roomName] = room = new Drawing roomName
 
     console.log "Adding client"
-    room.addClient (client = new Client socket, opts), (err) ->
-      console.log "failed to add client #{ opts.id } to room #{ roomName }"
+    client = new Client
+      socket: socket
+      model: room
 
-    socket.on "background", (data) ->
-      console.log "got bg"
-      room.setBackground data
-      socket.broadcast.to(roomName).emit "background", data
+    client.join()
+
 
 
     client.on "draw", (draw) ->
