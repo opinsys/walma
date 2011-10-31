@@ -111,17 +111,22 @@ class maindrawer.Main
 
     @settings.bind "change:tool", @setTool
 
-    @socket.on "connect", =>
-      @socket.emit "join",
-        room: @roomName
-        id: @id
-        useragent: navigator.userAgent
+    if @socket.socket.connected
+      @join()
+    else
+      @socket.on "connect", => @join()
+
     @socket.on "getbitmap", =>
       console.log "I should send bitmap! pos:#{ @drawCount }", @id
       @socket.emit "bitmap",
         pos: @drawCount
         data: @mainCanvas.toDataURL("image/png")
 
+  join: ->
+    @socket.emit "join",
+      room: @roomName
+      id: @id
+      useragent: navigator.userAgent
 
   drawHistory: (draws, img) =>
     @status.set status: "drawing history"
