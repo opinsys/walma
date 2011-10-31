@@ -1,7 +1,5 @@
 
-toolLevel = 10px
-buttonSize = 42px
-canvasLevel = 0px
+buttonSize = 4em
 
 
 
@@ -83,68 +81,6 @@ canvas.buffer
   z-index 2
 
 
-
-.tool_settings
-  button
-    display block
-    width buttonSize
-    height buttonSize
-    margin-bottom 10px
-    background-color #DDD
-    border-radius 5px
-    border 2px solid #DDD
-    font-size 8pt
-    text-align left
-
-  button.touching
-    border 2px solid green
-
-  .size
-    button
-      display inline
-      width (buttonSize / 2)
-    input
-      border 1px solid black
-      width 25px
-
-  .left
-    z-index 50
-    position fixed
-    top toolLevel
-    left toolLevel
-
-
-  .top
-
-    .colorSelector button
-      border 1px solid black
-      background-color cyan
-      width red
-      position fixed
-      top toolLevel
-      left 1em
-      z-index 50
-
-
-    .color
-      .wrapper
-        width 30em
-
-      display none
-      overflow none
-      position fixed
-      z-index 50
-      top toolLevel
-      left 4em
-      button
-        display inline !important
-        margin-left 1em
-
-  .selected
-    box-shadow 0px 0px 20px white
-    border 2px solid black !important
-    border-radius 5px
-
 .status
   position fixed
   font-size 8pt
@@ -160,16 +96,29 @@ canvas.buffer
 canvas.loading
   top -200%
 
-.toolSettings2
+.toolSettings
   position fixed
+  top 0px !important
+  left 0px !important
+
+  overflow none
+
   z-index 50
-  width 100%
   .options
-    overflow none
+    display none
+    height buttonSize
+  button.selected
+    border 3px inset
   button
     margin 0.5em
-    width 4em
-    height 4em
+    width buttonSize
+    height buttonSize
+    cursor pointer
+    border-radius 0.5em
+    border 3px outset
+
+
+
   .clear
     clear both
   button.toggle

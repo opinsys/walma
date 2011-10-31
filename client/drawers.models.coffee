@@ -7,9 +7,6 @@ now = -> new Date().getTime()
 
 class models.SettingsModel extends Backbone.Model
 
-  defaults:
-    size: 20
-    color: "cyan"
 
 
 class models.StatusModel extends Backbone.Model

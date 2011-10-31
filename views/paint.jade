@@ -25,77 +25,41 @@ h1
 
 .status
 
-.toolSettings2
+.toolSettings
 
   .colorSelector.group
-    button.toggle color
+    button.toggle
     .options
-      button(data-color="black").selected
-      button(data-color="white")
-      button(data-color="green")
-      button(data-color="blue")
-      button(data-color="yellow")
-      button(data-color="brown")
-      button(data-color="red")
-      button(data-color="purple")
+      button(data-value="black").selected
+      button(data-value="white")
+      button(data-value="green")
+      button(data-value="blue")
+      button(data-value="yellow")
+      button(data-value="brown")
+      button(data-value="red")
+      button(data-value="purple")
 
   .clear
 
   .sizeSelector.group
     button.toggle size
     .options
-        button(data-size="5")
-        button(data-size="15")
-        button(data-size="30").selected
-        button(data-size="60")
-        button(data-size="100")
+        button(data-value="5")
+        button(data-value="15")
+        button(data-value="30").selected
+        button(data-value="60")
+        button(data-value="100")
 
   .clear
 
-  .toolSelection
+  .toolSelector.group
     button.toggle Tool
     .options
-      button.selected(data-tool="Pencil") Pen
-      button(data-tool="Line") Line
-      button(data-tool="Circle") Circle
-      button(data-tool="Eraser") Eraser
+      button.selected(data-value="Pencil") Pen
+      button(data-value="Line") Line
+      button(data-value="Circle") Circle
+      button(data-value="Eraser") Eraser
 
-
-
-.tool_settings
-
-  .top
-
-
-    .color
-      .wrapper
-        button.selected(data-color="black")
-        button(data-color="white")
-        button(data-color="green")
-        button(data-color="blue")
-        button(data-color="yellow")
-        button(data-color="brown")
-        button(data-color="red")
-        button(data-color="purple")
-
-  .left
-
-    .colorSelector
-      button color
-
-    .tool
-
-      button.selected(data-tool="Pencil") Pen
-      button(data-tool="Line") Line
-      button(data-tool="Circle") Circle
-      button(data-tool="Eraser") Eraser
-
-    .size
-      input.size-value(type="text", value="10", size="2")
-      span px
-      div
-        button.smaller &lt;
-        button.bigger &gt;
 
 .loading
   p Loading...

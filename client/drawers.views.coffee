@@ -4,67 +4,71 @@ Backbone = require "backbone"
 views = NS "PWB.drawers.views"
 
 
-class views.ToolSettings extends Backbone.View
+class views.ColorSelector extends Backbone.View
 
+  option: "color"
 
   constructor: ->
     super
 
-    @model.bind "change:color", =>
-      @setButtonColor @model.get "color"
+    # load default value
+    options = {}
+    options[@option] = @$("button.selected").data "value"
+    @model.set options
+    @update()
 
-    @sizeInput = $ ".size input"
-    @model.bind "change:size", =>
-      @sizeInput.val @model.get "size"
+    @model.bind "change", @update
+    @styleButtons()
 
-    currentSize = parseInt @$(".size input").val(), 10
-    @model.set size: currentSize or @defaults.size
-    @model.set color: @$(".color .selected").data("color")
-    @model.set tool: @$(".tool .selected").data("tool")
-
+  styleButtons: ->
+    @$(".options button").each ->
+      $el = $ this
+      $el.css "background-color", $el.data "value"
 
   events:
-    "tap .color button": "changeColor"
-    "tap .tool button": "changeTool"
-    "tap .size button.bigger": "increaseSize"
-    "tap .size button.smaller": "decreaseSize"
-    "tap .colorSelector button": "openColorSelection"
-
-    "keyup .size input": "changeSize"
+    "tap .toggle": "openOptions"
+    "tap .options button": "change"
 
 
-  openColorSelection: ->
-    @$(".color").animate width: "show", 350, =>
-      $(window).one "tap", => @closeColorSelection()
+  openOptions: =>
+    @$(".options").animate width: "show", 350, =>
+      $(window).one "tap", => @closeOptions()
 
-  closeColorSelection: ->
-    @$(".color").animate(width: "hide", 350)
+  closeOptions: =>
+    @$(".options").animate(width: "hide", 350)
 
-  setButtonColor: (color) ->
-    @$(".colorSelector button").css "background-color", color
 
-  changeTool: (e) =>
+  change: (e) =>
     setting = $(e.currentTarget)
-    @model.set tool: setting.data("tool")
 
-    @$(".tool .selected").removeClass "selected"
+    options = {}
+    options[@option] = color = setting.data("value")
+    @model.set options
+
+    @$(".selected").removeClass "selected"
     setting.addClass "selected"
 
-  changeColor: (e) =>
-    setting = $(e.currentTarget)
-    @model.set color: color = setting.data("color")
-    @$(".color .selected").removeClass "selected"
-    setting.addClass "selected"
 
-  increaseSize: (e) =>
-    @model.set size: @model.get("size") + 10
+  update: =>
+    @$("button.toggle").css "background-color", @model.get @option
 
-  decreaseSize: (e) =>
-    @model.set size: @model.get("size") - 10
 
-  changeSize: (e) =>
-    @model.set size: (e.currentTarget).val(), 10
+class views.SizeSelector extends views.ColorSelector
+  option: "size"
+  styleButtons: ->
+    @$(".options button").each ->
+      $el = $ this
+      $el.html "#{$el.data "value"}px"
 
+  update: =>
+    @$("button.toggle").html "#{ @model.get @option }px"
+
+class views.ToolSelector extends views.ColorSelector
+  option: "tool"
+  styleButtons: ->
+
+  update: =>
+    @$("button.toggle").html "#{ @model.get @option }"
 
 
 class views.Status extends Backbone.View

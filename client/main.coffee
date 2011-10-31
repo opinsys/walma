@@ -21,10 +21,23 @@ $ ->
   $(window).bind "touchstart", false
   $(window).bind "touchmove", false
 
-  toolSettings = new models.SettingsModel
-  toolSettingsView = new views.ToolSettings
-    el: ".tool_settings"
-    model: toolSettings
+  settings = new models.SettingsModel
+
+  new views.ColorSelector
+    el: ".colorSelector"
+    model: settings
+
+
+  new views.SizeSelector
+    el: ".sizeSelector"
+    model: settings
+
+  new views.ToolSelector
+    el: ".toolSelector"
+    model: settings
+
+
+
 
   statusView = new views.Status
     el: ".status"
@@ -50,7 +63,7 @@ $ ->
     id: helpers.guidGenerator()
     mainCanvas: $("canvas.main").get 0
     bufferCanvas: $("canvas.buffer").get 0
-    settings: toolSettings
+    settings: settings
     socket: socket
     status: status
     input: new Input
