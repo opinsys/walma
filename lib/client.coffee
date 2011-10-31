@@ -64,7 +64,7 @@ class exports.Client extends EventEmitter
 
       @startWith
         resolution: @model.resolution
-        backgroundURL: doc.background
+        background: doc.background
         draws: history
         latestCachePosition: latest
 

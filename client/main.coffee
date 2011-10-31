@@ -93,8 +93,8 @@ class Background extends Backbone.View
       @setBackground url
 
     @socket.on "start", (history) =>
-      if history.backgroundURL
-        @setBackground history.backgroundURL
+      if history.background
+        @setBackground "#{ window.location.pathname }/bg"
 
   bindDrag: ->
 

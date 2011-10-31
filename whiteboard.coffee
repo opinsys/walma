@@ -48,28 +48,37 @@ app.get "/", (req, res) ->
     rooms: rooms
 
 
+app.get "/bootstrap", (req, res) ->
+  res.render "bootstrap.jade"
+
+app.get "/:room/bg", (req, res) ->
+  res.header('Content-Type', 'image/png')
+
+  room = new Drawing req.params.room
+  room.getBackground (err, data) ->
+    throw err if err
+    console.log "get BG", data.length
+    res.send data
+
+app.post "/api/create", (req, res) ->
+  req.form.complete (err, fields, files) ->
+    console.log fields, files
+    roomName = "screenshot-#{ parseInt(Math.random(1) * 1000) }"
+    room = new Drawing roomName
+    room.fetch ->
+      fs.readFile files.image.path, (err, data) ->
+        throw err if err
+        room.setBackground data, (err) ->
+          throw err if err
+          console.log "set bg", data.length
+          res.redirect "/#{ roomName }"
+
+
 app.get "/:room", (req, res) ->
   res.render "paint.jade"
 
-# app.get "/:room/bitmap/latest", (req, res) ->
-#   res.header('Content-Type', 'image/png')
-#   # res.header('Content-Type', 'text/plain')
-# 
-#   console.log "fetching room", req.params
-# 
-#   room = new Drawing req.params.room
-#   room.getLatestCachePosition (err, position) ->
-#     throw err if err
-#     room.getCache position, (err, data) ->
-#       throw err if err
-#       [__, pngData] = data.split ","
-#       res.send new Buffer(pngData, "base64")
-
-
 app.get "/:room/bitmap/:pos", (req, res) ->
   res.header('Content-Type', 'image/png')
-  # res.header('Content-Type', 'text/plain')
-
 
   room = new Drawing req.params.room
   room.getCache req.params.pos, (err, data) ->

@@ -17,6 +17,7 @@
       , "jade": "0.15.3"
       , "piler": ""
       , "mongodb": ""
+      , "connect-form": ""
       , "socket.io": "0.8.5"
       , "socket.io-client": "0.8.5"
       , "stylus": "0.15.1"

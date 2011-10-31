@@ -29,10 +29,6 @@ class exports.Drawing
     @resolution.x = point.x if point.x > @resolution.x
     @resolution.y = point.y if point.y > @resolution.y
 
-  setBackground: (data, cb=->) ->
-    Drawing.collection.update name: @name,
-      $set: background: data
-    , cb
 
 
   addDraw: mustBeOpened (draw, cb=->) ->
@@ -56,6 +52,30 @@ class exports.Drawing
       else
         cb null
 
+
+  # TODO: DRY up gs reading!
+
+  setBackground: mustBeOpened (data, cb=->) ->
+    data = data.toString "base64"
+    gs = new GridStore Drawing.db, "#{ @name }-bg", "w"
+    gs.open (err) =>
+      return cb err if err
+      gs.write data, (err, result) =>
+        return cb err if err
+        gs.close =>
+          Drawing.collection.update name: @name,
+            $set: background: true
+          , (err) ->
+            return cb err if err
+            cb null
+
+  getBackground: (cb) ->
+    gs = new GridStore Drawing.db, "#{ @name }-bg", "r"
+    gs.open (err) =>
+      return cb err if err
+      gs.read gs.length, (err, data) ->
+        return cb err if err
+        cb null, new Buffer(data, "base64")
 
 
   setCache: (position, data, cb=->) ->
@@ -115,7 +135,7 @@ class exports.Drawing
         @_doc = doc
         console.log "We have #{ doc.history.length } draws"
         for draw in doc.history
-          for point in draw.shape.moves
+          for point in draw.shape?.moves
             @updateResolution point
         cb null, doc
       else
