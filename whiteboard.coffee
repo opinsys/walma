@@ -52,17 +52,15 @@ app.get "/bootstrap", (req, res) ->
   res.render "bootstrap.jade"
 
 app.get "/:room/bg", (req, res) ->
-  res.header('Content-Type', 'image/png')
-
+  # res.header('Content-Type', 'image/png')
+  res.contentType "image/png"
   room = new Drawing req.params.room
   room.getBackground (err, data) ->
     throw err if err
-    console.log "get BG", data.length
     res.send data
 
 app.post "/api/create", (req, res) ->
   req.form.complete (err, fields, files) ->
-    console.log fields, files
     roomName = "screenshot-#{ parseInt(Math.random(1) * 1000) }"
     room = new Drawing roomName
     room.fetch ->
@@ -70,7 +68,6 @@ app.post "/api/create", (req, res) ->
         throw err if err
         room.setBackground data, (err) ->
           throw err if err
-          console.log "set bg", data.length
           res.redirect "/#{ roomName }"
 
 

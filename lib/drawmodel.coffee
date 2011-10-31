@@ -54,9 +54,9 @@ class exports.Drawing
 
 
   # TODO: DRY up gs reading!
+  crypto = require "crypto"
 
   setBackground: mustBeOpened (data, cb=->) ->
-    data = data.toString "base64"
     gs = new GridStore Drawing.db, "#{ @name }-bg", "w"
     gs.open (err) =>
       return cb err if err
@@ -73,9 +73,9 @@ class exports.Drawing
     gs = new GridStore Drawing.db, "#{ @name }-bg", "r"
     gs.open (err) =>
       return cb err if err
-      gs.read gs.length, (err, data) ->
+      gs.readBuffer gs.length, (err, data) ->
         return cb err if err
-        cb null, new Buffer(data, "base64")
+        cb null, data
 
 
   setCache: (position, data, cb=->) ->
