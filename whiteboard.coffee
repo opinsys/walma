@@ -60,15 +60,12 @@ app.get "/:room/bg", (req, res) ->
     res.send data
 
 app.post "/api/create", (req, res) ->
-  req.form.complete (err, fields, files) ->
-    roomName = "screenshot-#{ parseInt(Math.random(1) * 1000) }"
-    room = new Drawing roomName
-    room.fetch ->
-      fs.readFile files.image.path, (err, data) ->
-        throw err if err
-        room.setBackground data, (err) ->
-          throw err if err
-          res.redirect "/#{ roomName }"
+  roomName = "screenshot-#{ parseInt(Math.random(1) * 1000) }"
+  room = new Drawing roomName
+  room.fetch ->
+    room.setBackground new Buffer(req.body.image, "base64"), (err) ->
+      throw err if err
+      res.json url: "/#{ roomName }"
 
 
 app.get "/:room", (req, res) ->
