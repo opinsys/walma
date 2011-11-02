@@ -31,11 +31,11 @@ class views.ColorSelector extends Backbone.View
 
 
   openOptions: =>
-    @$(".options").animate width: "show", 350, =>
+    @$(".options").animate width: "show", 150, =>
       $(window).one "tap", => @closeOptions()
 
   closeOptions: =>
-    @$(".options").animate(width: "hide", 350)
+    @$(".options").animate(width: "hide", 150)
 
 
   change: (e) =>
