@@ -27,8 +27,7 @@ exports.populate = (dbname, cb=->) ->
       throw err if err
       coll.insert
         _id: "config"
-      ,
-        safe: true
+      , safe: true
       , (err) ->
         throw err if err
         console.log "Config doc created"

@@ -223,4 +223,24 @@ class exports.Circle extends exports.Line
     @sketch.closePath()
 
 
+class exports.Move
+  _.extend @::, Backbone.Events
+  begin: ->
+  end: ->
+
+  name: "Move"
+
+  down: (point) ->
+    @lastPoint = point
+
+  move: (point) ->
+    toX = $(window).scrollLeft() + point.x - @lastPoint.x
+    toY = $(window).scrollTop() + point.y - @lastPoint.y
+    console.log "from", $(window).scrollLeft(), $(window).scrollTop(), "to", toX, toY
+    scroll toX, toX
+
+    @lastPoint = point
+
+  up: (point) ->
+
 
