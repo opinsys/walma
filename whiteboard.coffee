@@ -3,7 +3,6 @@ express = require "express"
 _  = require 'underscore'
 _.mixin require 'underscore.string'
 
-{Db, Connection, Server} = require "mongodb"
 
 app = express.createServer()
 io = require('socket.io').listen app
@@ -11,23 +10,13 @@ io = require('socket.io').listen app
 {Drawing} = require "./lib/drawmodel"
 {Client} = require "./lib/client"
 
+generateName = require "./lib/namegenerator"
 
 
-db = new Db('whiteboard2', new Server("localhost", Connection.DEFAULT_PORT))
-db.open (err) ->
-  if err
-    console.log "Could not open the database", err.trace
-    process.exit(1)
-
-  db.collection "drawings", (err, collection) ->
-    throw err if err
-    Drawing.collection = collection
-    Drawing.db = db
-
-
-
+db = require("./db").open()
 
 require("./configure") app, io
+
 
 
 app.get "/", (req, res) ->
@@ -69,12 +58,14 @@ app.get "/:room/bg", (req, res) ->
 
 
 app.post "/api/create", (req, res) ->
-  roomName = "screenshot-#{ parseInt(Math.random(1) * 1000) }"
-  room = new Drawing roomName
-  room.fetch ->
-    room.setBackground new Buffer(req.body.image, "base64"), (err) ->
-      throw err if err
-      res.json url: "/#{ roomName }"
+  console.log "GOTpost"
+  generateName (err, roomName) ->
+    throw err if err
+    room = new Drawing roomName
+    room.fetch ->
+      room.setBackground new Buffer(req.body.image, "base64"), (err) ->
+        throw err if err
+        res.json url: "/#{ roomName }"
 
 
 app.get "/:room", (req, res) ->

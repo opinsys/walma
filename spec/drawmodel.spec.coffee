@@ -3,10 +3,11 @@
 async = require "async"
 _  = require 'underscore'
 
-{Db, Connection, Server} = require "mongodb"
-{Drawing} = require "../lib/drawmodel"
+prepare = require "./specdb"
 
+{Drawing} = require "../lib/drawmodel"
 {Client} = require "../lib/client"
+
 model = require "../lib/drawmodel"
 
 
@@ -17,31 +18,7 @@ class FakeSocket extends EventEmitter
 
   join: ->
 
-prepare = (cb) ->
-  this.db = db = new Db 'whiteboard-test',
-    new Server "localhost", Connection.DEFAULT_PORT,
-      auto_reconnect: true
 
-  db.open (err) ->
-    throw err if err
-    db.dropDatabase (err, done) ->
-      cb()
-
-  # db.open  do ->
-  #   count = 0
-  #   (err, db )->
-
-  #     if ++count isnt 1
-  #       console.log "Called twice open", err
-  #       cb null
-  #       return
-
-  #     if err
-  #       console.log "Could not open the db", err
-  #       cb err
-  #     else
-  #       cb null
-  #       db.dropDatabase (err, result) -> cb()
 
 beforeEach ->
   asyncSpecWait()
@@ -370,54 +347,55 @@ describe "Drawing in MongoDB", ->
           asyncSpecDone()
 
 
-  it "gets only partial history when picture is cached", ->
-    testHistory = null
-    waitsFor -> testHistory isnt null
-    runs ->
-      expect(testHistory.latestCachePosition).toBeDefined "should have cache"
+  # it "gets only partial history when picture is cached", ->
+  #   testHistory = null
+  #   waitsFor -> testHistory isnt null
+  #   runs ->
+  #     expect(testHistory).toBe ""
+  #     expect(testHistory.latestCachePosition).toBeDefined "should have cache"
 
-      expect(testHistory.draws).toBeDefined "should have draws"
+  #     expect(testHistory.draws).toBeDefined "should have draws"
 
-      expect(testHistory.draws.length).toEqual 5, "should have 5 draws"
+  #     expect(testHistory.draws.length).toEqual 5, "should have 5 draws"
 
-      expect(_.last(_.last(testHistory.draws).shape.moves).x).toEqual 15, "last draw x should be 15"
+  #     expect(_.last(_.last(testHistory.draws).shape.moves).x).toEqual 15, "last draw x should be 15"
 
-    fakeSocket = new FakeSocket
+  #   fakeSocket = new FakeSocket
 
 
-    counter = 0
+  #   counter = 0
 
-    fakeSocket.on "getbitmap", ->
-      fakeSocket.emit "bitmap",
-        pos: counter
-        data: "partialcachepic"
+  #   fakeSocket.on "getbitmap", ->
+  #     fakeSocket.emit "bitmap",
+  #       pos: counter
+  #       data: "partialcachepic"
 
-    fakeSocket.on "start", (history) ->
-      testHistory = history
+  #   fakeSocket.on "start", (history) ->
+  #     testHistory = history
 
-    drawing = new Drawing "partial_history_drawing"
-    drawing.cacheInterval = 10
-    client = new Client
-      socket: fakeSocket
-      id: "partial_history_client"
-      userAgent: "sdafds"
-      model: drawing
-    drawing.fetch ->
-      client.join()
-      for i in [1...16]
-        counter += 1
-        fakeSocket.emit "draw", draw = {
-          shape: {
-            color: '#000000',
-            tool: 'Pencil',
-            size: 50,
-            moves: [ { x: i, x: 10, op: "down" }, { x: i, x: i, op: "up" } ], }
-          user: 'Esa3',
-          time: 1319195315736 }
-        , (err) ->
-          throw err if err
+  #   drawing = new Drawing "partial_history_drawing"
+  #   drawing.cacheInterval = 10
+  #   client = new Client
+  #     socket: fakeSocket
+  #     id: "partial_history_client"
+  #     userAgent: "sdafds"
+  #     model: drawing
+  #   drawing.fetch ->
+  #     for i in [1...16]
+  #       counter += 1
+  #       fakeSocket.emit "draw", draw = {
+  #         shape: {
+  #           color: '#000000',
+  #           tool: 'Pencil',
+  #           size: 50,
+  #           moves: [ { x: i, x: 10, op: "down" }, { x: i, x: i, op: "up" } ], }
+  #         user: 'Esa3',
+  #         time: 1319195315736 }
+  #       , (err) ->
+  #         throw err if err
+  #       draw
+  #     client.join()
 
-        draw
 
 
 
