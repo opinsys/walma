@@ -44,7 +44,6 @@ class exports.Drawing
       $push: history: draw
     , (err, coll) =>
       return cb err if err
-      cb null
       @drawsAfterLastCache += 1
       if not @fethingBitmap and @drawsAfterLastCache >= @cacheInterval
         @fethingBitmap = true
@@ -54,8 +53,6 @@ class exports.Drawing
 
 
   # TODO: DRY up gs reading!
-  crypto = require "crypto"
-
   setBackground: mustBeOpened (data, cb=->) ->
     gs = new GridStore Drawing.db, "#{ @name }-bg", "w"
     gs.open (err) =>

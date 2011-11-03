@@ -11,6 +11,10 @@ model = require "../lib/drawmodel"
 
 
 class FakeSocket extends EventEmitter
+
+  broadcast:
+    to: -> emit: ->
+
   join: ->
 
 prepare = (cb) ->
@@ -133,7 +137,6 @@ describe "Drawing in MongoDB", ->
             op: "move"
             x: 100
             y: 200 ]
-      , {id: "fakeclient"}
       , (err) =>
         throw err if err
         drawing3 = new Drawing name
@@ -152,10 +155,6 @@ describe "Drawing in MongoDB", ->
   it "initializes client with empty history", ->
     fakeSocket = new FakeSocket
 
-    client = new Client fakeSocket,
-      id: "testclient"
-      userAgent: "sdafds"
-
     drawing = new Drawing "init_test"
     drawing.init()
 
@@ -163,20 +162,23 @@ describe "Drawing in MongoDB", ->
 
     fakeSocket.on "start", (history) ->
       expect(_.isArray history).toBe false
-      expect(history.draws.length).toBe 0
+      console.log "INIT", history.draws
+      expect(history.draws.length).toBe 0, "history length should be 0"
       expect(history.latestCachePosition).toBeUndefined()
       asyncSpecDone()
 
-    drawing.addClient client
-    expect(_.size drawing.clients).toBe 1
+    client = new Client
+      socket: fakeSocket
+      id: "testclient"
+      userAgent: "sdafds"
+      model: drawing
+    client.join()
+
 
   it "initialized client with small history", ->
     asyncSpecWait()
     fakeSocket = new FakeSocket
 
-    client = new Client fakeSocket,
-      id: "smallhistory2"
-      userAgent: "sdafds"
 
     testHistory = null
     fakeSocket.on "start", (history) ->
@@ -197,14 +199,19 @@ describe "Drawing in MongoDB", ->
             moves: [ { x: i, x: 10, op: "down" }, { x: i, x: 10*i, op: "up" } ], }
           user: 'Esa3',
           time: 1319195315736 }
-        , client, (err) ->
+        , (err) ->
           throw err if err
 
         draw
 
 
     setTimeout ->
-      drawing.addClient client
+      client = new Client
+        socket: fakeSocket
+        id: "smallhistory2"
+        userAgent: "sdafds"
+        model: drawing
+      client.join()
     , 300
 
 
@@ -214,33 +221,40 @@ describe "Drawing in MongoDB", ->
   it "send draws to the database via clients", ->
     fakeSocket = new FakeSocket
 
-    client = new Client fakeSocket,
-      id: "testclient2"
-      userAgent: "sdafds"
     drawing = new Drawing "emittest"
-    drawing.addClient client
-
     spyOn(drawing, "addDraw")
 
-    fakeSocket.emit "draw",
-      user: "epeli"
-      shape:
-        moves: []
+    client = new Client
+      socket: fakeSocket
+      id: "testclient2"
+      userAgent: "sdafds"
+      model: drawing
+    client.join()
 
-    expect(drawing.addDraw).toHaveBeenCalled()
+    waits 100
+    runs ->
+      fakeSocket.emit "draw",
+        user: "epeli"
+        shape:
+          moves: []
+
+      expect(drawing.addDraw).toHaveBeenCalled()
 
   it "asks for cache bitmap from time to time", ->
     fakeSocket = new FakeSocket
 
-    client = new Client fakeSocket,
-      id: "ask cache"
-      userAgent: "sdafds"
-    client.timeoutTime = 50
 
 
     drawing = new Drawing "cachetest"
     drawing.init()
-    drawing.addClient client
+
+    client = new Client
+      socket: fakeSocket
+      id: "ask cache"
+      userAgent: "sdafds"
+      model: drawing
+    client.timeoutTime = 50
+    client.join()
 
     spyOn client, "fetchBitmap"
 
@@ -266,15 +280,17 @@ describe "Drawing in MongoDB", ->
         pos: 3
         data: "sdfadfas"
 
-    client = new Client fakeSocket,
-      id: "cache save test"
-      userAgent: "sdafds"
 
 
     drawing = new Drawing "cache point test"
     drawing.init()
     drawing.cacheInterval = 100
-    drawing.addClient client
+    client = new Client
+      socket: fakeSocket
+      id: "cache save test"
+      userAgent: "sdafds"
+      model: drawing
+    client.join()
 
 
     spyOn drawing, "setCache"
@@ -360,8 +376,6 @@ describe "Drawing in MongoDB", ->
     runs ->
       expect(testHistory.latestCachePosition).toBeDefined "should have cache"
 
-      expect(testHistory.latestCachePosition).toBe 10, "last cache pos should be 10"
-
       expect(testHistory.draws).toBeDefined "should have draws"
 
       expect(testHistory.draws.length).toEqual 5, "should have 5 draws"
@@ -370,9 +384,6 @@ describe "Drawing in MongoDB", ->
 
     fakeSocket = new FakeSocket
 
-    client = new Client fakeSocket,
-      id: "partial_history_client"
-      userAgent: "sdafds"
 
     counter = 0
 
@@ -386,10 +397,16 @@ describe "Drawing in MongoDB", ->
 
     drawing = new Drawing "partial_history_drawing"
     drawing.cacheInterval = 10
+    client = new Client
+      socket: fakeSocket
+      id: "partial_history_client"
+      userAgent: "sdafds"
+      model: drawing
     drawing.fetch ->
+      client.join()
       for i in [1...16]
         counter += 1
-        drawing.addDraw draw = {
+        fakeSocket.emit "draw", draw = {
           shape: {
             color: '#000000',
             tool: 'Pencil',
@@ -397,14 +414,11 @@ describe "Drawing in MongoDB", ->
             moves: [ { x: i, x: 10, op: "down" }, { x: i, x: i, op: "up" } ], }
           user: 'Esa3',
           time: 1319195315736 }
-        , client, (err) ->
+        , (err) ->
           throw err if err
 
         draw
 
-      setTimeout ->
-        drawing.addClient client
-      , 400
 
 
   it "knows the size of canvas", ->
@@ -412,13 +426,16 @@ describe "Drawing in MongoDB", ->
     drawingName = "canvasize"
 
     fakeSocket = new FakeSocket
-    client = new Client fakeSocket,
-      id: "canvas_size"
-      userAgent: "sdafds"
 
     drawing = new Drawing drawingName
+    client = new Client
+      socket: fakeSocket
+      id: "canvas_size"
+      userAgent: "sdafds"
+      model: drawing
     drawing.cacheInterval = 10
     drawing.fetch ->
+      client.join()
       drawers = for i in [0...20] then do (i) -> (cb) ->
         drawing.addDraw draw = {
           shape: {
@@ -428,7 +445,7 @@ describe "Drawing in MongoDB", ->
             moves: [ { x: i, y: 10, op: "down" }, { x: i, y: 10*i, op: "up" } ], }
           user: 'Esa',
           time: 1319195315736 }
-        , client, cb
+        , cb
 
       async.series drawers, (err) ->
         throw err if err

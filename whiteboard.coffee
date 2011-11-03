@@ -11,6 +11,8 @@ io = require('socket.io').listen app
 {Drawing} = require "./lib/drawmodel"
 {Client} = require "./lib/client"
 
+
+
 db = new Db('whiteboard2', new Server("localhost", Connection.DEFAULT_PORT))
 db.open (err) ->
   if err
@@ -18,8 +20,10 @@ db.open (err) ->
     process.exit(1)
 
   db.collection "drawings", (err, collection) ->
+    throw err if err
     Drawing.collection = collection
     Drawing.db = db
+
 
 
 
@@ -58,6 +62,11 @@ app.get "/:room/bg", (req, res) ->
   room.getBackground (err, data) ->
     throw err if err
     res.send data
+
+
+
+
+
 
 app.post "/api/create", (req, res) ->
   roomName = "screenshot-#{ parseInt(Math.random(1) * 1000) }"
