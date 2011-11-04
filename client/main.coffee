@@ -55,6 +55,7 @@ $ ->
 
   console.log  "creaign main"
   bg = new Background
+    model: settings
     el: "canvas.main"
     socket: socket
 
@@ -120,6 +121,7 @@ class Background extends Backbone.View
     @socket.emit "background", dataURL
 
   setBackground: (url) ->
+    @model.set backgroundURL: url
     $(@el).css "background-image", "url(#{ url })"
 
 

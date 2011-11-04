@@ -52,6 +52,7 @@ class maindrawer.Main
     # Buffer for remote users.
     @bufferCanvasRemote = createCanvas()
 
+    {@background} = opts
 
     # Socket for communicating with other drawers
     {@socket} = opts
@@ -110,6 +111,8 @@ class maindrawer.Main
 
 
     @settings.bind "change:tool", @setTool
+    @settings.bind "change:backgroundURL", =>
+      @expandDrawingAreaToImg @settings.get "backgroundURL"
 
     if @socket.socket.connected
       @join()
@@ -121,6 +124,7 @@ class maindrawer.Main
       @socket.emit "bitmap",
         pos: @drawCount
         data: @mainCanvas.toDataURL("image/png")
+
 
   join: ->
     @socket.emit "join",
@@ -209,6 +213,12 @@ class maindrawer.Main
       @dirtyCanvasSize = false
     else
       cb()
+
+  expandDrawingAreaToImg: (url) ->
+    img = new Image
+    img.onload = =>
+      @resizeDrawingArea img.width, img.height
+    img.src = url
 
   resizeDrawingArea: (width, height, cb=->) ->
     @updateResolution
