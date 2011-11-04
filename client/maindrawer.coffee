@@ -72,6 +72,7 @@ class maindrawer.Main
       model: @settings
       bufferCanvas: @bufferCanvas
       mainCanvas: @mainCanvas
+      drawArea: this
 
     tool.bind "shape", (shape) =>
       @drawCount += 1
