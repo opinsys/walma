@@ -88,19 +88,19 @@ class drawers.TouchInput extends BaseInput
     "touchmove": "move"
 
   move: (e) =>
+    e.preventDefault()
     @tool.move @lastTouch = @getCoords e
-    false
 
   down: (e) =>
+    e.preventDefault()
     @tool.begin()
     @tool.down @lastTouch = @getCoords e
-    false
 
 
   up: (e) =>
+    e.preventDefault()
     @tool.up @lastTouch
     @tool.end()
-    false
 
   getCoords: (e) ->
     e = e.originalEvent.touches[0]
