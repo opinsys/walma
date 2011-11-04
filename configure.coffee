@@ -63,7 +63,6 @@ module.exports = (app, io) ->
     js.addFile "spec", clientFiles + "/vendor/jasmine/jasmine.js"
     js.addFile "spec", clientFiles + "/vendor/jasmine/jasmine-html.js"
     js.addFile "spec", __dirname + "/spec/tools.spec.coffee"
-    # js.addFile "spec", __dirname + "/spec/require.spec.coffee"
     js.addFile "spec", clientFiles + "/specrunner.js"
 
     app.get "/spec", (req, res) ->

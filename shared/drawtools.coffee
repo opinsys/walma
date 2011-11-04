@@ -227,20 +227,33 @@ class exports.Move
   _.extend @::, Backbone.Events
   begin: ->
   end: ->
+  updateSettings: ->
+  up: ->
 
   name: "Move"
 
+  treshold: 4
+
   down: (point) ->
     @lastPoint = point
+    @count = 0
+
 
   move: (point) ->
-    toX = $(window).scrollLeft() + point.x - @lastPoint.x
-    toY = $(window).scrollTop() + point.y - @lastPoint.y
-    console.log "from", $(window).scrollLeft(), $(window).scrollTop(), "to", toX, toY
-    scroll toX, toX
+    console.log "ypos", point.y
+    @count += 1
 
-    @lastPoint = point
-
-  up: (point) ->
+    if @lastPoint and @count >= @treshold
+      # console.log "y", $(window).scrollTop(), @lastPoint.y, point.y, "diff", @lastPoint.y - point.y
+      diffX = @lastPoint.x - point.x
+      diffY = @lastPoint.y - point.y
+      toX = $(window).scrollLeft() + diffX * 2
+      toY = $(window).scrollTop() + diffY * 2
+      # console.log "from", $(window).scrollLeft(), $(window).scrollTop(), "to", toX, toY
+      scroll toX, toY
+      @lastPoint = null
+      @count = 0
+    else
+      @lastPoint = point
 
 
