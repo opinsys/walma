@@ -259,19 +259,21 @@ class exports.Move
       scroll toX, toY
       @lastPoint = null
       @count = 0
+      @expand point, false
     else
       @lastPoint = point
 
 
   up: (point) ->
-    @expand point, true
+    @drawArea.updateResolution
+      x: @areaWidth
+      y: @areaHeight
+
+    @drawArea.resizeMainCanvas()
 
   expand: (point, force=false) ->
     diffX = @startPoint.x - point.x
     diffY = @startPoint.y - point.y
-
-    if not force and diffX < 50 and diffY < 50
-      return
 
     console.log "EXPANDING"
 
@@ -292,11 +294,9 @@ class exports.Move
       console.log "REALLY EXPANDING height"
 
     if dirt
-      @drawArea.updateResolution
-        x: areaWidth
-        y: areaHeight
-
-      @drawArea.resizeMainCanvas()
+      $(".bg-size").css("width", areaWidth).css("height", areaWidth)
+      @areaWidth = areaWidth
+      @areaHeight = areaHeight
 
 class exports.FastMove extends exports.Move
 

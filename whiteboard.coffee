@@ -19,7 +19,6 @@ require("./configure") app, io
 
 
 app.post "/", (req, res) ->
-  console.log req.body
   res.redirect "/" + req.body.roomName
 
 app.get "/", (req, res) ->

@@ -25,6 +25,48 @@ resizeCanvas = (width, height, canvas, cb=->) ->
   img.src = data
 
 
+
+class Resolution
+
+  constructor: (opts) ->
+    @width = 0
+    @height = 0
+
+    # Cavnvases
+    {@main} = opts
+    {@buffers} = opts
+
+    # Simple div that is fast to resize
+    {@soft} = opts
+
+    @dirty = false
+
+  update: (width, height) ->
+    if width > @with
+      @width = width
+      @dirty = true
+
+    if height > @height
+      @height = height
+      @dirty = true
+
+    @dirty
+
+  updateFromPoint: (point) ->
+    @update point.x, point.y
+
+  softResize: ->
+    $(@soft).css("width", @with).css("height", @height)
+
+
+  resize: (cb=->) ->
+    resizeCanvas @with, @height, @main, =>
+      for c in @buffers
+        c.with = @with
+        c.height = @height
+      @dirty = false
+      cb()
+
 class maindrawer.Main
 
   _.extend @::, Backbone.Events
