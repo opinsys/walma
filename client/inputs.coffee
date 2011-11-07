@@ -26,8 +26,7 @@ sanitizePoint = (fn) -> (e) ->
 
 class BaseInput extends Backbone.View
 
-  constructor: (@opts) ->
-    super
+  constructor: (@opts) -> super
 
   use: (tool) ->
     console.log "Using tool", tool
@@ -44,8 +43,8 @@ class drawers.MouseInput extends BaseInput
     $(window).mousemove @cursorMove
     $(window).mouseup @stopDrawing
 
-
   startDrawing: (e) =>
+
     return if e.target isnt @el
     @down = true
 

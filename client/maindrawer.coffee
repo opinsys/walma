@@ -14,58 +14,6 @@ tools = require "drawtools"
 
 now = -> new Date().getTime()
 
-resizeCanvas = (width, height, canvas, cb=->) ->
-  img = new Image
-  data = canvas.toDataURL("image/png")
-  canvas.width = width
-  canvas.height = height
-  img.onload = =>
-    canvas.getContext("2d").drawImage img, 0, 0
-    cb()
-  img.src = data
-
-
-
-class Resolution
-
-  constructor: (opts) ->
-    @width = 0
-    @height = 0
-
-    # Cavnvases
-    {@main} = opts
-    {@buffers} = opts
-
-    # Simple div that is fast to resize
-    {@soft} = opts
-
-    @dirty = false
-
-  update: (width, height) ->
-    if width > @with
-      @width = width
-      @dirty = true
-
-    if height > @height
-      @height = height
-      @dirty = true
-
-    @dirty
-
-  updateFromPoint: (point) ->
-    @update point.x, point.y
-
-  softResize: ->
-    $(@soft).css("width", @with).css("height", @height)
-
-
-  resize: (cb=->) ->
-    resizeCanvas @with, @height, @main, =>
-      for c in @buffers
-        c.with = @with
-        c.height = @height
-      @dirty = false
-      cb()
 
 class maindrawer.Main
 
@@ -85,16 +33,8 @@ class maindrawer.Main
     # Status model
     {@status} = opts
 
-    # Main canvas
-    {@mainCanvas} = opts
+    {@area} = opts
 
-    # Client buffer canvas
-    {@bufferCanvas} = opts
-
-    # Buffer for remote users.
-    @bufferCanvasRemote = createCanvas()
-
-    {@background} = opts
 
     # Socket for communicating with other drawers
     {@socket} = opts
@@ -102,19 +42,15 @@ class maindrawer.Main
     {@input} = opts
 
 
-    @resolution =
-      width: 0
-      height: 0
 
     @setTool()
     @bindEvents()
 
   setTool: =>
+
     tool = new tools[@settings.get "tool"]
       model: @settings
-      bufferCanvas: @bufferCanvas
-      mainCanvas: @mainCanvas
-      drawArea: this
+      area: @area
 
     tool.bind "shape", (shape) =>
       @drawCount += 1
@@ -138,24 +74,19 @@ class maindrawer.Main
       console.log "Need to draw #{history.draws.length} shapes"
       console.log "Got #{history.latestCachePosition} for free from cache"
 
-      @updateResolution history.resolution
-      console.log "updated res #{ JSON.stringify history.resolution }"
-
-      @resizeMainCanvas =>
+      @area.update history.resolution.x, history.resolution.y
+      @area.resize =>
         if history.latestCachePosition
           bitmapUrl = "/#{ @roomName }/bitmap/#{ history.latestCachePosition }"
           @status.set status: "downloading cache"
           cacheImage = new Image
-          cacheImage.onload = =>
-            @drawHistory history.draws, cacheImage
+          cacheImage.onload = => @drawHistory history.draws, cacheImage
           cacheImage.src = bitmapUrl
         else
           @drawHistory history.draws
 
 
     @settings.bind "change:tool", @setTool
-    @settings.bind "change:backgroundURL", =>
-      @expandDrawingAreaToImg @settings.get "backgroundURL"
 
     if @socket.socket.connected
       @join()
@@ -166,7 +97,7 @@ class maindrawer.Main
       console.log "I should send bitmap! pos:#{ @drawCount }", @id
       @socket.emit "bitmap",
         pos: @drawCount
-        data: @mainCanvas.toDataURL("image/png")
+        data: @area.getDataURL()
 
 
   join: ->
@@ -176,10 +107,11 @@ class maindrawer.Main
       useragent: navigator.userAgent
 
   drawHistory: (draws, img) =>
+    console.log "Drawing history", draws.length
     @status.set status: "drawing history"
 
     if img
-      @mainCanvas.getContext("2d").drawImage img, 0, 0
+      @area.drawImage img
 
     operations = 0
     start = now()
@@ -216,59 +148,15 @@ class maindrawer.Main
   replay: (draw) =>
 
     for point in draw.shape.moves
-      @updateResolution point
+      @area.updateFromPoint point
 
     tool = new tools[draw.shape.tool]
-      bufferCanvas: @bufferCanvasRemote
-      mainCanvas: @mainCanvas
+      area: @area
 
-    @drawCount += 1
-
-    @resizeMainCanvas =>
+    @area.resize =>
       tool.replay draw.shape
+      @drawCount += 1
       @status.addRemoteDraw()
-
-
-
-  # Keep main canvas size as big as needed
-  updateResolution: (point) ->
-
-    newWidth = point.x
-    newHeight = point.y
-
-    if newWidth > @resolution.width
-      @resolution.width = @bufferCanvasRemote.width = @bufferCanvas.width = newWidth
-      @dirtyCanvasSize = true
-
-    if newHeight > @resolution.height
-      @resolution.height = @bufferCanvasRemote.height = @bufferCanvas.height = newHeight
-      @dirtyCanvasSize = true
-
-    if @dirtyCanvasSize
-      @input.tool.updateSettings()
-
-  resizeMainCanvas: (cb=->) ->
-      # Main canvas should not ever get smaller
-    if @dirtyCanvasSize
-      @bufferCanvasRemote.width = @resolution.width
-      @bufferCanvasRemote.height = @resolution.height
-      resizeCanvas @resolution.width, @resolution.height, @mainCanvas, cb
-      @dirtyCanvasSize = false
-    else
-      cb()
-
-  expandDrawingAreaToImg: (url) ->
-    img = new Image
-    img.onload = =>
-      @resizeDrawingArea img.width, img.height
-    img.src = url
-
-  resizeDrawingArea: (width, height, cb=->) ->
-    @updateResolution
-      x: width
-      y: height
-
-    @resizeMainCanvas cb
 
 
 

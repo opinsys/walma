@@ -21,8 +21,13 @@ class exports.Client extends EventEmitter
     @socket.on "background", (background) =>
       # Should emit the background url. Currently we have dataURL in
       # background-variable
-      @socket.broadcast.to(@model.name).emit "background", background
-      @model.setBackground background
+
+      # Epic dataURL parser
+      base64data = background.split(",")[1]
+
+      @model.setBackground new Buffer(base64data, "base64"), =>
+        @socket.broadcast.to(@model.name).emit "background"
+
 
     @socket.on "draw", (draw) =>
       @socket.broadcast.to(@model.name).emit "draw", draw

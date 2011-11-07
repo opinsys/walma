@@ -11,18 +11,28 @@ class BaseTool
 
   constructor: (opts) ->
     {@model} = opts
-    {@bufferCanvas} = opts
-    {@mainCanvas} = opts
+    {@area} = opts
+
+
+    @bufferCanvas = @area.localBuffer
+    @mainCanvas = @area.main
 
     @sketch = @bufferCanvas.getContext "2d"
     @main = @mainCanvas.getContext "2d"
 
     @updateSettings()
 
+    @area.bind "resize", =>
+      @updateSettings()
+
     if @model
       @model.bind "change", =>
         @updateSettings()
 
+
+  asRemote: ->
+    @bufferCanvas = @area.remoteBuffer
+    @sketch = @bufferCanvas.getContext "2d"
 
   updateSettings: ->
     if @model
@@ -74,6 +84,7 @@ class BaseTool
 
 
   replay: (shape) ->
+    @asRemote()
     @begin()
     @setColor shape.color
     @setSize shape.size
@@ -231,7 +242,7 @@ class exports.Move
   speedUp: @::treshold
 
   constructor: (opts) ->
-    {@drawArea} = opts
+    {@area} = opts
 
   begin: ->
   end: ->
@@ -265,11 +276,8 @@ class exports.Move
 
 
   up: (point) ->
-    @drawArea.updateResolution
-      x: @areaWidth
-      y: @areaHeight
-
-    @drawArea.resizeMainCanvas()
+    @area.update @areaWidth, @areaHeight
+    @area.resize()
 
   expand: (point, force=false) ->
     diffX = @startPoint.x - point.x
@@ -288,15 +296,15 @@ class exports.Move
       areaWidth += diffX
       dirt = true
       console.log "REALLY EXPANDING width"
+
     if offScreenY and diffY > 0
       areaHeight += diffY
       dirt = true
       console.log "REALLY EXPANDING height"
 
     if dirt
-      $(".bg-size").css("width", areaWidth).css("height", areaWidth)
-      @areaWidth = areaWidth
-      @areaHeight = areaHeight
+      @area.update areaWidth, areaHeight
+      @area.softResize()
 
 class exports.FastMove extends exports.Move
 

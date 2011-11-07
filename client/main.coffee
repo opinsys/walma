@@ -2,6 +2,7 @@
 {drawers} = NS "PWB"
 {views} = NS "PWB.drawers"
 {models} = NS "PWB.drawers"
+{DrawArea} = NS "PWB.drawarea"
 helpers = NS "PWB.helpers"
 
 maindrawer = NS "PWB.maindrawer"
@@ -36,14 +37,17 @@ $ ->
     el: ".toolSelector"
     model: settings
 
-
-
+  area = new DrawArea
+    main: $("canvas.main").get 0
+    localBuffer: $("canvas.localBuffer").get 0
+    remoteBuffer: $("canvas.remoteBuffer").get 0
+    soft: ".bg-size"
 
   statusView = new views.Status
     el: ".status"
     model: status = new models.StatusModel
 
-  status.set status: "sgtarting"
+  status.set status: "starting"
 
   socket = io.connect().of("/drawer")
 
@@ -52,28 +56,25 @@ $ ->
   else
     Input = drawers.MouseInput
 
-
-  console.log  "creaign main"
   bg = new Background
     model: settings
     el: "canvas.main"
     socket: socket
+    area: area
 
   main = new maindrawer.Main
     roomName: window.location.pathname.substring(1) or "_main"
     id: helpers.guidGenerator()
-    mainCanvas: $("canvas.main").get 0
-    bufferCanvas: $("canvas.buffer").get 0
+    area: area
     settings: settings
     socket: socket
     status: status
     input: new Input
-      el: "canvas.buffer"
-      user: "Esa"
+      el: "canvas.localBuffer"
 
-  main.resizeDrawingArea window.innerWidth, window.innerHeight
+  area.update window.innerWidth, window.innerHeight, true
   $(window).resize ->
-    main.resizeDrawingArea window.innerWidth, window.innerHeight
+    area.update window.innerWidth, window.innerHeight, true
 
   main.bind "ready", ->
     $("canvas.loading").removeClass "loading"
@@ -88,14 +89,16 @@ class Background extends Backbone.View
   constructor: (opts) ->
     super
     {@socket} = opts
+    {@area} = opts
     @bindDrag()
     @socket.on "background", (url) =>
-      console.log "got bg client"
-      @setBackground url
+      throw new Error "Use window.location.pathname"
+      @area.setBackground url
 
     @socket.on "start", (history) =>
+      debugger
       if history.background
-        @setBackground "#{ window.location.pathname }/bg"
+        @area.setBackground "#{ window.location.pathname }/bg"
 
   bindDrag: ->
 
@@ -117,19 +120,8 @@ class Background extends Backbone.View
 
   fileRead: (e) =>
     dataURL = e.target.result
-    @setBackground dataURL
+    @area.setBackground dataURL
     @socket.emit "background", dataURL
 
-  setBackground: (url) ->
-    @model.set backgroundURL: url
-    $(@el).css "background-image", "url(#{ url })"
-
-
-
-# Just some styling
-$ ->
-  $("[data-color]").each ->
-    that = $ @
-    that.css "background-color", that.data "color"
 
 

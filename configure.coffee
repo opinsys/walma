@@ -47,6 +47,7 @@ module.exports = (app, io) ->
     js.addFile clientFiles + "/vendor/handlebars.js"
     js.addFile clientFiles + "/helpers.coffee"
 
+    js.addFile clientFiles + "/drawarea.coffee"
     js.addFile clientFiles + "/inputs.coffee"
     js.addFile clientFiles + "/drawers.models.coffee"
     js.addFile clientFiles + "/drawers.views.coffee"
