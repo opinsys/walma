@@ -26,7 +26,8 @@ generateUniqueName = (prefix, modifier, cb=->) ->
       # Make sure that the new name does not clash with existing
       Drawing.collection.find(name: newName).nextObject (err, doc) ->
         if doc
-          generateUniqueName cb
+          console.log "Retrying"
+          generateUniqueName prefix, modifier, cb
         else
           cb err, newName
 
