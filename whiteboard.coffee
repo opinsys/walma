@@ -20,12 +20,26 @@ require("./configure") app, io
 
 
 app.get "/", (req, res) ->
-  generateUniqueName "main"
-    , (prefix, num) ->
-      urlshortener.encode num
-    , (err, roomName) ->
-      throw err if err
-      res.redirect "/" + roomName
+  res.send '''
+  <h1>Whiteboard</h1>
+  <p>Room:</p>
+  <form action="" method="post" accept-charset="utf-8">
+  <p><input type="text" name="roomName" /></p>
+  <p><input type="submit" value="Go"></p>
+  <p><input type="submit" name="generate" value="Generate new"></p>
+  </form>
+  '''
+
+app.post "/", (req, res) ->
+  if req.body.generate
+    generateUniqueName "main"
+      , (prefix, num) ->
+        urlshortener.encode num
+      , (err, roomName) ->
+        throw err if err
+        res.redirect "/" + roomName
+  else
+    res.redirect "/" + req.body.roomName
 
 
 app.get "/bootstrap", (req, res) ->

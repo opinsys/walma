@@ -258,53 +258,48 @@ class exports.Move
     @count += 1
 
     if @lastPoint and @count >= @treshold
-      # console.log "y", $(window).scrollTop(), @lastPoint.y, point.y, "diff", @lastPoint.y - point.y
+
       diffX = @lastPoint.x - point.x
       diffY = @lastPoint.y - point.y
+
       toX = $(window).scrollLeft() + diffX * @speedUp
       toY = $(window).scrollTop() + diffY * @speedUp
-      # console.log "from", $(window).scrollLeft(), $(window).scrollTop(), "to", toX, toY
 
-      # console.log "position", $(document).width() - $(window).width() - $(window).scrollLeft(), diffX
-
-      scroll toX, toY
       @lastPoint = null
       @count = 0
+
       @expand point, false
+      scroll toX, toY
     else
       @lastPoint = point
 
-
-  up: (point) ->
-    @area.update @areaWidth, @areaHeight
-    @area.resize()
 
   expand: (point, force=false) ->
     diffX = @startPoint.x - point.x
     diffY = @startPoint.y - point.y
 
-    console.log "EXPANDING"
-
     areaWidth = $(document).width()
     areaHeight = $(document).height()
 
-    console.log "Width", areaWidth - $(window).width() - $(window).scrollLeft()
-    offScreenX = !!!(areaWidth - $(window).width() - $(window).scrollLeft())
-    offScreenY = !!!(areaHeight - $(window).height() - $(window).scrollTop())
+    offScreenX = !(areaWidth - $(window).width() - $(window).scrollLeft())
+    offScreenY = !(areaHeight - $(window).height() - $(window).scrollTop())
 
     if offScreenX and diffX > 0
       areaWidth += diffX
-      dirt = true
-      console.log "REALLY EXPANDING width"
+      dirty = true
 
     if offScreenY and diffY > 0
       areaHeight += diffY
-      dirt = true
-      console.log "REALLY EXPANDING height"
+      dirty = true
 
-    if dirt
+    if dirty
       @area.update areaWidth, areaHeight
       @area.softResize()
+
+
+  up: (point) ->
+    @area.update @areaWidth, @areaHeight
+    @area.resize()
 
 class exports.FastMove extends exports.Move
 
