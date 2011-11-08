@@ -31,15 +31,18 @@ app.get "/", (req, res) ->
   '''
 
 app.post "/", (req, res) ->
+  console.log req
   if req.body.generate
     generateUniqueName "main"
       , (prefix, num) ->
         urlshortener.encode num
       , (err, roomName) ->
         throw err if err
-        res.redirect "/" + roomName
+        res.setHeader "Location", "/" + roomName
+        res.send 302
   else
-    res.redirect "/" + req.body.roomName
+    res.setHeader "Location", "/" + req.body.roomName
+    res.send 302
 
 
 app.get "/bootstrap", (req, res) ->
