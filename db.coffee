@@ -21,7 +21,7 @@ exports.open = open = (dbname="whiteboard", cb=->) ->
 
 exports.populate = (dbname, cb=->) ->
 
-  open dbname (err, db) ->
+  open dbname, (err, db) ->
     throw err if err
     db.collection "whiteboard-config", (err, coll) ->
       throw err if err
