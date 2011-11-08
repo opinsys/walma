@@ -5,7 +5,7 @@
 
 
 exports.open = open = (dbname="whiteboard", cb=->) ->
-  db = new Db 'whiteboard-test',
+  db = new Db dbname,
     new Server "localhost", Connection.DEFAULT_PORT,
 
   db.open (err) ->
@@ -17,6 +17,7 @@ exports.open = open = (dbname="whiteboard", cb=->) ->
       throw err if err
       Drawing.collection = collection
       Drawing.db = db
+      cb null, db
   db
 
 exports.populate = (dbname, cb=->) ->
