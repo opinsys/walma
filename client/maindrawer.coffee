@@ -64,7 +64,6 @@ class maindrawer.Main
 
   bindEvents: ->
     @socket.on "draw", @replay
-    @status.set status: "downloading history"
     @socket.on "start", (history) =>
       @status.set
         cachedDraws: history.latestCachePosition or 0
@@ -88,6 +87,7 @@ class maindrawer.Main
 
     @settings.bind "change:tool", @setTool
 
+    @status.set status: "Connecting"
     if @socket.socket.connected
       @join()
     else
@@ -101,6 +101,10 @@ class maindrawer.Main
 
 
   join: ->
+    @status.set
+      status: "downloading history"
+      transport: @socket.socket.transport.name
+
     @socket.emit "join",
       room: @roomName
       id: @id
