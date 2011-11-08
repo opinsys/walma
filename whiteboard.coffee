@@ -10,7 +10,8 @@ io = require('socket.io').listen app
 {Drawing} = require "./lib/drawmodel"
 {Client} = require "./lib/client"
 
-generateName = require "./lib/namegenerator"
+generateUniqueName = require "./lib/namegenerator"
+urlshortener = require "./lib/urlshortener"
 
 
 db = require("./db").open()
@@ -18,31 +19,13 @@ db = require("./db").open()
 require("./configure") app, io
 
 
-app.post "/", (req, res) ->
-  res.redirect "/" + req.body.roomName
-
 app.get "/", (req, res) ->
-  res.send '''
-  <h1>Whiteboard</h1>
-  <p>Room:</p>
-  <form action="" method="post" accept-charset="utf-8">
-  <p><input type="text" name="roomName" /></p>
-  <p><input type="submit" value="Go"></p>
-  </form>
-  '''
-  return
-
-  # TODO:
-  rooms = _.map db, (history, name) ->
-    return {} unless history
-    name: name
-    historySize:  _.reduce(history, (memo, draw) ->
-      return memo unless draw?.shape?.moves
-      memo + draw.shape.moves.length
-    , 0)
-
-  res.render "index.jade",
-    rooms: rooms
+  generateUniqueName "main"
+    , (prefix, num) ->
+      urlshortener.encode num
+    , (err, roomName) ->
+      throw err if err
+      res.redirect "/" + roomName
 
 
 app.get "/bootstrap", (req, res) ->
@@ -62,8 +45,11 @@ app.get "/:room/bg", (req, res) ->
 
 
 app.post "/api/create", (req, res) ->
-  console.log "GOTpost"
-  generateName (err, roomName) ->
+
+  generateUniqueName "screenshot"
+    , (prefix, num) ->
+      "#{ prefix }-#{ num }"
+    , (err, roomName) ->
     throw err if err
     room = new Drawing roomName
     room.fetch ->
@@ -72,8 +58,10 @@ app.post "/api/create", (req, res) ->
         res.json url: "/#{ roomName }"
 
 
+
 app.get "/:room", (req, res) ->
   res.render "paint.jade"
+
 
 app.get "/:room/bitmap/:pos", (req, res) ->
   res.header('Content-Type', 'image/png')

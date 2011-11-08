@@ -92,11 +92,9 @@ class Background extends Backbone.View
     {@area} = opts
     @bindDrag()
     @socket.on "background", (url) =>
-      throw new Error "Use window.location.pathname"
-      @area.setBackground url
+      @area.setBackground "#{ window.location.pathname }/bg?v=#{ new Date().getTime() }"
 
     @socket.on "start", (history) =>
-      debugger
       if history.background
         @area.setBackground "#{ window.location.pathname }/bg"
 
@@ -121,7 +119,7 @@ class Background extends Backbone.View
   fileRead: (e) =>
     dataURL = e.target.result
     @area.setBackground dataURL
-    @socket.emit "background", dataURL
+    @socket.emit "bgdata", dataURL
 
 
 

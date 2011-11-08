@@ -18,9 +18,7 @@ class exports.Client extends EventEmitter
     @socket.on "state", (state) =>
       @state = state
 
-    @socket.on "background", (background) =>
-      # Should emit the background url. Currently we have dataURL in
-      # background-variable
+    @socket.on "bgdata", (background) =>
 
       # Epic dataURL parser
       base64data = background.split(",")[1]
