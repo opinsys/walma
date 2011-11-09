@@ -27,6 +27,11 @@ class exports.Client extends EventEmitter
         @socket.broadcast.to(@model.getCombinedRoomName()).emit "background"
 
 
+    @socket.on "changeSlide", (position, cb) =>
+      @socket.broadcast.to(@model.name).emit "changeSlide", position
+      cb()
+
+
     @socket.on "draw", (draw) =>
       @socket.broadcast.to(@model.getCombinedRoomName()).emit "draw", draw
       @model.addDraw draw, (err, status) =>

@@ -27,11 +27,6 @@ $ ->
     roomName: roomName
     position: parseInt position, 10
 
-  navigation = new views.Navigation
-    model: settings
-    el: ".navigation"
-
-  navigation.render()
 
 
   new views.ColorSelector
@@ -60,8 +55,13 @@ $ ->
   status.set status: "starting"
 
   socket = io.connect().of("/drawer")
-  socket.on "global", ->
-    console.log "got GLOBAL"
+
+  navigation = new views.Navigation
+    socket: socket
+    model: settings
+    el: ".navigation"
+
+  navigation.render()
 
   if hasTouch
     Input = drawers.TouchInput
