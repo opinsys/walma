@@ -12,7 +12,6 @@ class views.Navigation extends Backbone.View
     "tap .next": "navigateToNext"
     "tap .prev": "navigateToPrev"
 
-  remote: false
 
   constructor: (opts) ->
     super
@@ -27,14 +26,14 @@ class views.Navigation extends Backbone.View
     # @$(".next").attr "href", "/#{ @model.get "roomName" }/" + (@model.get("position") + 1)
     # @$(".prev").attr "href", "/#{ @model.get "roomName" }/" + (@model.get("position") - 1)
 
-    if @remote
+    if @model.get "remote"
       @$(".remote").html "Remote is on"
     else
       @$(".remote").html "Remote is off"
 
 
   toggleRemote: ->
-    @remote = !@remote
+    @model.set remote: !@model.get "remote"
     @render()
 
   navigateToNext: (e) ->
@@ -51,7 +50,7 @@ class views.Navigation extends Backbone.View
   navigate: (position) ->
     url = "/#{ @model.get "roomName" }/" + position
 
-    if not @remote
+    if not @model.get "remote"
       window.location = url
     else
       console.log "Emiting change"

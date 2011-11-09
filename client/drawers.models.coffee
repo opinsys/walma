@@ -7,6 +7,16 @@ now = -> new Date().getTime()
 
 class models.SettingsModel extends Backbone.Model
 
+  constructor: ->
+    super
+
+    if localStorage.settings
+      $.extend @attributes, JSON.parse localStorage.settings
+
+    @bind "change", => @save()
+
+  save: ->
+    localStorage.settings = JSON.stringify @attributes
 
 
 class models.StatusModel extends Backbone.Model

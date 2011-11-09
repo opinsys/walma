@@ -24,6 +24,7 @@ $ ->
 
   [__, roomName, position] = window.location.pathname.split("/")
   settings = new models.SettingsModel
+  settings.set
     roomName: roomName
     position: parseInt position, 10
 

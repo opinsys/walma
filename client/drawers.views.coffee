@@ -12,9 +12,11 @@ class views.ColorSelector extends Backbone.View
     super
 
     # load default value
-    options = {}
-    options[@option] = @$("button.selected").data "value"
-    @model.set options
+    if not @model.get @option
+      options = {}
+      options[@option] = @$("button.selected").data "value"
+      @model.set options
+
     @update()
 
     @model.bind "change", @update
