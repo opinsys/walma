@@ -22,7 +22,17 @@ $ ->
   $(window).bind "touchstart", false
   $(window).bind "touchmove", false
 
+  [__, roomName, position] = window.location.pathname.split("/")
   settings = new models.SettingsModel
+    roomName: roomName
+    position: parseInt position, 10
+
+  navigation = new views.Navigation
+    model: settings
+    el: ".navigation"
+
+  navigation.render()
+
 
   new views.ColorSelector
     el: ".colorSelector"
@@ -50,6 +60,8 @@ $ ->
   status.set status: "starting"
 
   socket = io.connect().of("/drawer")
+  socket.on "global", ->
+    console.log "got GLOBAL"
 
   if hasTouch
     Input = drawers.TouchInput
@@ -62,11 +74,11 @@ $ ->
     socket: socket
     area: area
 
+
   main = new maindrawer.Main
-    roomName: window.location.pathname.substring(1) or "_main"
+    model: settings
     id: helpers.guidGenerator()
     area: area
-    settings: settings
     socket: socket
     status: status
     input: new Input
@@ -92,7 +104,10 @@ class Background extends Backbone.View
     {@area} = opts
     @bindDrag()
     @socket.on "background", (url) =>
+      # Background has been updated. Lets just append timestamp to the url so
+      # it will get reloaded.
       @area.setBackground "#{ window.location.pathname }/bg?v=#{ new Date().getTime() }"
+
 
     @socket.on "start", (history) =>
       if history.background

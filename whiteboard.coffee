@@ -31,7 +31,7 @@ app.get "/", (req, res) ->
   '''
 
 app.post "/", (req, res) ->
-  console.log req
+
   if req.body.generate
     generateUniqueName "main"
       , (prefix, num) ->
@@ -48,7 +48,7 @@ app.post "/", (req, res) ->
 app.get "/bootstrap", (req, res) ->
   res.render "bootstrap.jade"
 
-app.get "/:room/bg", (req, res) ->
+app.get "/:room/:position/bg", (req, res) ->
   # res.header('Content-Type', 'image/png')
   res.contentType "image/png"
   room = new Drawing req.params.room
@@ -57,7 +57,9 @@ app.get "/:room/bg", (req, res) ->
     res.send data
 
 
-
+app.get "/:room", (req, res) ->
+  res.setHeader "Location", "/#{ req.params.room }/1"
+  res.send 302
 
 
 
@@ -67,23 +69,23 @@ app.post "/api/create", (req, res) ->
     , (prefix, num) ->
       "#{ prefix }-#{ num }"
     , (err, roomName) ->
-    throw err if err
-    room = new Drawing roomName
-    room.fetch ->
-      room.setBackground new Buffer(req.body.image, "base64"), (err) ->
-        throw err if err
-        res.json url: "/#{ roomName }"
+      throw err if err
+      room = new Drawing roomName, 1
+      room.fetch ->
+        room.setBackground new Buffer(req.body.image, "base64"), (err) ->
+          throw err if err
+          res.json url: "/#{ roomName }"
 
 
 
-app.get "/:room", (req, res) ->
+app.get "/:room/:position", (req, res) ->
   res.render "paint.jade"
 
 
-app.get "/:room/bitmap/:pos", (req, res) ->
+app.get "/:room/:position/bitmap/:pos", (req, res) ->
   res.header('Content-Type', 'image/png')
 
-  room = new Drawing req.params.room
+  room = new Drawing req.params.room, req.params.position
   room.getCache req.params.pos, (err, data) ->
     throw err if err
     [__, pngData] = data.split ","
@@ -91,37 +93,19 @@ app.get "/:room/bitmap/:pos", (req, res) ->
 
 
 
-
-rooms = {}
-
 sockets = io.of "/drawer"
 sockets.on "connection", (socket) ->
 
 
   socket.on "join", (opts) ->
     roomName = opts.room
+    position = opts.position
 
-    # Send history to the new client
-    if not room = rooms[roomName]
-      console.log "Creating new room"
-      rooms[roomName] = room = new Drawing roomName
-
+    room = new Drawing roomName, position
     console.log "Adding client"
     client = new Client
       socket: socket
       model: room
 
     client.join()
-
-
-
-    client.on "draw", (draw) ->
-      # got new shape from some client
-
-      # Send new shape to all clients in the room
-      socket.broadcast.to(roomName).emit "draw", draw
-
-
-
-
 
