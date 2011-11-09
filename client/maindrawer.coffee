@@ -25,10 +25,8 @@ class maindrawer.Main
     # Draw count
     @drawCount = 0
 
-    {@roomName} = opts
-
     # Tool settings model
-    {@settings} = opts
+    {@model} = opts
 
     # Status model
     {@status} = opts
@@ -42,14 +40,13 @@ class maindrawer.Main
     {@input} = opts
 
 
-
     @setTool()
     @bindEvents()
 
   setTool: =>
 
-    tool = new tools[@settings.get "tool"]
-      model: @settings
+    tool = new tools[@model.get "tool"]
+      model: @model
       area: @area
 
     tool.bind "shape", (shape) =>
@@ -76,7 +73,7 @@ class maindrawer.Main
       @area.update history.resolution.x, history.resolution.y
       @area.resize =>
         if history.latestCachePosition
-          bitmapUrl = "/#{ @roomName }/bitmap/#{ history.latestCachePosition }"
+          bitmapUrl = "/#{ @model.get "roomName" }/#{ @model.get "position" }/bitmap/#{ history.latestCachePosition }"
           @status.set status: "downloading cache"
           cacheImage = new Image
           cacheImage.onload = => @drawHistory history.draws, cacheImage
@@ -85,7 +82,7 @@ class maindrawer.Main
           @drawHistory history.draws
 
 
-    @settings.bind "change:tool", @setTool
+    @model.bind "change:tool", @setTool
 
     @status.set status: "Connecting"
     if @socket.socket.connected
@@ -106,7 +103,8 @@ class maindrawer.Main
       transport: @socket.socket.transport.name
 
     @socket.emit "join",
-      room: @roomName
+      room: @model.get "roomName"
+      position: @model.get "position"
       id: @id
       useragent: navigator.userAgent
 

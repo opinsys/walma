@@ -24,11 +24,11 @@ class exports.Client extends EventEmitter
       base64data = background.split(",")[1]
 
       @model.setBackground new Buffer(base64data, "base64"), =>
-        @socket.broadcast.to(@model.name).emit "background"
+        @socket.broadcast.to(@model.getCombinedRoomName()).emit "background"
 
 
     @socket.on "draw", (draw) =>
-      @socket.broadcast.to(@model.name).emit "draw", draw
+      @socket.broadcast.to(@model.getCombinedRoomName()).emit "draw", draw
       @model.addDraw draw, (err, status) =>
         if err
           console.log "Failed to save draw to db: #{ err }"
@@ -48,6 +48,8 @@ class exports.Client extends EventEmitter
       console.log "#{ @id } sent a bitmap", bitmap.data?.length, "k"
 
   join: ->
+    console.log "joining", @model.getCombinedRoomName()
+    @socket.join @model.getCombinedRoomName()
     @socket.join @model.name
 
     @model.fetch (err, doc) =>

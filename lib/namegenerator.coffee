@@ -1,6 +1,10 @@
 
 {Drawing} = require "../lib/drawmodel"
 
+###
+Generates new unique name with a prefix that won't clash with existing room
+names.
+###
 generateUniqueName = (prefix, modifier, cb=->) ->
   if not cb
     cb = modifier

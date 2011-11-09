@@ -16,7 +16,9 @@ class exports.Drawing
 
   cacheInterval: 10
 
-  constructor: (@name) ->
+  constructor: (@name, @position) ->
+    @position = parseInt @position, 10
+
     @resolution =
       x: 0
       y: 0
@@ -24,6 +26,10 @@ class exports.Drawing
     throw "Collection must be set" unless Drawing.collection
     @clients = {}
     @drawsAfterLastCache = 0
+
+  # Unique string name for single slide. Used for Socket.io rooms
+  getCombinedRoomName: ->
+    "#{ @name }/#{ @position }"
 
   updateResolution: (point) ->
     @resolution.x = point.x if point.x > @resolution.x
@@ -40,8 +46,10 @@ class exports.Drawing
         @updateResolution point
 
 
-    Drawing.collection.update name: @name,
-      $push: history: draw
+    Drawing.collection.update
+      name: @name,
+      position: @position
+    , $push: history: draw
     , (err, coll) =>
       return cb err if err
       @drawsAfterLastCache += 1
@@ -60,8 +68,10 @@ class exports.Drawing
       gs.write data, (err, result) =>
         return cb err if err
         gs.close =>
-          Drawing.collection.update name: @name,
-            $set: background: true
+          Drawing.collection.update
+            name: @name,
+            position: @position
+          , $set: background: true
           , (err) ->
             return cb err if err
             cb null
@@ -75,24 +85,26 @@ class exports.Drawing
         cb null, data
 
 
-  setCache: (position, data, cb=->) ->
+  setCache: (drawCount, data, cb=->) ->
     @fethingBitmap = false
     @drawsAfterLastCache = 0
-    gs = new GridStore Drawing.db, "#{ @name }-#{ position }", "w"
+    gs = new GridStore Drawing.db, "#{ @name }-#{ drawCount }", "w"
     gs.open (err) =>
       return cb err if err
       gs.write data, (err, result) =>
         return cb err if err
         gs.close =>
-          Drawing.collection.update name: @name,
-            $push: cache: position
+          Drawing.collection.update
+            name: @name,
+            position: @position
+          , $push: cache: drawCount
           , (err) ->
             return cb err if err
             cb null
 
 
-  getCache: (position, cb=->) ->
-    gs = new GridStore Drawing.db, "#{ @name }-#{ position }", "r"
+  getCache: (drawCount, cb=->) ->
+    gs = new GridStore Drawing.db, "#{ @name }-#{ drawCount }", "r"
     gs.open (err) =>
       return cb err if err
       gs.read gs.length, (err, data) ->
@@ -116,17 +128,17 @@ class exports.Drawing
   init: (cb=->) ->
     Drawing.collection.insert @_doc =
       name: @name
+      position: @position
       history: []
       cache: []
       created: Date.now()
-    ,
-      safe: true
+    , safe: true
     , (err, docs) =>
       return cb err if err
       cb null, docs[0]
 
   fetch: (cb=->) =>
-    Drawing.collection.find(name: @name).nextObject (err, doc) =>
+    Drawing.collection.find(name: @name, position: @position).nextObject (err, doc) =>
       return cb err if err
       if doc
         @_doc = doc
