@@ -17,9 +17,10 @@ class views.ColorSelector extends Backbone.View
       options[@option] = @$("button.selected").data "value"
       @model.set options
 
-    @update()
+    @render()
 
-    @model.bind "change", @update
+    @model.bind "change", @render
+
     @styleButtons()
 
   styleButtons: ->
@@ -47,12 +48,16 @@ class views.ColorSelector extends Backbone.View
     options[@option] = color = setting.data("value")
     @model.set options
 
+
+  renderSelected: ->
     @$(".selected").removeClass "selected"
-    setting.addClass "selected"
+    selected = @$("[data-value='#{ @model.get @option  }']")
+    selected.addClass "selected"
 
-
-  update: =>
+  render: =>
+    @renderSelected()
     @$("button.toggle").css "background-color", @model.get @option
+
 
 
 class views.SizeSelector extends views.ColorSelector
@@ -62,14 +67,16 @@ class views.SizeSelector extends views.ColorSelector
       $el = $ this
       $el.html "#{$el.data "value"}px"
 
-  update: =>
+  render: =>
+    @renderSelected()
     @$("button.toggle").html "#{ @model.get @option }px"
 
 class views.ToolSelector extends views.ColorSelector
   option: "tool"
   styleButtons: ->
 
-  update: =>
+  render: =>
+    @renderSelected()
     @$("button.toggle").html "#{ @model.get @option }"
 
 
