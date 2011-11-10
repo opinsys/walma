@@ -23,13 +23,16 @@ class views.Navigation extends Backbone.View
 
 
   render: ->
-    # @$(".next").attr "href", "/#{ @model.get "roomName" }/" + (@model.get("position") + 1)
-    # @$(".prev").attr "href", "/#{ @model.get "roomName" }/" + (@model.get("position") - 1)
 
     if @model.get "remote"
       @$(".remote").html "Remote is on"
     else
       @$(".remote").html "Remote is off"
+
+    if @model.get("position") <= 1
+      @$(".prev").hide()
+    else
+      @$(".prev").show()
 
 
   toggleRemote: ->
@@ -48,7 +51,10 @@ class views.Navigation extends Backbone.View
 
 
   navigate: (position) ->
+    return if position < 1
+
     url = "/#{ @model.get "roomName" }/" + position
+
 
     if not @model.get "remote"
       window.location = url
