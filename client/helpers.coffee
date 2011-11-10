@@ -38,15 +38,9 @@ $ ->
       $(e.target).removeClass "touching"
       $(e.target).trigger('tap')
   else
-    $('body').bind 'click', (e) ->
+    $('body').bind 'mouseup', (e) ->
       $(e.target).trigger('tap')
 
-
-$ ->
-  $("a.reload-page").bind "tap", ->
-    $(this).text "reloading"
-    window.location.reload()
-    false
 
 
 # Do not die if we have no logging function. Eg. FF without Firebug.

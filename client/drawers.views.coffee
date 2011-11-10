@@ -4,6 +4,68 @@ Backbone = require "backbone"
 views = NS "PWB.drawers.views"
 
 
+
+
+class views.ToolSelection extends Backbone.View
+
+  constructor: ->
+    super
+
+    @toolBar = $(@el)
+
+
+
+    @current =
+      x: @toolBar.offset().left
+      y: @toolBar.offset().top
+
+    $(@el).mousedown @startMove
+    $(window).mouseup @stopMove
+    $(window).mousemove @move
+
+    $(@el).bind "touchstart", (e) =>
+      @startMove e.originalEvent.touches[0]
+      false
+
+    $('body').bind "touchend", (e) =>
+      @stopMove e.originalEvent.touches[0]
+      false
+
+    $('body').bind "touchmove", (e) =>
+      @move e.originalEvent.touches[0]
+      false
+
+  move: (e) =>
+    if @last
+      console.log "MOVE", e.pageX
+
+      diffPoint =
+        x: e.pageX - @last.pageX
+        y: e.pageY - @last.pageY
+
+
+      newPoint =
+        x: @current.x + diffPoint.x
+        y: @current.y + diffPoint.y
+
+
+      console.log "setting", JSON.stringify newPoint
+      @toolBar.css "left", "#{ newPoint.x }px"
+      @toolBar.css "top", "#{ newPoint.y }px"
+
+
+      @current = newPoint
+      @last = e
+
+  startMove: (e) =>
+    @last = e
+
+  stopMove: =>
+    if @last
+      @last = null
+      false
+
+
 class views.ColorSelector extends Backbone.View
 
   option: "color"
@@ -22,6 +84,7 @@ class views.ColorSelector extends Backbone.View
     @model.bind "change", @render
 
     @styleButtons()
+
 
   styleButtons: ->
     @$(".options button").each ->

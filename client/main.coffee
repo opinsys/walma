@@ -29,6 +29,8 @@ $ ->
     position: parseInt position, 10
 
 
+  new views.ToolSelection
+    el: ".toolSettings"
 
   new views.ColorSelector
     el: ".colorSelector"
@@ -38,6 +40,7 @@ $ ->
   new views.SizeSelector
     el: ".sizeSelector"
     model: settings
+
 
   new views.ToolSelector
     el: ".toolSelector"
