@@ -9,13 +9,14 @@
   , "devDependencies": {
       "supervisor": ""
       , "jasmine-node": ""
-      , "useragent": ""
+      , "node-inspector": ""
   }
   , "dependencies": {
       "coffee-script": "1.1.2"
       , "express": "2.4.6"
       , "jade": "0.15.3"
       , "piler": ""
+      , "useragent": ""
       , "mongodb": ""
       , "connect-form": ""
       , "socket.io": "0.8.5"
