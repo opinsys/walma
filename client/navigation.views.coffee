@@ -8,7 +8,6 @@ views = NS "PWB.drawers.views"
 class views.Navigation extends Backbone.View
 
   events:
-    "tap .remote": "toggleRemote"
     "tap .next": "navigateToNext"
     "tap .prev": "navigateToPrev"
 
@@ -21,13 +20,11 @@ class views.Navigation extends Backbone.View
     @socket.on "changeSlide", (position) =>
       @navigate parseInt position, 10
 
+    @model.bind "change:remote", => @render()
+
 
   render: ->
 
-    if @model.get "remote"
-      @$(".remote").html "Remote is on"
-    else
-      @$(".remote").html "Remote is off"
 
     if @model.get("position") <= 1
       @$(".prev").hide()
@@ -35,9 +32,6 @@ class views.Navigation extends Backbone.View
       @$(".prev").show()
 
 
-  toggleRemote: ->
-    @model.set remote: !@model.get "remote"
-    @render()
 
   navigateToNext: (e) ->
     e.preventDefault()

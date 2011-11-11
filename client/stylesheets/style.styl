@@ -1,5 +1,5 @@
 
-buttonSize = 4em
+buttonSize = 4.5em
 
 
 
@@ -40,7 +40,7 @@ ul li
 
 div.loading
   opacity 0.8
-  position absolute
+  position fixed
   z-index 100
   width 100%
   top 8em
@@ -97,11 +97,14 @@ canvas.loading
   left 0px
 
   overflow none
+  display block
+
 
   z-index 50
   .options
     display none
     height buttonSize
+    overflow hidden
   button.selected
     border 3px inset
   button
@@ -118,6 +121,7 @@ canvas.loading
     clear both
   button.toggle
     display block
+
 
   .options,.toggle
     float left
