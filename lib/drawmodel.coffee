@@ -60,7 +60,6 @@ class exports.Drawing
         cb null
 
 
-  # TODO: DRY up gs reading!
   setBackground: mustBeOpened (data, cb=->) ->
     gs = new GridStore Drawing.db, "#{ @name }-bg", "w"
     gs.open (err) =>
@@ -84,32 +83,39 @@ class exports.Drawing
         return cb err if err
         cb null, data
 
+  saveData: (name, data, cb=->) ->
+    gs = new GridStore Drawing.db, name, "w"
+    gs.open (err) ->
+      return cb err if err
+      gs.write data, (err, result) ->
+        return cb err if err
+        gs.close (err) -> cb err
+
+  readData: (name, cb=->) ->
+    gs = new GridStore Drawing.db, name, "r"
+    gs.open (err) ->
+      return cb err if err
+      gs.readBuffer gs.length, (err, data) ->
+        return cb err if err
+        cb null, data
+        gs.close ->
+
 
   setCache: (drawCount, data, cb=->) ->
     @fethingBitmap = false
     @drawsAfterLastCache = 0
-    gs = new GridStore Drawing.db, "#{ @name }-#{ drawCount }", "w"
-    gs.open (err) =>
-      return cb err if err
-      gs.write data, (err, result) =>
+    @saveData "#{ @name }-#{ drawCount }", data, =>
+      Drawing.collection.update
+        name: @name,
+        position: @position
+      , $push: cache: drawCount
+      , (err) ->
         return cb err if err
-        gs.close =>
-          Drawing.collection.update
-            name: @name,
-            position: @position
-          , $push: cache: drawCount
-          , (err) ->
-            return cb err if err
-            cb null
+        cb null
 
 
   getCache: (drawCount, cb=->) ->
-    gs = new GridStore Drawing.db, "#{ @name }-#{ drawCount }", "r"
-    gs.open (err) =>
-      return cb err if err
-      gs.read gs.length, (err, data) ->
-        return cb err if err
-        cb null, data
+    @readData "#{ @name }-#{ drawCount }", cb
 
 
   getLatestCachePosition: (cb=->) =>

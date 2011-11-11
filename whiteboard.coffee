@@ -88,8 +88,7 @@ app.get "/:room/:position/bitmap/:pos", (req, res) ->
   room = new Drawing req.params.room, req.params.position
   room.getCache req.params.pos, (err, data) ->
     throw err if err
-    [__, pngData] = data.split ","
-    res.send new Buffer(pngData, "base64")
+    res.send data
 
 
 
