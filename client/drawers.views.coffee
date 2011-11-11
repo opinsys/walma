@@ -13,8 +13,6 @@ class views.ToolSelection extends Backbone.View
 
     @toolBar = $(@el)
 
-
-
     @current =
       x: @toolBar.offset().left
       y: @toolBar.offset().top
@@ -64,7 +62,47 @@ class views.ToolSelection extends Backbone.View
       false
 
 
-class views.ColorSelector extends Backbone.View
+
+class views.BaseMenu extends Backbone.View
+
+  constructor: ->
+    super
+    @$(".toggle").bind "tap", => @openOptions()
+
+  openOptions: =>
+    @$(".options").animate width: "show", 150, =>
+      $(window).one "tap", => @closeOptions()
+
+  closeOptions: =>
+    @$(".options").animate(width: "hide", 150)
+
+
+
+class views.Menu extends views.BaseMenu
+
+  constructor: ->
+    super
+
+    @$(".remote").bind "tap", =>
+      @model.set remote: !@model.get "remote"
+
+    @$(".publish").bind "tap", =>
+      @trigger "publish"
+
+    @model.bind "change:remote", => @render()
+
+
+
+  render: ->
+    if @model.get "remote"
+      @$(".remote").addClass "selected"
+    else
+      @$(".remote").removeClass "selected"
+
+class views.ColorSelector extends views.BaseMenu
+
+  events:
+    "tap .options button": "change"
 
   option: "color"
 
@@ -89,17 +127,6 @@ class views.ColorSelector extends Backbone.View
       $el = $ this
       $el.css "background-color", $el.data "value"
 
-  events:
-    "tap .toggle": "openOptions"
-    "tap .options button": "change"
-
-
-  openOptions: =>
-    @$(".options").animate width: "show", 150, =>
-      $(window).one "tap", => @closeOptions()
-
-  closeOptions: =>
-    @$(".options").animate(width: "hide", 150)
 
 
   change: (e) =>
@@ -131,6 +158,7 @@ class views.SizeSelector extends views.ColorSelector
   render: =>
     @renderSelected()
     @$("button.toggle").html "#{ @model.get @option }px"
+
 
 class views.ToolSelector extends views.ColorSelector
   option: "tool"

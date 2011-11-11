@@ -35,26 +35,46 @@ $ ->
 
   new views.ToolSelection
     el: ".toolSettings"
+  .render()
 
   new views.ColorSelector
     el: ".colorSelector"
     model: settings
+  .render()
 
 
   new views.SizeSelector
     el: ".sizeSelector"
     model: settings
+  .render()
 
 
   new views.ToolSelector
     el: ".toolSelector"
     model: settings
+  .render()
+
+
+  menu = new views.Menu
+    el: ".menu"
+    model: settings
+
+  menu.render()
+
+
 
   area = new DrawArea
     main: $("canvas.main").get 0
     localBuffer: $("canvas.localBuffer").get 0
     remoteBuffer: $("canvas.remoteBuffer").get 0
     soft: ".bg-size"
+
+  menu.bind "publish", ->
+
+    area.getDataURLWithBackground (err, dataURL) ->
+      socket.emit "publishImg", dataURL
+
+
 
   statusView = new views.Status
     el: ".status"

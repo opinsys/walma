@@ -22,6 +22,8 @@ class drawarea.DrawArea
   constructor: (opts) ->
     @width = 0
     @height = 0
+    @bgURL = null
+    @bgIMG = null
 
     # Canvases
     {@main} = opts
@@ -37,11 +39,30 @@ class drawarea.DrawArea
   getDataURL: ->
     @main.toDataURL("image/png")
 
+  getDataURLWithBackground: (cb) ->
+    if not @bgURL
+      cb null, @getDataURL()
+      return
+
+    img = new Image
+    canvas = document.createElement "canvas"
+    canvas.width = @width
+    canvas.height = @height
+    img.onload = =>
+      ctx = canvas.getContext "2d"
+      ctx.drawImage img, 0, 0
+      ctx.drawImage @main 0, 0
+      cb null, canvas.toDataURL("image/png")
+
+    img.src = @bgURL
+
+
   drawImage: (img) ->
     @main.getContext("2d").drawImage img, 0, 0
 
 
   setBackground: (url, cb=->) ->
+    @bgURL = url
     img = new Image
     img.onload = =>
       $(@main).css "background-image", "url(#{ url })"

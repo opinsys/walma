@@ -2,6 +2,11 @@ _  = require 'underscore'
 {EventEmitter} = require "events"
 useragent = require 'useragent'
 
+# Epic dataURL parser. Returns base64 encoded PNG
+parseDataURL = (dataURL) ->
+  base64data = dataURL.split(",")[1]
+  new Buffer(base64data, "base64")
+
 class exports.Client extends EventEmitter
 
   timeoutTime: 1000 * 5
@@ -21,11 +26,12 @@ class exports.Client extends EventEmitter
 
     @socket.on "bgdata", (background) =>
 
-      # Epic dataURL parser
-      base64data = background.split(",")[1]
-
-      @model.setBackground new Buffer(base64data, "base64"), =>
+      @model.setBackground parseDataURL(background), =>
         @socket.broadcast.to(@model.getCombinedRoomName()).emit "background"
+
+    @socket.on "publishImg", (dataURL) =>
+      @model.savePublisedImg parseDataURL dataURL
+
 
 
     @socket.on "changeSlide", (position, cb) =>
@@ -44,7 +50,9 @@ class exports.Client extends EventEmitter
             if err
               console.log "Could not get cache bitmap #{ err.message } #{ client.id }"
             else
-              @model.setCache bitmap.pos, bitmap.data
+              buf = parseDataURL bitmap.data
+              console.log "Saving cahce", buf.length
+              @model.setCache bitmap.pos, buf
 
 
     @socket.on "disconnect", =>

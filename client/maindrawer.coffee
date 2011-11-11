@@ -74,6 +74,7 @@ class maindrawer.Main
       @area.resize =>
         if history.latestCachePosition
           bitmapUrl = "/#{ @model.get "roomName" }/#{ @model.get "position" }/bitmap/#{ history.latestCachePosition }"
+          console.log bitmapUrl
           @status.set status: "downloading cache"
           cacheImage = new Image
           cacheImage.onload = => @drawHistory history.draws, cacheImage
