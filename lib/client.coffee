@@ -1,5 +1,6 @@
 _  = require 'underscore'
 {EventEmitter} = require "events"
+useragent = require 'useragent'
 
 class exports.Client extends EventEmitter
 
@@ -46,16 +47,26 @@ class exports.Client extends EventEmitter
               @model.setCache bitmap.pos, bitmap.data
 
 
-    @socket.on "disconect", =>
-      console.log "Disconnect: #{ @id }"
+    @socket.on "disconnect", =>
+      @socket.broadcast.to(@model.getCombinedRoomName()).emit "clientParted",
+        @getClientInfo()
 
     @socket.on "bitmap", (bitmap) =>
       console.log "#{ @id } sent a bitmap", bitmap.data?.length, "k"
 
+  getClientInfo: ->
+    id: @id
+    userAgent: @userAgent
+    browser: useragent.parse(@userAgent).toAgent()
+
   join: ->
     console.log "joining", @model.getCombinedRoomName()
+
     @socket.join @model.getCombinedRoomName()
     @socket.join @model.name
+
+    @socket.broadcast.to(@model.getCombinedRoomName()).emit "clientJoined",
+      @getClientInfo()
 
     @model.fetch (err, doc) =>
       return cb err if err

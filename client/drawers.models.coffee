@@ -32,6 +32,7 @@ class models.StatusModel extends Backbone.Model
     totalDraws: 0
 
 
+
   constructor: ->
     super
     @loading = true
@@ -44,6 +45,21 @@ class models.StatusModel extends Backbone.Model
         @get("remoteDraws") +
         @get("startDraws")
       )
+
+
+  addClient: (client) ->
+    clients = @get("clients") or {}
+    clients[client.id] = client
+    @set clients: clients
+
+  removeClient: (client) ->
+    clients = @get("clients") or {}
+    delete clients[client.id]
+    @set clients: clients
+
+
+  getClientCount: ->
+    _.size @get("clients") or {}
 
 
   addUserDraw: (i=1)->

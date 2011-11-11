@@ -37,7 +37,6 @@ class views.ToolSelection extends Backbone.View
 
   move: (e) =>
     if @last
-      console.log "MOVE", e.pageX
 
       diffPoint =
         x: e.pageX - @last.pageX
@@ -49,7 +48,6 @@ class views.ToolSelection extends Backbone.View
         y: @current.y + diffPoint.y
 
 
-      console.log "setting", JSON.stringify newPoint
       @toolBar.css "left", "#{ newPoint.x }px"
       @toolBar.css "top", "#{ newPoint.y }px"
 

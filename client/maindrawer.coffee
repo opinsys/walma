@@ -106,7 +106,7 @@ class maindrawer.Main
       room: @model.get "roomName"
       position: @model.get "position"
       id: @id
-      useragent: navigator.userAgent
+      userAgent: navigator.userAgent
 
   drawHistory: (draws, img) =>
     console.log "Drawing history", draws.length

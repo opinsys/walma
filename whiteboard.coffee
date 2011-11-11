@@ -106,6 +106,9 @@ sockets.on "connection", (socket) ->
     client = new Client
       socket: socket
       model: room
+      userAgent: opts.userAgent
+      id: opts.id
+
 
     client.join()
 

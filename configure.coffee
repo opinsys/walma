@@ -34,12 +34,14 @@ module.exports = (app, io) ->
 
     css.addFile "main", clientFiles + "/stylesheets/reset.css"
     css.addFile "main", clientFiles + "/stylesheets/style.styl"
+    css.addFile clientFiles + "/vendor/jquery.notice/jquery.notice.css"
 
     js.addUrl "/socket.io/socket.io.js"
     js.addFile clientFiles + "/require.coffee"
     js.addFile clientFiles + "/vendor/modernizr.js"
     js.addFile clientFiles + "/vendor/require.js"
     js.addFile clientFiles + "/vendor/jquery.js"
+    js.addFile clientFiles + "/vendor/jquery.notice/jquery.notice.js"
     js.addFile clientFiles + "/vendor/async.js"
     js.addModule clientFiles + "/vendor/underscore.js"
     # js.addModule clientFiles + "/vendor/underscore.string.js"
@@ -52,6 +54,7 @@ module.exports = (app, io) ->
     js.addFile clientFiles + "/drawers.models.coffee"
     js.addFile clientFiles + "/drawers.views.coffee"
     js.addFile clientFiles + "/navigation.views.coffee"
+    js.addFile clientFiles + "/notification.coffee"
     js.addModule __dirname + "/shared/drawtools.coffee"
     js.addFile clientFiles + "/maindrawer.coffee"
 

@@ -3,6 +3,7 @@
 {views} = NS "PWB.drawers"
 {models} = NS "PWB.drawers"
 {DrawArea} = NS "PWB.drawarea"
+{Notification} = NS "PWB.notification"
 helpers = NS "PWB.helpers"
 
 maindrawer = NS "PWB.maindrawer"
@@ -24,9 +25,12 @@ $ ->
 
   [__, roomName, position] = window.location.pathname.split("/")
   settings = new models.SettingsModel
+
   settings.set
     roomName: roomName
     position: parseInt position, 10
+
+  notifications = new Notification
 
 
   new views.ToolSelection
@@ -59,6 +63,15 @@ $ ->
   status.set status: "starting"
 
   socket = io.connect().of("/drawer")
+
+  socket.on "clientJoined", (client) ->
+    status.addClient client
+    notifications.info "#{ client.browser } joined. We have now #{ status.getClientCount() } other users"
+
+
+  socket.on "clientParted", (client) ->
+    status.removeClient client
+    notifications.info "#{ client.browser } parted. We have now #{ status.getClientCount() } other users"
 
   navigation = new views.Navigation
     socket: socket
