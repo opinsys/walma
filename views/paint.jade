@@ -24,9 +24,27 @@ script.status-template(type="x-handlebars-template")
     span.value  {{transport}}
 
 
+script.image-template(type="x-handlebars-template")
+  .imageWrapper
+    a.imgLink(href="{{imgUrl}}")
+      img(src="{{imgDataURL}}", alt="")
+
+  .linkBox
+    span Link for this image:
+    input(type="text", value="{{imgUrl}}")
+    span.saving Saving...
+
+
 h1
 
-.status lol
+.status Status template goes here
+
+
+.lightbox
+  .wrapper
+    .close
+      a(href="#") X
+    .content hello sdaf sadfkj asdlasdfk asdfsd
 
 
 .toolSettings
@@ -85,6 +103,7 @@ h1
 
 .loading
   p Loading...
+
 
 .bg-size
 

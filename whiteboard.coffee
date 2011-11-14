@@ -60,9 +60,9 @@ app.get "/:room/:position/bg", withRoom (req, res, room) ->
     throw err if err
     res.send data
 
-app.get "/:room/:position/public", withRoom (req, res, room) ->
+app.get "/:room/:position/published.png", withRoom (req, res, room) ->
   res.contentType "image/png"
-  room.getPublishedImg (err, data) ->
+  room.getPublishedImageData (err, data) ->
     throw err if err
     res.send data
 

@@ -18,6 +18,12 @@ class models.SettingsModel extends Backbone.Model
   save: ->
     localStorage.settings = JSON.stringify @attributes
 
+  getBackgroundURL: ->
+    "#{ window.location.origin }/#{ @get "roomName" }/#{ @get "position" }/bg"
+
+  getPublishedImageURL: ->
+    "#{ window.location.origin }/#{ @get "roomName" }/#{ @get "position" }/published.png"
+
 
 class models.StatusModel extends Backbone.Model
 

@@ -1,8 +1,10 @@
 
+PWB = NS "PWB"
+{DrawArea, Background} = PWB
+
 {drawers} = NS "PWB"
 {views} = NS "PWB.drawers"
 {models} = NS "PWB.drawers"
-{DrawArea} = NS "PWB.drawarea"
 {Notification} = NS "PWB.notification"
 helpers = NS "PWB.helpers"
 
@@ -72,8 +74,17 @@ $ ->
 
   menu.bind "publish", ->
     area.getDataURLWithBackground (err, dataURL) ->
+
+      linkView = new views.PublicLink
+        el: ".lightbox"
+        imgUrl: settings.getPublishedImageURL()
+        imgDataURL: dataURL
+
+      linkView.render()
+
       socket.emit "publishImg", dataURL, ->
-        notifications.info "Published!"
+        notifications.info "Image published"
+        linkView.setSaved()
 
 
 
@@ -136,47 +147,6 @@ $ ->
     window.scrollTo 0, 100
 
 
-
-class Background extends Backbone.View
-
-  constructor: (opts) ->
-    super
-    {@socket} = opts
-    {@area} = opts
-    @bindDrag()
-    @socket.on "background", (url) =>
-      # Background has been updated. Lets just append timestamp to the url so
-      # it will get reloaded.
-      @area.setBackground "#{ window.location.pathname }/bg?v=#{ new Date().getTime() }"
-
-
-    @socket.on "start", (history) =>
-      if history.background
-        @area.setBackground "#{ window.location.pathname }/bg"
-
-  bindDrag: ->
-
-    $(document).bind "dragenter", (e) ->
-      e.preventDefault()
-      e.originalEvent.dataTransfer.dropEffect = 'copy'
-
-    $(document).bind "dragover", (e) ->
-      e.preventDefault()
-      e.originalEvent.dataTransfer.dropEffect = 'copy'
-
-    $(document).bind "dragleave", (e) -> e.preventDefault()
-    $(document).bind "dragend", (e) -> e.preventDefault()
-    $(document).bind "drop", (e) =>
-      e.preventDefault()
-      reader = new FileReader
-      reader.onload = @fileRead
-      reader.readAsDataURL e.originalEvent.dataTransfer.files[0]
-
-  fileRead: (e) =>
-    dataURL = e.target.result
-    @area.setBackground dataURL
-    @socket.emit "bgdata", dataURL, =>
-      @trigger "bgsaved"
 
 
 

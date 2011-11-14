@@ -63,7 +63,7 @@ class exports.Drawing
     @saveData "#{ @name }-public", data,  (err) ->
       cb err
 
-  getPublishedImg: (cb) ->
+  getPublishedImageData: (cb) ->
     @readData "#{ @name }-public", (err, data) ->
       return cb err if err
       cb null, data

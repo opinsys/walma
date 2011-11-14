@@ -55,6 +55,8 @@ module.exports = (app, io) ->
     js.addFile clientFiles + "/drawers.views.coffee"
     js.addFile clientFiles + "/navigation.views.coffee"
     js.addFile clientFiles + "/notification.coffee"
+    js.addFile clientFiles + "/lightbox.coffee"
+    js.addFile clientFiles + "/background.coffee"
     js.addModule __dirname + "/shared/drawtools.coffee"
     js.addFile clientFiles + "/maindrawer.coffee"
 
