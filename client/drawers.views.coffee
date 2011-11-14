@@ -17,6 +17,10 @@ class views.ToolSelection extends Backbone.View
       x: @toolBar.offset().left
       y: @toolBar.offset().top
 
+    @size =
+      width: $(@el).width()
+      height: $(@el).height()
+
     $(@el).mousedown @startMove
     $(window).mouseup @stopMove
     $(window).mousemove @move
@@ -46,8 +50,12 @@ class views.ToolSelection extends Backbone.View
         y: @current.y + diffPoint.y
 
 
-      @toolBar.css "left", "#{ newPoint.x }px"
-      @toolBar.css "top", "#{ newPoint.y }px"
+
+      if newPoint.x > 0 and newPoint.x + @size.width < $(window).width()
+        @toolBar.css "left", "#{ newPoint.x }px"
+
+      if newPoint.y > 0 and newPoint.y + @size.height < $(window).height()
+        @toolBar.css "top", "#{ newPoint.y }px"
 
 
       @current = newPoint
