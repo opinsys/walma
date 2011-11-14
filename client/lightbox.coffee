@@ -29,22 +29,29 @@ class views.PublicLink extends views.LightBox
     @template = Handlebars.compile source
 
 
-    @$(".close a").bind "tap", =>
-      @remove()
-
-    $("body").bind "tap", cb = (e) =>
-      if $(@el).has(e.target).length is 0
-        $("body").unbind "tap", cb
-        @remove()
 
 
   render: ->
     super
     @$(".content").html @template @
     @$(".imgLink").click(false).bind "tap", (e) =>
-      window.open @imgUrl, "FOO"
+      window.open @imgUrl
+
+    @$(".close a").bind "tap", =>
+      @remove()
 
     @$("input").select()
+
+    # Add small timeout so that event loop gets cleared. Otherwise menu click
+    # trigger this.
+    setTimeout =>
+      $("body").bind "tap", cb = (e) =>
+        if $(@el).has(e.target).length is 0
+          $("body").unbind "tap", cb
+          @remove()
+    , 10
+
+
 
 
   setSaved: ->

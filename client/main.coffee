@@ -83,7 +83,7 @@ $ ->
       linkView.render()
 
       socket.emit "publishImg", dataURL, ->
-        notifications.info "Image published"
+        notifications.info "Drawing published"
         linkView.setSaved()
 
 
