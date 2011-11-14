@@ -59,29 +59,24 @@ class exports.Drawing
       else
         cb null
 
+  savePublisedImg: (imgData) ->
+    @
+
 
   setBackground: mustBeOpened (data, cb=->) ->
-    gs = new GridStore Drawing.db, "#{ @name }-bg", "w"
-    gs.open (err) =>
-      return cb err if err
-      gs.write data, (err, result) =>
+    @saveData "#{ @name }-bg", data,  =>
+      Drawing.collection.update
+        name: @name,
+        position: @position
+      , $set: background: true
+      , (err) ->
         return cb err if err
-        gs.close =>
-          Drawing.collection.update
-            name: @name,
-            position: @position
-          , $set: background: true
-          , (err) ->
-            return cb err if err
-            cb null
+        cb null
 
   getBackground: (cb) ->
-    gs = new GridStore Drawing.db, "#{ @name }-bg", "r"
-    gs.open (err) =>
+    @readData "#{ @name }-bg", (err, data) ->
       return cb err if err
-      gs.readBuffer gs.length, (err, data) ->
-        return cb err if err
-        cb null, data
+      cb null, data
 
   saveData: (name, data, cb=->) ->
     gs = new GridStore Drawing.db, name, "w"
