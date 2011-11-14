@@ -48,11 +48,21 @@ app.post "/", (req, res) ->
 app.get "/bootstrap", (req, res) ->
   res.render "bootstrap.jade"
 
-app.get "/:room/:position/bg", (req, res) ->
-  # res.header('Content-Type', 'image/png')
-  res.contentType "image/png"
+withRoom = (fn) -> (req, res) ->
   room = new Drawing req.params.room
+  room.fetch (err) ->
+    throw err if err
+    fn.call this, req, res, room
+
+app.get "/:room/:position/bg", withRoom (req, res, room) ->
+  res.contentType "image/png"
   room.getBackground (err, data) ->
+    throw err if err
+    res.send data
+
+app.get "/:room/:position/public", withRoom (req, res, room) ->
+  res.contentType "image/png"
+  room.getPublishedImg (err, data) ->
     throw err if err
     res.send data
 
