@@ -1,5 +1,6 @@
 
 Backbone = require "backbone"
+_  = require 'underscore'
 
 views = NS "PWB.drawers.views"
 
@@ -44,19 +45,18 @@ class views.ToolSelection extends Backbone.View
         x: e.pageX - @last.pageX
         y: e.pageY - @last.pageY
 
-
-      newPoint =
-        x: @current.x + diffPoint.x
-        y: @current.y + diffPoint.y
-
+      newPoint = _.clone @current
+      newX = @current.x + diffPoint.x
+      newY = @current.y + diffPoint.y
 
 
-      if newPoint.x > 0 and newPoint.x + @size.width < $(window).width()
-        @toolBar.css "left", "#{ newPoint.x }px"
+      if newX > 0 and newX + @size.width < $(window).width()
+        @toolBar.css "left", "#{ newX }px"
+        newPoint.x = newX
 
-      if newPoint.y > 0 and newPoint.y + @size.height < $(window).height()
-        @toolBar.css "top", "#{ newPoint.y }px"
-
+      if newY > 0 and newY + @size.height < $(window).height()
+        @toolBar.css "top", "#{ newY }px"
+        newPoint.y = newY
 
       @current = newPoint
       @last = e
