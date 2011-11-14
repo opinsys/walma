@@ -69,10 +69,11 @@ $ ->
     remoteBuffer: $("canvas.remoteBuffer").get 0
     soft: ".bg-size"
 
-  menu.bind "publish", ->
 
+  menu.bind "publish", ->
     area.getDataURLWithBackground (err, dataURL) ->
-      socket.emit "publishImg", dataURL
+      socket.emit "publishImg", dataURL, ->
+        notifications.info "Published!"
 
 
 
@@ -110,6 +111,9 @@ $ ->
     el: "canvas.main"
     socket: socket
     area: area
+
+  bg.bind "bgsaved", ->
+    notifications.info "Background saved"
 
 
   main = new maindrawer.Main
@@ -171,7 +175,8 @@ class Background extends Backbone.View
   fileRead: (e) =>
     dataURL = e.target.result
     @area.setBackground dataURL
-    @socket.emit "bgdata", dataURL
+    @socket.emit "bgdata", dataURL, =>
+      @trigger "bgsaved"
 
 
 

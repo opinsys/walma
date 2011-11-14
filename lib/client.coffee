@@ -24,19 +24,19 @@ class exports.Client extends EventEmitter
     @socket.on "state", (state) =>
       @state = state
 
-    @socket.on "bgdata", (background) =>
+    @socket.on "bgdata", (background, cb) =>
 
       @model.setBackground parseDataURL(background), =>
         @socket.broadcast.to(@model.getCombinedRoomName()).emit "background"
+        cb?()
 
-    @socket.on "publishImg", (dataURL) =>
-      @model.savePublisedImg parseDataURL dataURL
-
+    @socket.on "publishImg", (dataURL, cb) =>
+      @model.savePublisedImg (parseDataURL dataURL), -> cb()
 
 
     @socket.on "changeSlide", (position, cb) =>
       @socket.broadcast.to(@model.name).emit "changeSlide", position
-      cb()
+      cb?()
 
 
     @socket.on "draw", (draw) =>

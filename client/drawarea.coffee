@@ -51,7 +51,7 @@ class drawarea.DrawArea
     img.onload = =>
       ctx = canvas.getContext "2d"
       ctx.drawImage img, 0, 0
-      ctx.drawImage @main 0, 0
+      ctx.drawImage @main, 0, 0
       cb null, canvas.toDataURL("image/png")
 
     img.src = @bgURL

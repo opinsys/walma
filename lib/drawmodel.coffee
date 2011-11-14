@@ -59,8 +59,14 @@ class exports.Drawing
       else
         cb null
 
-  savePublisedImg: (imgData) ->
-    @
+  savePublisedImg: (data, cb) ->
+    @saveData "#{ @name }-public", data,  (err) ->
+      cb err
+
+  getPublishedImg: (cb) ->
+    @readData "#{ @name }-public", (err, data) ->
+      return cb err if err
+      cb null, data
 
 
   setBackground: mustBeOpened (data, cb=->) ->
