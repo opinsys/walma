@@ -14,7 +14,8 @@
   , "dependencies": {
       "coffee-script": "1.1.2"
       , "express": "2.4.6"
-      , "jade": "0.15.3"
+      , "jade": "0.17.0"
+      , "markdown-js": "0.0.3"
       , "piler": ""
       , "useragent": ""
       , "mongodb": ""
