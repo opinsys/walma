@@ -59,32 +59,30 @@ class exports.Drawing
       else
         cb null
 
-  savePublisedImg: (data, cb) ->
-    @saveData "#{ @name }-public", data,  (err) ->
-      cb err
+  _getImageDBName: (name) ->
+    "image/#{ @name }/#{ @position }/#{ name }"
 
-  getPublishedImageData: (cb) ->
-    @readData "#{ @name }-public", (err, data) ->
+  saveImage: (name, data, cb=->) ->
+    @_saveData @_getImageDBName(name), data, (err) =>
       return cb err if err
-      cb null, data
+      attrs = {}
+      attrs[name] = true
+      @_setAttributes attrs, cb
+
+  getImage: (name, cb) ->
+    @_readData @_getImageDBName(name), cb
 
 
-  setBackground: mustBeOpened (data, cb=->) ->
-    @saveData "#{ @name }-bg", data,  =>
-      Drawing.collection.update
-        name: @name,
-        position: @position
-      , $set: background: true
-      , (err) ->
-        return cb err if err
-        cb null
+  _setAttributes: (attrs, cb=->) ->
+    Drawing.collection.update
+      name: @name,
+      position: @position
+    , $set: attrs
+    , cb
 
-  getBackground: (cb) ->
-    @readData "#{ @name }-bg", (err, data) ->
-      return cb err if err
-      cb null, data
 
-  saveData: (name, data, cb=->) ->
+  _saveData: (name, data, cb=->) ->
+    console.log "SAving", name
     gs = new GridStore Drawing.db, name, "w"
     gs.open (err) ->
       return cb err if err
@@ -92,20 +90,21 @@ class exports.Drawing
         return cb err if err
         gs.close (err) -> cb err
 
-  readData: (name, cb=->) ->
+  _readData: (name, cb=->) ->
+    console.log "reading", name
     gs = new GridStore Drawing.db, name, "r"
     gs.open (err) ->
       return cb err if err
       gs.readBuffer gs.length, (err, data) ->
         return cb err if err
-        cb null, data
         gs.close ->
+          cb null, data
 
 
   setCache: (drawCount, data, cb=->) ->
     @fethingBitmap = false
     @drawsAfterLastCache = 0
-    @saveData "#{ @name }-#{ drawCount }", data, =>
+    @_saveData "#{ @_getImageDBName("cache") }-#{ drawCount }", data, =>
       Drawing.collection.update
         name: @name,
         position: @position
@@ -116,7 +115,7 @@ class exports.Drawing
 
 
   getCache: (drawCount, cb=->) ->
-    @readData "#{ @name }-#{ drawCount }", cb
+    @_readData "#{ @_getImageDBName("cache") }-#{ drawCount }", cb
 
 
   getLatestCachePosition: (cb=->) =>

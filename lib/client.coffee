@@ -24,14 +24,25 @@ class exports.Client extends EventEmitter
     @socket.on "state", (state) =>
       @state = state
 
-    @socket.on "bgdata", (background, cb) =>
-
-      @model.setBackground parseDataURL(background), =>
-        @socket.broadcast.to(@model.getCombinedRoomName()).emit "background"
+    @socket.on "backgroundData", (dataURL, cb) =>
+      @model.saveImage "background", parseDataURL(dataURL), (err) =>
+        if err
+          # TODO: send error msg to user
+          console.log "Error while saving background", err
+          return cb err
+        @updateAttrs background: new Date().getTime()
         cb?()
 
-    @socket.on "publishImg", (dataURL, cb) =>
-      @model.savePublisedImg (parseDataURL dataURL), -> cb()
+
+    @socket.on "publishedImageData", (dataURL, cb) =>
+      @model.saveImage "publishedImage", parseDataURL(dataURL), (err) =>
+        if err
+          # TODO: send error msg to user
+          console.log "Error while saving published image", err
+          return cb err
+        @updateAttrs publishedImage: true
+        console.log "Saved published image"
+        cb?()
 
 
     @socket.on "changeSlide", (position, cb) =>
@@ -59,6 +70,7 @@ class exports.Client extends EventEmitter
       @socket.broadcast.to(@model.getCombinedRoomName()).emit "clientParted",
         @getClientInfo()
 
+
     @socket.on "bitmap", (bitmap) =>
       console.log "#{ @id } sent a bitmap", bitmap.data?.length, "k"
 
@@ -66,6 +78,9 @@ class exports.Client extends EventEmitter
     id: @id
     userAgent: @userAgent
     browser: useragent.parse(@userAgent).toAgent()
+
+  updateAttrs: (attrs) ->
+    @socket.broadcast.to(@model.getCombinedRoomName()).emit "updateAttrs", attrs
 
   join: ->
     console.log "joining", @model.getCombinedRoomName()
@@ -94,6 +109,7 @@ class exports.Client extends EventEmitter
       @startWith
         resolution: @model.resolution
         background: doc.background
+        publishedImage: !! doc.publishedImage
         draws: history
         latestCachePosition: latest
 
