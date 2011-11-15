@@ -26,6 +26,7 @@ class maindrawer.Main
     @drawCount = 0
 
     # Tool settings model
+    {@toolSettings} = opts
     {@model} = opts
 
     # Status model
@@ -45,8 +46,8 @@ class maindrawer.Main
 
   setTool: =>
 
-    tool = new tools[@model.get "tool"]
-      model: @model
+    tool = new tools[@toolSettings.get "tool"]
+      model: @toolSettings
       area: @area
 
     tool.bind "shape", (shape) =>
@@ -62,6 +63,11 @@ class maindrawer.Main
   bindEvents: ->
     @socket.on "draw", @replay
     @socket.on "start", (history) =>
+
+      @model.set
+        publishedImage: !! history.publishedImage
+        background: !! history.background
+
       @status.set
         cachedDraws: history.latestCachePosition or 0
         startDraws: history.draws.length
@@ -73,17 +79,15 @@ class maindrawer.Main
       @area.update history.resolution.x, history.resolution.y
       @area.resize =>
         if history.latestCachePosition
-          bitmapUrl = "/#{ @model.get "roomName" }/#{ @model.get "position" }/bitmap/#{ history.latestCachePosition }"
-          console.log bitmapUrl
           @status.set status: "downloading cache"
           cacheImage = new Image
           cacheImage.onload = => @drawHistory history.draws, cacheImage
-          cacheImage.src = bitmapUrl
+          cacheImage.src = @model.getCacheImageURL history.latestCachePosition 
         else
           @drawHistory history.draws
 
 
-    @model.bind "change:tool", @setTool
+    @toolSettings.bind "change:tool", @setTool
 
     @status.set status: "Connecting"
     if @socket.socket.connected

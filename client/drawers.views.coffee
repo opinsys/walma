@@ -94,11 +94,15 @@ class views.Menu extends views.BaseMenu
     @$(".remote").bind "tap", =>
       @model.set remote: !@model.get "remote"
 
-    @$(".publish").bind "tap", =>
+    @$(".publish").bind "tap", (e) =>
+      @$(".publish").addClass "selected"
       @trigger "publish"
 
-    @model.bind "change:remote", => @render()
+      setTimeout =>
+        @$(".publish").removeClass "selected"
+      , 500
 
+    @model.bind "change:remote", => @render()
 
 
   render: ->
@@ -106,6 +110,7 @@ class views.Menu extends views.BaseMenu
       @$(".remote").addClass "selected"
     else
       @$(".remote").removeClass "selected"
+
 
 class views.ColorSelector extends views.BaseMenu
 

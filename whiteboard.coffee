@@ -49,20 +49,22 @@ app.get "/bootstrap", (req, res) ->
   res.render "bootstrap.jade"
 
 withRoom = (fn) -> (req, res) ->
-  room = new Drawing req.params.room
+  room = new Drawing req.params.room, req.params.position
   room.fetch (err) ->
     throw err if err
     fn.call this, req, res, room
 
+# TODO: Proper 404, do not thow error on missing images
 app.get "/:room/:position/bg", withRoom (req, res, room) ->
   res.contentType "image/png"
-  room.getBackground (err, data) ->
+  room.getImage "background", (err, data) ->
+    console.log err
     throw err if err
     res.send data
 
 app.get "/:room/:position/published.png", withRoom (req, res, room) ->
   res.contentType "image/png"
-  room.getPublishedImageData (err, data) ->
+  room.getImage "publishedImage", (err, data) ->
     throw err if err
     res.send data
 

@@ -1,6 +1,10 @@
 
 
-script.status-template(type="x-handlebars-template")
+script(type="x-handlebars-template").
+  <b>hello</b>
+  <p>asfasdf</p>
+
+script.status-template(type="x-handlebars-template").
   .attr
     span.name Status:
     span.value  {{status}}
@@ -25,14 +29,23 @@ script.status-template(type="x-handlebars-template")
 
 
 script.image-template(type="x-handlebars-template")
+
   .imageWrapper
-    a.imgLink(href="{{imgUrl}}")
-      img(src="{{imgDataURL}}", alt="")
+    | {{#if published }}
+    h3 Published drawing
+    img.publishedImg(src="{{publishedImageURL}}", alt="")
+    | {{/if}}
+    h3 Current drawing
+    .buttonWrapper
+      img.currentImg(src="{{currentImageDataURL}}", alt="")
+    button.publish Publish
 
   .linkBox
+    | {{#if published }}
     span Link for this image:
-    input(type="text", value="{{imgUrl}}")
-    span.saving Saving...
+    input(type="text", value="{{publishedImageURL}}")
+    | {{/if}}
+
 
 
 h1

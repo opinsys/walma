@@ -5,7 +5,11 @@ models = NS "PWB.drawers.models"
 
 now = -> new Date().getTime()
 
-class models.SettingsModel extends Backbone.Model
+
+
+
+# Model for client only settings. Such as selected tool etc.
+class models.ToolSettings extends Backbone.Model
 
   constructor: ->
     super
@@ -18,13 +22,47 @@ class models.SettingsModel extends Backbone.Model
   save: ->
     localStorage.settings = JSON.stringify @attributes
 
+
+
+
+# Persistent shared model between clients.
+class models.RoomModel extends Backbone.Model
+
+  defaults:
+    background: false
+    publishedImage: false
+    position: 0
+    name: null
+
+  constructor: (opts) ->
+    super
+    {@socket} = opts
+    @socket.on "updateAttrs", (attrs) => @set attrs
+
+  setPublishedImage: (dataURL, cb=->) ->
+    @socket.emit "publishedImageData", dataURL, =>
+      @set publishedImage: new Date().getTime()
+      cb()
+
+  setBackground: (dataURL, cb=->) ->
+    console.log "BG setting"
+    @set background: "initial", { silent: true }
+
+    @socket.emit "backgroundData", dataURL, cb
+
   getBackgroundURL: ->
-    "#{ window.location.origin }/#{ @get "roomName" }/#{ @get "position" }/bg"
+    "#{ location.protocol }//#{ location.host }/#{ @get "roomName" }/#{ @get "position" }/bg"
 
   getPublishedImageURL: ->
-    "#{ window.location.origin }/#{ @get "roomName" }/#{ @get "position" }/published.png"
+    "#{ location.protocol }//#{ location.host }/#{ @get "roomName" }/#{ @get "position" }/published.png"
+
+  getCacheImageURL: (pos) ->
+    "/#{ @get "roomName" }/#{ @get "position" }/bitmap/#{ pos }"
 
 
+
+
+# Model for drawing statistics. Mainly for debugging purposes.
 class models.StatusModel extends Backbone.Model
 
   defaults:

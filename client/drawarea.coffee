@@ -1,5 +1,5 @@
 
-PWB = NS "PWB"
+drawarea = NS "PWB.drawarea"
 
 Backbone = require "backbone"
 _  = require 'underscore'
@@ -16,7 +16,7 @@ resizeCanvas = (width, height, canvas, cb=->) ->
 
 
 
-class PWB.DrawArea
+class drawarea.DrawArea
   _.extend @::, Backbone.Events
 
   constructor: (opts) ->

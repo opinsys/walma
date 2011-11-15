@@ -1,6 +1,8 @@
 
 PWB = NS "PWB"
-{DrawArea, Background} = PWB
+
+{DrawArea} = PWB.drawarea
+{Background} = PWB.background
 
 {drawers} = NS "PWB"
 {views} = NS "PWB.drawers"
@@ -26,9 +28,14 @@ $ ->
   $(window).bind "touchmove", false
 
   [__, roomName, position] = window.location.pathname.split("/")
-  settings = new models.SettingsModel
+  toolSettings = new models.ToolSettings
 
-  settings.set
+  socket = io.connect().of("/drawer")
+
+  roomModel = new models.RoomModel
+    socket: socket
+
+  roomModel.set
     roomName: roomName
     position: parseInt position, 10
 
@@ -41,25 +48,25 @@ $ ->
 
   new views.ColorSelector
     el: ".colorSelector"
-    model: settings
+    model: toolSettings
   .render()
 
 
   new views.SizeSelector
     el: ".sizeSelector"
-    model: settings
+    model: toolSettings
   .render()
 
 
   new views.ToolSelector
     el: ".toolSelector"
-    model: settings
+    model: toolSettings
   .render()
 
 
   menu = new views.Menu
     el: ".menu"
-    model: settings
+    model: toolSettings
 
   menu.render()
 
@@ -73,19 +80,15 @@ $ ->
 
 
   menu.bind "publish", ->
-    area.getDataURLWithBackground (err, dataURL) ->
 
-      linkView = new views.PublicLink
-        el: ".lightbox"
-        imgUrl: settings.getPublishedImageURL()
-        imgDataURL: dataURL
+    linkView = new views.PublicLink
+      el: ".lightbox"
+      model: roomModel
+      area: area
 
-      linkView.render()
+    linkView.render()
 
-      socket.emit "publishImg", dataURL, ->
-        notifications.info "Drawing published"
-        linkView.setSaved()
-
+    linkView.bind "published", -> notifications.info "Drawing published"
 
 
   statusView = new views.Status
@@ -94,7 +97,6 @@ $ ->
 
   status.set status: "starting"
 
-  socket = io.connect().of("/drawer")
 
   socket.on "clientJoined", (client) ->
     status.addClient client
@@ -107,7 +109,7 @@ $ ->
 
   navigation = new views.Navigation
     socket: socket
-    model: settings
+    model: roomModel
     el: ".navigation"
 
   navigation.render()
@@ -118,17 +120,17 @@ $ ->
     Input = drawers.MouseInput
 
   bg = new Background
-    model: settings
+    model: roomModel
     el: "canvas.main"
     socket: socket
     area: area
 
-  bg.bind "bgsaved", ->
-    notifications.info "Background saved"
+  bg.bind "bgsaved", -> notifications.info "Background saved"
 
 
   main = new maindrawer.Main
-    model: settings
+    model: roomModel
+    toolSettings: toolSettings
     id: helpers.guidGenerator()
     area: area
     socket: socket
@@ -145,8 +147,6 @@ $ ->
     $("div.loading").remove()
     # http://www.html5rocks.com/en/mobile/mobifying.html#toc-optimizations-scrolling
     window.scrollTo 0, 100
-
-
 
 
 
