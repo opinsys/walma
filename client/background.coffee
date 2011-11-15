@@ -1,24 +1,21 @@
 Backbone = require "backbone"
 _  = require 'underscore'
 
-PWB = NS "PWB"
+background = NS "PWB.background"
 
-class PWB.Background extends Backbone.View
+class background.Background extends Backbone.View
 
   constructor: (opts) ->
     super
     {@socket} = opts
     {@area} = opts
     @bindDrag()
-    @socket.on "background", (url) =>
+
+    @model.bind "change:background", =>
       # Background has been updated. Lets just append timestamp to the url so
       # it will get reloaded.
+      console.log "BG model bind"
       @area.setBackground "#{ @model.getBackgroundURL() }?v=#{ new Date().getTime() }"
-
-
-    @socket.on "start", (history) =>
-      if history.background
-        @area.setBackground @model.getBackgroundURL()
 
 
   bindDrag: ->
@@ -42,6 +39,6 @@ class PWB.Background extends Backbone.View
   fileRead: (e) =>
     dataURL = e.target.result
     @area.setBackground dataURL
-    @socket.emit "bgdata", dataURL, =>
+    @model.setBackground dataURL, =>
       @trigger "bgsaved"
 
