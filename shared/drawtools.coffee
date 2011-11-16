@@ -238,8 +238,8 @@ class exports.Move
   _.extend @::, Backbone.Events
 
   name: "Move"
-  treshold: 4
-  speedUp: @::treshold
+  threshold: 4
+  speedUp: @::threshold
 
   constructor: (opts) ->
     {@area} = opts
@@ -257,7 +257,7 @@ class exports.Move
   move: (point) ->
     @count += 1
 
-    if @lastPoint and @count >= @treshold
+    if @lastPoint and @count >= @threshold
 
       diffX = @lastPoint.x - point.x
       diffY = @lastPoint.y - point.y
@@ -304,6 +304,6 @@ class exports.Move
 class exports.FastMove extends exports.Move
 
   name: "FastMove"
-  speedUp: @::treshold * 4
+  speedUp: @::threshold * 4
 
 
