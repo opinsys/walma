@@ -57,22 +57,28 @@ div.loading
 
 
 canvas
-  position absolute
   cursor crosshair
   display block
-  top 0px
-  left 0px
 
-canvas.main
-  // background-image url(http://placekitten.com/1000/600)
-  background-color white
-  background-repeat no-repeat !important
+.whiteboard
+  position absolute
+  overflow hidden
 
-canvas.whiteboard
-  z-index 1
+  canvas
+    position absolute
+  canvas.localBuffer
+  canvas.remoteBuffer
+    background-image url(https://whiteboard.opinsys.fi/local/1/published.png)
+    z-index 12
+  canvas.remoteBuffer
+    background-image url(https://whiteboard.opinsys.fi/remote/1/published.png)
+    z-index 11
+  canvas.main
+    background-image url(https://whiteboard.opinsys.fi/main/1/published.png)
+    z-index 10
+  .bg-size
+    z-index 9
 
-canvas.localBuffer
-  z-index 2
 
 
 .status

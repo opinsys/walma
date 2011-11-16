@@ -24,8 +24,12 @@ if not hasTouch and typeof DocumentTouch isnt "undefined"
 
 
 $ ->
-  $(window).bind "touchstart", false
-  $(window).bind "touchmove", false
+  $(document).scroll (e) ->
+    console.log "SCRolling"
+    false
+
+  $("body").bind "touchmove", (e) -> e.preventDefault()
+
 
   [__, roomName, position] = window.location.pathname.split("/")
   toolSettings = new models.ToolSettings
@@ -73,11 +77,7 @@ $ ->
 
 
   area = new DrawArea
-    main: $("canvas.main").get 0
-    localBuffer: $("canvas.localBuffer").get 0
-    remoteBuffer: $("canvas.remoteBuffer").get 0
-    soft: ".bg-size"
-
+    el: ".whiteboard"
 
   menu.bind "publish", ->
 

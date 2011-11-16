@@ -76,15 +76,12 @@ class maindrawer.Main
       console.log "Need to draw #{history.draws.length} shapes"
       console.log "Got #{history.latestCachePosition} for free from cache"
 
-      @area.update history.resolution.x, history.resolution.y
-      @area.resize =>
-        if history.latestCachePosition
-          @status.set status: "downloading cache"
-          cacheImage = new Image
-          cacheImage.onload = => @drawHistory history.draws, cacheImage
-          cacheImage.src = @model.getCacheImageURL history.latestCachePosition 
-        else
+      if history.latestCachePosition
+        @status.set status: "downloading cache"
+        area.drawImage @model.getCacheImageURL(history.latestCachePosition), =>
           @drawHistory history.draws
+      else
+        @drawHistory history.draws
 
 
     @toolSettings.bind "change:tool", @setTool
@@ -113,12 +110,9 @@ class maindrawer.Main
       id: @id
       userAgent: navigator.userAgent
 
-  drawHistory: (draws, img) =>
+  drawHistory: (draws) =>
     console.log "Drawing history", draws.length
     @status.set status: "drawing history"
-
-    if img
-      @area.drawImage img
 
     operations = 0
     start = now()
@@ -155,7 +149,7 @@ class maindrawer.Main
   replay: (draw) =>
 
     for point in draw.shape.moves
-      @area.updateFromPoint point
+      @area.updateDrawingSizeFromPoint point
 
     tool = new tools[draw.shape.tool]
       area: @area

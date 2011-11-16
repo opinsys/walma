@@ -262,43 +262,22 @@ class exports.Move
       diffX = @lastPoint.x - point.x
       diffY = @lastPoint.y - point.y
 
-      toX = $(window).scrollLeft() + diffX * @speedUp
-      toY = $(window).scrollTop() + diffY * @speedUp
+      toX = @area.position.x + diffX * @speedUp
+      toY = @area.position.y + diffY * @speedUp
 
       @lastPoint = null
       @count = 0
 
-      @expand point, false
-      scroll toX, toY
+      @area.moveCanvas
+        x: toX
+        y: toY
+
     else
       @lastPoint = point
 
 
-  expand: (point, force=false) ->
-    diffX = @startPoint.x - point.x
-    diffY = @startPoint.y - point.y
-
-    areaWidth = $(document).width()
-    areaHeight = $(document).height()
-
-    offScreenX = !(areaWidth - $(window).width() - $(window).scrollLeft())
-    offScreenY = !(areaHeight - $(window).height() - $(window).scrollTop())
-
-    if offScreenX and diffX > 0
-      areaWidth += diffX
-      dirty = true
-
-    if offScreenY and diffY > 0
-      areaHeight += diffY
-      dirty = true
-
-    if dirty
-      @area.update areaWidth, areaHeight
-      @area.softResize()
-
 
   up: (point) ->
-    @area.update @areaWidth, @areaHeight
     @area.resize()
 
 class exports.FastMove extends exports.Move
