@@ -259,8 +259,8 @@ class exports.Move
 
     if @lastPoint and @count >= @threshold
 
-      diffX = @lastPoint.x - point.x
-      diffY = @lastPoint.y - point.y
+      diffX = point.x - @lastPoint.x
+      diffY = point.y - @lastPoint.y
 
       toX = @area.position.x + diffX * @speedUp
       toY = @area.position.y + diffY * @speedUp
@@ -276,9 +276,9 @@ class exports.Move
       @lastPoint = point
 
 
-
   up: (point) ->
     @area.resize()
+    console.log @area.debugPrint()
 
 class exports.FastMove extends exports.Move
 

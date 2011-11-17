@@ -86,7 +86,8 @@ class drawarea.DrawArea extends Backbone.View
 
 
   debugPrint: ->
-    console.log "Drawing: #{ JSON.stringify @drawingSize }, Area: #{ JSON.stringify @areaSize }, View: #{ JSON.stringify @viewSize }, Dirty: #{ @dirty }"
+    console.log m = "Drawing: #{ JSON.stringify @drawingSize }, Area: #{ JSON.stringify @areaSize }, View: #{ JSON.stringify @viewSize }, Position: #{ JSON.stringify @position } Dirty: #{ @dirty }"
+
 
 
 
@@ -179,16 +180,26 @@ class drawarea.DrawArea extends Backbone.View
 
 
   moveCanvas: (position) ->
-    @$("canvas").css
-      top: position.x + "px"
-      left: position.y + "px"
 
-    @position = position
+    canvas = @$("canvas")
 
-    if @position.x < 0
-      updateDrawingSize position.x*-1 + @areaSize.width, 0
-    if @position.y < 0
-      updateDrawingSize 0,  position.y*-1 + @areaSize.height
+    newPos =
+      x: 0
+      y: 0
+
+    if position.x <= 0
+      canvas.css "left", position.x + "px"
+      newPos.x = position.x
+      @updateDrawingSize @viewSize.width - position.x, 0
+
+    if position.y <= 0
+      canvas.css "top", position.y + "px"
+      newPos.y = position.y
+      @updateDrawingSize 0, @viewSize.height - position.y
+
+    @position = newPos
+
+    # @updateDrawingSize @areaSize.width - @position.x, @areaSize.height - @position.y
 
     @dirty
 
