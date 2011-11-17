@@ -47,6 +47,7 @@ class views.PublicLink extends views.LightBox
         @render()
       return
 
+
     @$(".content").html @template
       published: @model.get "publishedImage"
       publishedImageURL: @model.getPublishedImageURL()

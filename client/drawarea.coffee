@@ -31,10 +31,11 @@ class drawarea.DrawArea extends Backbone.View
   constructor: (opts) ->
     super
 
-    # Where the actual drawing is. Including background
+    # Where the actual drawing is. Including background.  Start with 100x100
+    # because serializing it to png will fail if the size is zero
     @drawingSize =
-      width: 0
-      height: 0
+      width: 100
+      height: 100
 
     # Area where user can draw. The actual canvas size.
     @areaSize =
