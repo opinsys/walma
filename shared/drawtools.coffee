@@ -68,10 +68,13 @@ class BaseTool
     @moves = []
 
   end: ->
-    @trigger "shape", @toJSON()
+    draw = @toJSON()
 
-    for move in @moves
-      @area.updateDrawingSizeFromPoint move
+    size = draw.size or 0
+    for move in draw.moves
+      @area.updateDrawingSize move.x + size, move.y + size
+
+    @trigger "shape", draw
 
   down: notImplemented "down"
   up: notImplemented "up"

@@ -191,6 +191,7 @@ class drawarea.DrawArea extends Backbone.View
     @updateDrawingSize point.x, point.y
 
 
+
   setCursor: (cursor) ->
     @canvases.css "cursor",  cursor or "crosshair"
 
