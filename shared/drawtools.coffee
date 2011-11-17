@@ -70,6 +70,9 @@ class BaseTool
   end: ->
     @trigger "shape", @toJSON()
 
+    for move in @moves
+      @area.updateDrawingSizeFromPoint move
+
   down: notImplemented "down"
   up: notImplemented "up"
   move: notImplemented "move"
