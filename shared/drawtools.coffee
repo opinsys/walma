@@ -14,6 +14,8 @@ class BaseTool
     {@area} = opts
 
 
+    @area.setCursor @cursor
+
     @bufferCanvas = @area.localBuffer
     @mainCanvas = @area.main
 
@@ -238,11 +240,14 @@ class exports.Move
   _.extend @::, Backbone.Events
 
   name: "Move"
+  cursor: "move"
+
   threshold: 4
   speedUp: @::threshold
 
   constructor: (opts) ->
     {@area} = opts
+    @area.setCursor @cursor
 
   begin: ->
   end: ->

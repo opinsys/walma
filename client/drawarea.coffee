@@ -64,12 +64,28 @@ class drawarea.DrawArea extends Backbone.View
     @localBuffer = @$("canvas.localBuffer").get 0
     @remoteBuffer = @$("canvas.remoteBuffer").get 0
 
+    @canvases = @$("canvas")
 
     # Simple div for containing background  that is fast to resize
     @background = @$("div.canvasBackground")
 
     @syncViewSize()
-    $(window).resize => @syncViewSize()
+    @resize()
+
+    @resizeTimer = null
+    $(window).resize =>
+      @syncViewSize()
+
+      # Resizing is a heavy operation. So we'll do real reszing bit after
+      # resizing has been ended.
+      if @resizeTimer
+        clearTimeout @resizeTimer
+        @resizeTimer = null
+
+      @resizeTimer = setTimeout =>
+        @resize()
+        @resizeTimer = null
+      , 500
 
 
   # Synchronizes view size to the browser window. Should always be smaller than
@@ -82,7 +98,6 @@ class drawarea.DrawArea extends Backbone.View
 
     @updateAreaSize @viewSize.width - @position.x, @viewSize.height - @position.y
 
-    @resize()
 
 
   debugPrint: ->
@@ -178,22 +193,22 @@ class drawarea.DrawArea extends Backbone.View
   softResize: ->
     throw new Error "no soft anymore"
 
+  setCursor: (cursor) ->
+    @canvases.css "cursor",  cursor or "crosshair"
 
   moveCanvas: (position) ->
-
-    canvas = @$("canvas")
 
     newPos =
       x: 0
       y: 0
 
     if position.x <= 0
-      canvas.css "left", position.x + "px"
+      @canvases.css "left", position.x + "px"
       newPos.x = position.x
       @updateDrawingSize @viewSize.width - position.x, 0
 
     if position.y <= 0
-      canvas.css "top", position.y + "px"
+      @canvases.css "top", position.y + "px"
       newPos.y = position.y
       @updateDrawingSize 0, @viewSize.height - position.y
 

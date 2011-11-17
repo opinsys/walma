@@ -50,6 +50,7 @@ class maindrawer.Main
       model: @toolSettings
       area: @area
 
+
     tool.bind "shape", (shape) =>
       @drawCount += 1
       console.log "We have #{ @drawCount } draws"
