@@ -170,7 +170,6 @@ class drawarea.DrawArea extends Backbone.View
     if @_updateSize @areaSize, newWidth, newHeight
       @dirty = true
 
-      console.log "Drawing area size is dirty!", JSON.stringify @areaSize
 
   _updateSize: (size, newWidth, newHeight) ->
 
@@ -222,7 +221,6 @@ class drawarea.DrawArea extends Backbone.View
 
   resize: (cb=->) ->
     if not @dirty
-      console.log "Not dirty"
       return cb()
 
     @trigger "resizing"
