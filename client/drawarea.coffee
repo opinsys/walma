@@ -107,8 +107,8 @@ class drawarea.DrawArea extends Backbone.View
       return
 
     canvas = document.createElement "canvas"
-    canvas.width = @areaSize.width
-    canvas.height = @areaSize.height
+    canvas.width = @drawingSize.width
+    canvas.height = @drawingSize.height
     toImage @bgURL, (err, img) =>
       throw err if err
       ctx = canvas.getContext "2d"
@@ -129,7 +129,7 @@ class drawarea.DrawArea extends Backbone.View
 
 
   setBackground: (url, cb=->) ->
-    $(@background).css "background-image", "url(#{ url })"
+    @$("canvas.main").css "background-image", "url(#{ url })"
     @bgURL = url
     @updateDrawingSizeFromImage url, => @resize cb
 
