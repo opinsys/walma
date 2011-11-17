@@ -80,7 +80,7 @@ class drawarea.DrawArea extends Backbone.View
       width: (@viewSize.width = $(window).width()) + "px"
       height: (@viewSize.height = $(window).height()) + "px"
 
-    @_updateSize @areaSize, @viewSize.width, @viewSize.height
+    @updateAreaSize @viewSize.width, @viewSize.height
 
     @resize()
 
