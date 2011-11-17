@@ -9,6 +9,15 @@ script.status-template(type="x-handlebars-template").
     span.name Status:
     span.value  {{status}}
   .attr
+    span.name Position:
+    span.value  {{position/x}}x{{position/y}}
+  .attr
+    span.name area size:
+    span.value  {{areaSize/width}}x{{areaSize/height}}
+  .attr
+    span.name drawing size:
+    span.value  {{drawingSize/width}}x{{drawingSize/height}}
+  .attr
     span.name Cached:
     span.value  {{cachedDraws}} draws
   .attr

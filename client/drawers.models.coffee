@@ -72,8 +72,16 @@ class models.StatusModel extends Backbone.Model
     startDraws: 0
     userDraws: 0
     remoteDraws: 0
-
     totalDraws: 0
+    position:
+      x: 0
+      y: 0
+    areaSize:
+      width: 0
+      height: 0
+    drawingSize:
+      width: 0
+      height: 0
 
 
 

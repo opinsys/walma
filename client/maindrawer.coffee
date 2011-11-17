@@ -71,6 +71,12 @@ class maindrawer.Main
         cachedDraws: history.latestCachePosition or 0
         startDraws: history.draws.length
 
+      @area.bind "moved", =>
+        @status.set position: @area.position
+      @area.bind "resized", =>
+        @status.set areaSize: @area.areaSize
+        @status.set drawingSize: @area.drawingSize
+
       @drawCount = history.latestCachePosition or 0
       console.log "Need to draw #{history.draws.length} shapes"
       console.log "Got #{history.latestCachePosition} for free from cache"

@@ -214,7 +214,7 @@ class drawarea.DrawArea extends Backbone.View
 
     @position = newPos
 
-    # @updateDrawingSize @areaSize.width - @position.x, @areaSize.height - @position.y
+    @trigger "moved", @position
 
     @dirty
 
