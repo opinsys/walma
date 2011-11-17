@@ -15,10 +15,21 @@ resizeCanvas = (width, height, canvas, cb=->) ->
   img.src = data
 
 
+toImage = (url, cb) ->
+  if typeof url is "string"
+    img = new Image
+    img.onload = -> cb null, img
+    img.src = url
+  else if url.width?
+    # Duck typing guess: It's already an image!
+    cb null, url
+  else
+    cb new Error "Could not convert to image"
 
 class drawarea.DrawArea extends Backbone.View
 
   constructor: (opts) ->
+    super
 
     # Where the actual drawing is. Including background
     @drawingSize =
@@ -46,6 +57,7 @@ class drawarea.DrawArea extends Backbone.View
 
     @bgURL = null
 
+
     # Canvases
     @mainCanvas = @$("canvas.main")
     @main = @mainCanvas.get 0
@@ -62,12 +74,20 @@ class drawarea.DrawArea extends Backbone.View
 
   # Synchronizes view size to the browser window. Should always be smaller than
   # the broswer so that there is nothing to scroll. Tablets has hard time with
-  # it.
+  # scrolling.
   syncViewSize: ->
     $(@el).css
       width: (@viewSize.width = $(window).width()) + "px"
       height: (@viewSize.height = $(window).height()) + "px"
-      @_updateSize @areaSize, @viewSize.width, @viewSize.height
+
+    @_updateSize @areaSize, @viewSize.width, @viewSize.height
+
+    @resize()
+
+
+  debugPrint: ->
+    console.log "Drawing: #{ JSON.stringify @drawingSize }, Area: #{ JSON.stringify @areaSize }, View: #{ JSON.stringify @viewSize }, Dirty: #{ @dirty }"
+
 
 
   getDataURL: ->
@@ -85,24 +105,27 @@ class drawarea.DrawArea extends Backbone.View
       cb null, @getDataURL()
       return
 
-    img = new Image
     canvas = document.createElement "canvas"
     canvas.width = @drawingSize.width
     canvas.height = @drawingSize.height
-    img.onload = =>
+    toImage @bgURL, (err, img) =>
+      throw err if err
       ctx = canvas.getContext "2d"
       ctx.drawImage img, 0, 0
       ctx.drawImage @main, 0, 0
       cb null, canvas.toDataURL("image/png")
 
-    img.src = @bgURL
 
 
   # Draw given image or canvas on top of current drawing
-  drawImage: (img) ->
-    @updateDrawingSizeFromImage img, =>
-      @resize =>
-        @main.getContext("2d").drawImage img, 0, 0
+  drawImage: (url, cb=->) ->
+    toImage url, (err, img) =>
+      throw err if err
+      @updateDrawingSizeFromImage img, =>
+        @resize =>
+          @main.getContext("2d").drawImage img, 0, 0
+          cb()
+
 
   setBackground: (url, cb=->) ->
     $(@background).css "background-image", "url(#{ url })"
@@ -110,28 +133,27 @@ class drawarea.DrawArea extends Backbone.View
     @updateDrawingSizeFromImage url, => @resize cb
 
   updateDrawingSizeFromImage: (url, cb=->) ->
-    url = url.src if url.src
-    img = new Image
-    img.onload =>
+    toImage url, (err, img) =>
       @updateDrawingSize img.width, img.height
       cb null,
         width: img.width
         height: img.height
 
-    img.src = url
 
 
   update: ->
     throw new Error "use update size"
 
   updateDrawingSize: (newWidth, newHeight) ->
-    @dirty = @_updateSize @drawingSize, newWidth, newHeight
+    if @_updateSize @drawingSize, newWidth, newHeight
+      @dirty = true
+
     @updateAreaSize.apply this, arguments
 
   updateAreaSize: (newWidth, newHeight) ->
-    @dirty = @_updateSize @areaSize, newWidth, newHeight
+    if @_updateSize @areaSize, newWidth, newHeight
+      @dirty = true
 
-    if @dirty
       console.log "Drawing area size is dirty!", JSON.stringify @areaSize
 
   _updateSize: (size, newWidth, newHeight) ->
@@ -173,7 +195,9 @@ class drawarea.DrawArea extends Backbone.View
 
 
   resize: (cb=->) ->
-    return cb() unless @dirty
+    if not @dirty
+      console.log "Not dirty"
+      return cb()
 
     resizeCanvas @areaSize.width, @areaSize.height, @main, =>
 

@@ -78,7 +78,7 @@ class maindrawer.Main
 
       if history.latestCachePosition
         @status.set status: "downloading cache"
-        area.drawImage @model.getCacheImageURL(history.latestCachePosition), =>
+        @area.drawImage @model.getCacheImageURL(history.latestCachePosition), =>
           @drawHistory history.draws
       else
         @drawHistory history.draws
@@ -114,37 +114,43 @@ class maindrawer.Main
     console.log "Drawing history", draws.length
     @status.set status: "drawing history"
 
-    operations = 0
-    start = now()
+    for d in draws
+      for point in d.shape.moves
+        @area.updateDrawingSizeFromPoint point
 
-    @status.set startDraws: draws.length
+    @area.resize =>
 
-    async.forEachSeries draws, (draw, cb) =>
+      operations = 0
+      start = now()
 
-      return cb() unless draw
+      @status.set startDraws: draws.length
 
-      @replay draw
+      async.forEachSeries draws, (draw, cb) =>
 
-      operations += draw.shape.moves.length
+        return cb() unless draw
 
-      # If redrawing the history takes more than 500ms take a timeout and allow
-      # the UI to draw itself.
-      if now() - start > 400
-        start = now()
-        operations = 0
-        setTimeout =>
+        @replay draw
+
+        operations += draw.shape.moves.length
+
+        # If redrawing the history takes more than 500ms take a timeout and allow
+        # the UI to draw itself.
+        if now() - start > 400
+          start = now()
+          operations = 0
+          setTimeout =>
+            cb()
+          , 5
+        else
           cb()
-        , 5
-      else
-        cb()
 
 
-    , (err) =>
-        throw err if err
-        @status.set status: "ready"
-        @trigger "ready"
+      , (err) =>
+          throw err if err
+          @status.set status: "ready"
+          @trigger "ready"
 
-    null
+      null
 
   replay: (draw) =>
 

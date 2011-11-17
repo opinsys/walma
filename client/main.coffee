@@ -79,6 +79,8 @@ $ ->
   area = new DrawArea
     el: ".whiteboard"
 
+  window._area = area
+
   menu.bind "publish", ->
 
     linkView = new views.PublicLink
@@ -137,10 +139,6 @@ $ ->
     status: status
     input: new Input
       el: "canvas.localBuffer"
-
-  area.update window.innerWidth, window.innerHeight, true
-  $(window).resize ->
-    area.update window.innerWidth, window.innerHeight, true
 
   main.bind "ready", ->
     $("canvas.loading").removeClass "loading"
