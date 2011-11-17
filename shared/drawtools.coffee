@@ -24,7 +24,9 @@ class BaseTool
 
     @updateSettings()
 
-    @area.bind "resize", =>
+    # Resizeing causes canvas to forget it's state. So we reset settings for
+    # it.
+    @area.bind "resized", =>
       @updateSettings()
 
     if @model

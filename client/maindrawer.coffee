@@ -40,8 +40,6 @@ class maindrawer.Main
 
     {@input} = opts
 
-
-    @setTool()
     @bindEvents()
 
   setTool: =>
@@ -149,6 +147,7 @@ class maindrawer.Main
       , (err) =>
           throw err if err
           @status.set status: "ready"
+          @setTool()
           @trigger "ready"
 
       null

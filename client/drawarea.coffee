@@ -190,11 +190,10 @@ class drawarea.DrawArea extends Backbone.View
   updateDrawingSizeFromPoint: (point) ->
     @updateDrawingSize point.x, point.y
 
-  softResize: ->
-    throw new Error "no soft anymore"
 
   setCursor: (cursor) ->
     @canvases.css "cursor",  cursor or "crosshair"
+
 
   moveCanvas: (position) ->
 
@@ -225,6 +224,8 @@ class drawarea.DrawArea extends Backbone.View
       console.log "Not dirty"
       return cb()
 
+    @trigger "resizing"
+
     resizeCanvas @areaSize.width, @areaSize.height, @main, =>
 
       for c in [@localBuffer, @remoteBuffer]
@@ -233,7 +234,7 @@ class drawarea.DrawArea extends Backbone.View
 
       @dirty = false
       console.log "Canvas resized", JSON.stringify @areaSize
-      @trigger "resize", @areaSize.width, @areaSize.height
+      @trigger "resized", @areaSize.width, @areaSize.height
       cb()
 
 
