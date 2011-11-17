@@ -80,7 +80,7 @@ class drawarea.DrawArea extends Backbone.View
       width: (@viewSize.width = $(window).width()) + "px"
       height: (@viewSize.height = $(window).height()) + "px"
 
-    @updateAreaSize @viewSize.width, @viewSize.height
+    @updateAreaSize @viewSize.width - @position.x, @viewSize.height - @position.y
 
     @resize()
 
@@ -107,8 +107,8 @@ class drawarea.DrawArea extends Backbone.View
       return
 
     canvas = document.createElement "canvas"
-    canvas.width = @drawingSize.width
-    canvas.height = @drawingSize.height
+    canvas.width = @areaSize.width
+    canvas.height = @areaSize.height
     toImage @bgURL, (err, img) =>
       throw err if err
       ctx = canvas.getContext "2d"
