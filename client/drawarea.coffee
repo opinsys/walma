@@ -205,12 +205,12 @@ class drawarea.DrawArea extends Backbone.View
     if position.x <= 0
       @canvases.css "left", position.x + "px"
       newPos.x = position.x
-      @updateDrawingSize @viewSize.width - position.x, 0
+      @updateAreaSize @viewSize.width - position.x, 0
 
     if position.y <= 0
       @canvases.css "top", position.y + "px"
       newPos.y = position.y
-      @updateDrawingSize 0, @viewSize.height - position.y
+      @updateAreaSize 0, @viewSize.height - position.y
 
     @position = newPos
 
