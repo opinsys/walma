@@ -22,6 +22,15 @@ if not hasTouch and typeof DocumentTouch isnt "undefined"
   hasTouch = document instanceof DocumentTouch
 
 
+$ ->
+  $(".color button").each ->
+    $el = $ this
+    $el.css "background-color", $el.data "value"
+
+  $(".size button").each ->
+    $el = $ this
+    $el.html  $el.data "value"
+
 
 $ ->
   $(document).scroll (e) ->
