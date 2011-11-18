@@ -8,6 +8,7 @@ PWB = NS "PWB"
 {views} = NS "PWB.drawers"
 {models} = NS "PWB.drawers"
 {Notification} = NS "PWB.notification"
+{ToolMenu} = NS "PWB.toolmenu"
 helpers = NS "PWB.helpers"
 
 maindrawer = NS "PWB.maindrawer"
@@ -37,11 +38,17 @@ $ ->
     console.log "SCRolling"
     false
 
+
   $("body").bind "touchmove", (e) -> e.preventDefault()
 
 
   [__, roomName, position] = window.location.pathname.split("/")
   toolSettings = new models.ToolSettings
+
+  toolMenu = new ToolMenu
+    el: ".menuContainer"
+    model: toolSettings
+  toolMenu.render()
 
   socket = io.connect().of("/drawer")
 
