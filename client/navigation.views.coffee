@@ -16,11 +16,12 @@ class views.Navigation extends Backbone.View
     super
 
     {@socket} = opts
+    {@settings} = opts
 
     @socket.on "changeSlide", (position) =>
       @navigate parseInt position, 10
 
-    @model.bind "change:remote", => @render()
+    @settings.bind "change:remote", => @render()
 
 
   render: ->
@@ -50,7 +51,7 @@ class views.Navigation extends Backbone.View
     url = "/#{ @model.get "roomName" }/" + position
 
 
-    if not @model.get "remote"
+    if not @settings.get "remote"
       window.location = url
     else
       console.log "Emiting change"

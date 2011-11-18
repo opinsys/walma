@@ -112,6 +112,7 @@ $ ->
   navigation = new views.Navigation
     socket: socket
     model: roomModel
+    settings: toolSettings
     el: ".navigation"
 
   navigation.render()
