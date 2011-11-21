@@ -10,6 +10,10 @@ now = -> new Date().getTime()
 
 # Model for client only settings. Such as selected tool etc.
 class models.ToolSettings extends Backbone.Model
+  defaults:
+    tool: "Pencil"
+    size: 5
+    color: "black"
 
   constructor: ->
     super

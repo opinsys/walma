@@ -8,7 +8,7 @@ PWB = NS "PWB"
 {views} = NS "PWB.drawers"
 {models} = NS "PWB.drawers"
 {Notification} = NS "PWB.notification"
-{ToolMenu} = NS "PWB.toolmenu"
+toolmenu = NS "PWB.toolmenu"
 helpers = NS "PWB.helpers"
 
 maindrawer = NS "PWB.maindrawer"
@@ -45,9 +45,35 @@ $ ->
   [__, roomName, position] = window.location.pathname.split("/")
   toolSettings = new models.ToolSettings
 
-  toolMenu = new ToolMenu
+
+
+  colorSelect = new toolmenu.ColorSelect
+    model: toolSettings
+    colors: [ "black", "white", "red", "green", "blue" ]
+
+  sizeSelect = new toolmenu.SizeSelect
+    model: toolSettings
+    sizes: [ 5, 10, 20, 50, 100 ]
+
+
+
+  toolMenu = new toolmenu.ToolMenu
     el: ".menuContainer"
     model: toolSettings
+    tools: [
+      name: "Pencil"
+      description: "Free drawing"
+      options: [ sizeSelect, colorSelect ]
+    ,
+      name: "Line"
+      description: "Lines"
+      options: [ sizeSelect, colorSelect ]
+    ,
+      name: "Circle"
+      description: "Circles"
+      options: [ colorSelect ]
+    ]
+
   toolMenu.render()
 
   socket = io.connect().of("/drawer")
@@ -62,6 +88,7 @@ $ ->
   notifications = new Notification
 
 
+  ## OLDIES
   new views.ToolSelection
     el: ".toolSettings"
   .render()
@@ -90,6 +117,7 @@ $ ->
 
   menu.render()
 
+  ## /OLDIES
 
 
   area = new DrawArea

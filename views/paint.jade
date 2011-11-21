@@ -1,8 +1,5 @@
 
 
-script(type="x-handlebars-template").
-  <b>hello</b>
-  <p>asfasdf</p>
 
 script.status-template(type="x-handlebars-template").
   .attr
@@ -56,6 +53,15 @@ script.image-template(type="x-handlebars-template")
     | {{/if}}
 
 
+script.menuButtonTemplate(type="x-handlebars-template")
+  .buttonBorder
+    button(title="{{description}}") {{name}}
+
+
+script.toolOptionsTemplate(type="x-handlebars-template")
+  .group
+    h2 {{name}}
+    .description {{description}}
 
 h1
 
@@ -71,7 +77,7 @@ h1
 
 .menuContainer
 
-  .wrapper.openDown
+  .wrapper
 
     .tabs
 
@@ -79,19 +85,18 @@ h1
         .sideButtonBorder
           .dragArea
 
-        .buttonBorder
-          button Menu
-        .buttonBorder
-          button Pen
-        .buttonBorder.selected
-          button Line
-        .buttonBorder
-          button Eraser
-        .buttonBorder
-          button Move
+        .buttons
+          .buttonBorder
+            button Menu
+          .buttonBorder
+            button Pen
+          .buttonBorder.selected
+            button Line
+          .buttonBorder
+            button Eraser
+          .buttonBorder
+            button Move
 
-        .sideButtonBorder
-          .dragArea
 
     .content
       .size.group

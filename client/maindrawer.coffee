@@ -44,9 +44,12 @@ class maindrawer.Main
 
   setTool: =>
 
-    tool = new tools[@toolSettings.get "tool"]
-      model: @toolSettings
-      area: @area
+    if Tool = tools[@toolSettings.get "tool"]
+      tool = new Tool
+        model: @toolSettings
+        area: @area
+    else
+      throw new Error "Unkown tool #{ @toolSettings.get "tool" }"
 
 
     tool.bind "shape", (shape) =>
