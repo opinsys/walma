@@ -84,7 +84,7 @@ app.post "/api/create", (req, res) ->
       throw err if err
       room = new Drawing roomName, 1
       room.fetch ->
-        room.setBackground new Buffer(req.body.image, "base64"), (err) ->
+        room.saveImage "background", new Buffer(req.body.image, "base64"), (err) ->
           throw err if err
           res.json url: "/#{ roomName }"
 
