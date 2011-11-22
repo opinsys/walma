@@ -11,6 +11,13 @@ class views.Navigation extends Backbone.View
     "tap .next": "navigateToNext"
     "tap .prev": "navigateToPrev"
     "tap .remote": "toggleRemote"
+    # XXX
+    "tap .publish": "triggerPublish"
+
+  # XXX
+  triggerPublish: ->
+    @trigger "publish"
+
 
 
   constructor: (opts) ->
@@ -23,6 +30,8 @@ class views.Navigation extends Backbone.View
       @navigate parseInt position, 10
 
     @settings.bind "change:remote", => @render()
+
+
 
   toggleRemote: ->
     @settings.set remote: !@settings.get("remote")

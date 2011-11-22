@@ -89,7 +89,7 @@ $ ->
     model: toolSettings
     tools: [
       label: "Menu"
-      description: "Naviage sub slides"
+      description: ""
       subviews: [ navigation ]
     ,
       value: "Pencil"
@@ -157,7 +157,9 @@ $ ->
 
   window._area = area
 
-  menu.bind "publish", ->
+  # XXX
+  navigation.bind "publish", ->
+    toolMenu.closeMenu()
 
     linkView = new views.PublicLink
       el: ".lightbox"
