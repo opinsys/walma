@@ -126,12 +126,15 @@ class exports.Pencil extends BaseTool
   last = null
   down: (point) ->
 
+    console.log "down", @myid, JSON.stringify @moves
 
     last = this
 
     # Start drawing
     point = _.clone point
     point.op = "down"
+
+
     @moves.push point
     @lastPoint = point
 
@@ -151,6 +154,8 @@ class exports.Pencil extends BaseTool
     to = _.clone to
     to.op = "move"
 
+    console.log "down", @myid, JSON.stringify @moves
+    @moves.push to
 
     from = @lastPoint
     @drawLine from, to
@@ -159,6 +164,7 @@ class exports.Pencil extends BaseTool
 
   up: (point) ->
     @move point
+    console.log "up", @myid, JSON.stringify @moves
     @draw()
 
 
