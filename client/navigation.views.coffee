@@ -10,6 +10,7 @@ class views.Navigation extends Backbone.View
   events:
     "tap .next": "navigateToNext"
     "tap .prev": "navigateToPrev"
+    "tap .remote": "toggleRemote"
 
 
   constructor: (opts) ->
@@ -23,14 +24,24 @@ class views.Navigation extends Backbone.View
 
     @settings.bind "change:remote", => @render()
 
+  toggleRemote: ->
+    @settings.set remote: !@settings.get("remote")
+    @render()
+
+  update: ->
+    @delegateEvents()
 
   render: ->
-
 
     if @model.get("position") <= 1
       @$(".prev").hide()
     else
       @$(".prev").show()
+
+    if @settings.get "remote"
+      @$(".remote").parent().addClass "selected"
+    else
+      @$(".remote").parent().removeClass "selected"
 
 
 

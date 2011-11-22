@@ -38,6 +38,7 @@ $ ->
     console.log "SCRolling"
     false
 
+  socket = io.connect().of("/drawer")
 
   $("body").bind "touchmove", (e) -> e.preventDefault()
 
@@ -45,6 +46,20 @@ $ ->
   [__, roomName, position] = window.location.pathname.split("/")
   toolSettings = new models.ToolSettings
 
+  roomModel = new models.RoomModel
+    socket: socket
+
+  roomModel.set
+    roomName: roomName
+    position: parseInt position, 10
+
+  navigation = new views.Navigation
+    socket: socket
+    model: roomModel
+    settings: toolSettings
+    el: ".navigation"
+
+  navigation.render()
 
 
   colorSelect = new toolmenu.ColorSelect
@@ -73,37 +88,34 @@ $ ->
     el: ".menuContainer"
     model: toolSettings
     tools: [
+      label: "Menu"
+      description: "Naviage sub slides"
+      subviews: [ navigation ]
+    ,
       value: "Pencil"
       label: "Pencil"
       description: "Free drawing tool"
-      options: [ sizeSelect, colorSelect ]
+      subviews: [ sizeSelect, colorSelect ]
     ,
       value: "Line"
       label: "Line"
       description: "Lines"
-      options: [ sizeSelect, colorSelect ]
+      subviews: [ sizeSelect, colorSelect ]
     ,
       value: "Circle"
       label: "Circle"
       description: "Circles"
-      options: [ colorSelect ]
+      subviews: [ colorSelect ]
     ,
       value: "Move"
-      label: "Move"
+      label: "Pan"
       description: "Pan drawing area"
-      options: [ speedSelect ]
+      subviews: [ speedSelect ]
     ]
 
   toolMenu.render()
 
-  socket = io.connect().of("/drawer")
 
-  roomModel = new models.RoomModel
-    socket: socket
-
-  roomModel.set
-    roomName: roomName
-    position: parseInt position, 10
 
   notifications = new Notification
 
@@ -173,13 +185,6 @@ $ ->
     status.removeClient client
     notifications.info "#{ client.browser } parted. We have now #{ status.getClientCount() } other users"
 
-  navigation = new views.Navigation
-    socket: socket
-    model: roomModel
-    settings: toolSettings
-    el: ".navigation"
-
-  navigation.render()
 
   if hasTouch
     Input = drawers.TouchInput

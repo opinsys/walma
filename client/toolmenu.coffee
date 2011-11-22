@@ -41,6 +41,7 @@ class Draggable extends Backbone.View
     $("body").bind "touchmove", (e) =>
       @move e.originalEvent.touches[0]
 
+
   move: (e) =>
     if @down and @last
 
@@ -73,6 +74,15 @@ class Draggable extends Backbone.View
       @down = false
 
 
+groupButtons = (buttons) ->
+
+  for button in buttons then do (button) ->
+    button.bind "select", ->
+      button.select()
+      for other in buttons when other isnt button
+          other.unselect()
+
+
 class Button extends Backbone.View
 
   events:
@@ -91,17 +101,15 @@ class Button extends Backbone.View
 
   render: ->
     $(@el).html @template @
-
     if @model.get(@field) is @value
       @select()
-    else
-      @unselect()
 
 
   tap: ->
-    ob = {}
-    ob[@field] = @value
-    @model.set ob
+    if @value
+      ob = {}
+      ob[@field] = @value
+      @model.set ob
     @trigger "select", @
 
   select: ->
@@ -161,6 +169,7 @@ class toolmenu.ColorSelect extends Options
       button.render()
 
       button
+
 
   update: ->
     for b in @colorButtons
@@ -251,13 +260,14 @@ class toolmenu.ToolMenu extends Draggable
         @$(".content").empty()
 
         @$(".content").append description.el
-        for o in tool.options
-          @$(".content").append o.el
-          o.update()
+        for view in tool.subviews
+          @$(".content").append view.el
+          view.update()
 
         @toolSelected button
 
       button
+    groupButtons @toolButtons
 
     $("body").bind "mousedown touchstart", (e) =>
       if $(this.el).has(e.target).length is 0

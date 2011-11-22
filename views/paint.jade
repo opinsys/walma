@@ -65,6 +65,13 @@ script.toolOptionsTemplate(type="x-handlebars-template")
     .buttons
     .clear
 
+script.publishButton(type="x-handlebars-template")
+  .group.option
+    h2 Publish
+    .description Publish drawing
+    .buttons
+    .clear
+
 script.toolTitle(type="x-handlebars-template")
   .group.title
     h2 {{label}}
@@ -191,10 +198,15 @@ h1
 
   .clear
 
-  .navigation.group
-    button.next &gt;
-    .clear
+
+.navigation.group
+  .buttonBorder
     button.prev &lt;
+  .buttonBorder
+    button.next &gt;
+  .buttonBorder
+    button.remote Remote
+  .clear
 
 
 .loading
