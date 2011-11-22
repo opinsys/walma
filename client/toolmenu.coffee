@@ -67,27 +67,36 @@ class Draggable extends Backbone.View
       false
 
 
-class ToolButton extends Backbone.View
+class Button extends Backbone.View
+
+  events:
+    "tap button": "tap"
 
   constructor: (opts) ->
     super
-    {@name} = opts
-    {@description} = opts
-    {@options} = opts
-
-    # Display info as dummy option
-    @options.unshift new Description opts
+    {@field, @value, @label, @description} = opts
+    {@label, @description} = opts
 
     source = $("script.menuButtonTemplate").html()
     @template = Handlebars.compile source
 
+    @model.bind "change:#{ @field }", => @render()
+
+
   render: ->
     $(@el).html @template @
 
-    @$("button").bind "tap", =>
-      @trigger "select", @name
-      @model.set tool: @name
+    if @model.get(@field) is @value
+      @select()
+    else
+      @unselect()
 
+
+  tap: ->
+    ob = {}
+    ob[@field] = @value
+    @model.set ob
+    @trigger "select", @
 
   select: ->
     $(@el).children().addClass("selected")
@@ -96,11 +105,17 @@ class ToolButton extends Backbone.View
     $(@el).children().removeClass("selected")
 
 
+class ColorButton extends Button
+
+  render: ->
+    super
+    @$("button").css "background-color", @value
+
 
 # Base class for tool options
 class Options extends Backbone.View
 
-  constructor: (opts) ->
+  constructor: (@opts) ->
     super
 
     source = $("script.toolOptionsTemplate").html()
@@ -111,22 +126,73 @@ class Options extends Backbone.View
 
 
 # Dummy options view. Just shows some text.
-class Description extends Options
+class Description extends Backbone.View
 
-  constructor: (opts) ->
-    {@name, @description} = opts
+  constructor: (@opts) ->
     super
+    {@label, @description} = @opts
+
+    source = $("script.toolTitle").html()
+    @template = Handlebars.compile source
+
+  render: ->
+    $(@el).html @template @
 
 class toolmenu.ColorSelect extends Options
-  name: "Color"
-  description: "desc..."
+  label: "Color"
+  description: ""
+
+  constructor: ->
+    super
+    @colorButtons = for color in @opts.colors then do (color) =>
+      button = new ColorButton
+        model: @model
+        field: "color"
+        label: " "
+        value: color
+        description: "Tool color"
+
+      button.render()
+
+      button
+
+  update: ->
+    for b in @colorButtons
+      b.delegateEvents()
+
+  render: ->
+    super
+    for button in @colorButtons
+      @$(".buttons").append button.el
 
 
 class toolmenu.SizeSelect extends Options
 
-  name: "Size"
-  description: "desc..."
+  label: "Size"
+  description: ""
 
+  constructor: ->
+    super
+    @sizeButtons = for size in @opts.sizes then do (size) =>
+      button = new Button
+        model: @model
+        field: "size"
+        label: "#{ size }px"
+        value: size
+        description: "Tool size"
+
+      button.render()
+
+      button
+
+  update: ->
+    for b in @sizeButtons
+      b.delegateEvents()
+
+  render: ->
+    super
+    for button in @sizeButtons
+      @$(".buttons").append button.el
 
 
 class toolmenu.ToolMenu extends Draggable
@@ -137,23 +203,34 @@ class toolmenu.ToolMenu extends Draggable
 
     @selectedButton = null
 
-    @buttons = for buttonOpts in opts.tools
-      buttonOpts.model = @model
-      button = new ToolButton buttonOpts
+    @$(".buttons,.tabs").bind "mousemove mousedown", (e) ->
+      e.preventDefault()
 
-      do (button) =>
-        button.bind "select", => @toolSelected button
+    @toolButtons = for tool in opts.tools then do (tool) =>
+      tool.field = "tool"
+      tool.model = @model
+      button = new Button tool
+      description = new Description tool
+      description.render()
+
+      button.bind "select", =>
+        @$(".content").empty()
+
+        @$(".content").append description.el
+        for o in tool.options
+          @$(".content").append o.el
+          o.update()
+
+        @toolSelected button
 
       button
-
-    @model.bind "change:tool", =>
-
 
     $("body").bind "mousedown touchstart", (e) =>
       if $(this.el).has(e.target).length is 0
         @closeMenu()
 
   toolSelected: (button) ->
+
     previous =  @selectedButton
     @selectedButton = button
 
@@ -162,11 +239,6 @@ class toolmenu.ToolMenu extends Draggable
     else
       @openMenu()
 
-    for b in @buttons
-      b.unselect()
-    button.select()
-
-
 
   closeMenu: ->
     @$(".wrapper").removeClass "openDown"
@@ -174,17 +246,12 @@ class toolmenu.ToolMenu extends Draggable
 
   openMenu: ->
     @$(".wrapper").addClass "openDown"
-    @menuContent = @$(".content")
-    @menuContent.empty()
-
-    for o in @selectedButton.options
-      o.render()
-      @menuContent.append o.el
 
   render: ->
     @$(".buttons").empty()
-    for b in @buttons
+    for b in @toolButtons
       b.render()
       @$(".buttons").append b.el
+
 
 

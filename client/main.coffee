@@ -49,29 +49,43 @@ $ ->
 
   colorSelect = new toolmenu.ColorSelect
     model: toolSettings
-    colors: [ "black", "white", "red", "green", "blue" ]
+    colors: [ "black", "white", "red", "green", "blue", "yellow", "pink" ]
+  colorSelect.render()
 
   sizeSelect = new toolmenu.SizeSelect
     model: toolSettings
     sizes: [ 5, 10, 20, 50, 100 ]
+  sizeSelect.render()
 
+  # speedSelect = new toolmenu.SpeedSelect
+  #   model: toolSettings
+  #   sizes: [ 5, 10, 20, 50, 100 ]
+  # sizeSelect.render()
 
 
   toolMenu = new toolmenu.ToolMenu
     el: ".menuContainer"
     model: toolSettings
     tools: [
-      name: "Pencil"
-      description: "Free drawing"
+      value: "Pencil"
+      label: "Pencil"
+      description: "Free drawing tool"
       options: [ sizeSelect, colorSelect ]
     ,
-      name: "Line"
+      value: "Line"
+      label: "Line"
       description: "Lines"
       options: [ sizeSelect, colorSelect ]
     ,
-      name: "Circle"
+      value: "Circle"
+      label: "Circle"
       description: "Circles"
       options: [ colorSelect ]
+    ,
+      value: "Move"
+      label: "Move"
+      description: "Pan drawing area"
+      options: []
     ]
 
   toolMenu.render()

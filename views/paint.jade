@@ -55,13 +55,21 @@ script.image-template(type="x-handlebars-template")
 
 script.menuButtonTemplate(type="x-handlebars-template")
   .buttonBorder
-    button(title="{{description}}") {{name}}
+    button(title="{{description}}", data-value="{{value}}") {{label}}
 
 
 script.toolOptionsTemplate(type="x-handlebars-template")
-  .group
-    h2 {{name}}
+  .group.option
+    h2 {{label}}
     .description {{description}}
+    .buttons
+    .clear
+
+script.toolTitle(type="x-handlebars-template")
+  .group.title
+    h2 {{label}}
+    .description {{description}}
+    .clear
 
 h1
 

@@ -14,6 +14,7 @@ class models.ToolSettings extends Backbone.Model
     tool: "Pencil"
     size: 5
     color: "black"
+    panningSpeed: null
 
   constructor: ->
     super

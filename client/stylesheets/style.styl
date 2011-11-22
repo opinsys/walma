@@ -174,8 +174,6 @@ canvas.loading
 
 
 
-  .clear
-    clear both
   button.toggle
     display block
 
@@ -183,6 +181,8 @@ canvas.loading
   .options,.toggle
     float left
 
+.clear
+  clear both
 
 .bg-size
   top 0
@@ -234,6 +234,7 @@ canvas.loading
     height buttonSize
     border 2px solid #DDD
     cursor move
+    margin-right 1em
 
     // http://www.colorzilla.com/gradient-editor/
     background: #ffffff; /* Old browsers */
@@ -266,6 +267,15 @@ canvas.loading
   .content
     display none
     background-color white
+    padding 1em
+    margin-bottom 2em
+
+    hr
+      visibility hidden
+    .option
+      .description,h2
+        display inline
+
     .group
       clear both
       padding-left 1em

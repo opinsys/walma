@@ -254,12 +254,25 @@ class exports.Move
   speedUp: @::threshold
 
   constructor: (opts) ->
-    {@area} = opts
+    {@area, @model} = opts
     @area.setCursor @cursor
+
+    @model.bind "change:panningSpeed", =>
+      @updateSettings()
+    @updateSettings()
+
+
 
   begin: ->
   end: ->
+
   updateSettings: ->
+    speed = @model.get "panningSpeed"
+    alert speed
+    if speed
+      @speedUp = speed
+    else
+      @speedUp = @threshold
 
 
   down: (point) ->
@@ -292,6 +305,7 @@ class exports.Move
   up: (point) ->
     @area.resize()
     console.log @area.debugPrint()
+
 
 class exports.FastMove extends exports.Move
 
