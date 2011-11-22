@@ -102,7 +102,6 @@ class drawers.TouchInput extends BaseInput
     @tool.end()
 
   getCoords: (e) ->
-    console.log "touch", (t for t in e.originalEvent.touches)
     e = e.originalEvent.touches[0]
     x: e.pageX - @el.offsetLeft
     y: e.pageY - @el.offsetTop

@@ -268,7 +268,6 @@ class exports.Move
 
   updateSettings: ->
     speed = @model.get "panningSpeed"
-    alert speed
     if speed
       @speedUp = speed
     else

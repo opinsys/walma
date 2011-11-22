@@ -57,10 +57,16 @@ $ ->
     sizes: [ 5, 10, 20, 50, 100 ]
   sizeSelect.render()
 
-  # speedSelect = new toolmenu.SpeedSelect
-  #   model: toolSettings
-  #   sizes: [ 5, 10, 20, 50, 100 ]
-  # sizeSelect.render()
+  speedSelect = new toolmenu.SpeedSelect
+    model: toolSettings
+    speeds: [
+      speed: 4
+      human: "Normal"
+    ,
+      speed: 10
+      human: "Fast"
+    ]
+  speedSelect.render()
 
 
   toolMenu = new toolmenu.ToolMenu
@@ -85,7 +91,7 @@ $ ->
       value: "Move"
       label: "Move"
       description: "Pan drawing area"
-      options: []
+      options: [ speedSelect ]
     ]
 
   toolMenu.render()

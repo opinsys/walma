@@ -200,9 +200,6 @@ canvas.loading
   position absolute
   z-index 60
 
-  .buttons
-    width 25em
-    // border 1px solid black
 
   .tabs
     height buttonSize
@@ -227,30 +224,30 @@ canvas.loading
 
   .sideButtonBorder
     position relative
-    top 0.2em
     float left
-    border-radius 20px
-    width 2em
-    height buttonSize
-    border 2px solid #DDD
-    cursor move
+
     margin-right 1em
 
-    // http://www.colorzilla.com/gradient-editor/
-    background: #ffffff; /* Old browsers */
-    background: -moz-linear-gradient(left, #ffffff 0%, #f1f1f1 33%, #e1e1e1 66%, #f6f6f6 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, right top, color-stop(0%,#ffffff), color-stop(33%,#f1f1f1), color-stop(66%,#e1e1e1), color-stop(100%,#f6f6f6)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(left, #ffffff 0%,#f1f1f1 33%,#e1e1e1 66%,#f6f6f6 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(left, #ffffff 0%,#f1f1f1 33%,#e1e1e1 66%,#f6f6f6 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(left, #ffffff 0%,#f1f1f1 33%,#e1e1e1 66%,#f6f6f6 100%); /* IE10+ */
-    background: linear-gradient(left, #ffffff 0%,#f1f1f1 33%,#e1e1e1 66%,#f6f6f6 100%); /* W3C */
+    .dragArea.touching
+      box-shadow 0px 0px 40px black
+    .dragArea
+      cursor move
+      width buttonSize * 0.8
+      height buttonSize
+      box-shadow 0px 0px 10px black
+
+      // http://www.colorzilla.com/gradient-editor/
+      background: #ffffff; /* Old browsers */
+      background: -moz-linear-gradient(left, #ffffff 0%, #f1f1f1 33%, #e1e1e1 66%, #f6f6f6 100%); /* FF3.6+ */
+      background: -webkit-gradient(linear, left top, right top, color-stop(0%,#ffffff), color-stop(33%,#f1f1f1), color-stop(66%,#e1e1e1), color-stop(100%,#f6f6f6)); /* Chrome,Safari4+ */
+      background: -webkit-linear-gradient(left, #ffffff 0%,#f1f1f1 33%,#e1e1e1 66%,#f6f6f6 100%); /* Chrome10+,Safari5.1+ */
+      background: -o-linear-gradient(left, #ffffff 0%,#f1f1f1 33%,#e1e1e1 66%,#f6f6f6 100%); /* Opera 11.10+ */
+      background: -ms-linear-gradient(left, #ffffff 0%,#f1f1f1 33%,#e1e1e1 66%,#f6f6f6 100%); /* IE10+ */
+      background: linear-gradient(left, #ffffff 0%,#f1f1f1 33%,#e1e1e1 66%,#f6f6f6 100%); /* W3C */
 
 
 
 
-  .dragArea
-    width buttonSize * 0.75
-    height buttonSize * 0.75
 
 
   .openDown .tabs .buttonBorder
@@ -264,6 +261,8 @@ canvas.loading
   .selected
     background-color selectionColor
 
+  .openDown .content, .openUp .content
+      box-shadow 0px 40px 100px black
   .content
     display none
     background-color white
@@ -272,15 +271,13 @@ canvas.loading
 
     hr
       visibility hidden
-    .option
-      .description,h2
-        display inline
 
     .group
       clear both
       padding-left 1em
       padding-right 0.7em
       padding-top 0.3em
+      margin-top 0.7em
       .description
         margin 1em
         font-size 10pt

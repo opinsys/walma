@@ -18,24 +18,31 @@ class Draggable extends Backbone.View
       width: $(@el).width()
       height: $(@el).height()
 
-    @$(".dragArea").mousedown @startMove
-    $(window).mouseup @stopMove
-    $(window).mousemove @move
+    @usingTouch = false
 
-    $(@el).bind "touchstart", (e) =>
+    @$(".dragArea").mousedown (e) =>
+      e.preventDefault()
+      @startMove e unless @usingTouch
+
+    $(window).mouseup (e) =>
+      @stopMove e unless @usingTouch
+
+    $(window).mousemove (e) =>
+      @move e unless @usingTouch
+
+    $(".dragArea").bind "touchstart", (e) =>
+      @usingTouch = true
       @startMove e.originalEvent.touches[0]
-      false
 
     $('body').bind "touchend", (e) =>
       @stopMove e.originalEvent.touches[0]
-      false
+      @usingTouch = false
 
-    $('body').bind "touchmove", (e) =>
+    $("body").bind "touchmove", (e) =>
       @move e.originalEvent.touches[0]
-      false
 
   move: (e) =>
-    if @last
+    if @down and @last
 
       diffPoint =
         x: e.pageX - @last.pageX
@@ -55,16 +62,15 @@ class Draggable extends Backbone.View
         newPoint.y = newY
 
       @current = newPoint
-      @last = e
-
-  startMove: (e) =>
-    e.preventDefault()
     @last = e
 
+  startMove: (e) =>
+    @down = true
+
   stopMove: =>
-    if @last
+    if @down
       @last = null
-      false
+      @down = false
 
 
 class Button extends Backbone.View
@@ -195,6 +201,34 @@ class toolmenu.SizeSelect extends Options
       @$(".buttons").append button.el
 
 
+class toolmenu.SpeedSelect extends Options
+
+  label: "Panning speed"
+  description: "Use normal on tablets and desktop. Fast for large smartboards etc."
+
+  constructor: ->
+    super
+    @sizeButtons = for speedOpt in @opts.speeds then do (speedOpt) =>
+      button = new Button
+        model: @model
+        field: "panningSpeed"
+        label: speedOpt.human
+        value: speedOpt.speed
+        description: speedOpt.human + " speed"
+
+      button.render()
+
+      button
+
+  update: ->
+    for b in @sizeButtons
+      b.delegateEvents()
+
+  render: ->
+    super
+    for button in @sizeButtons
+      @$(".buttons").append button.el
+
 class toolmenu.ToolMenu extends Draggable
 
   constructor: (opts) ->
@@ -252,6 +286,8 @@ class toolmenu.ToolMenu extends Draggable
     for b in @toolButtons
       b.render()
       @$(".buttons").append b.el
+
+    @$(".buttons").css "width", "#{ @$(".dragArea").parent().width() + @$(".buttons").width() * (@toolButtons.length+1) }px"
 
 
 

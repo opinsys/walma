@@ -38,8 +38,11 @@ $ ->
       $(e.target).removeClass "touching"
       $(e.target).trigger('tap', e)
   else
+    $('body').bind 'mousedown', (e) ->
+      $(e.target).addClass "touching"
     $('body').bind 'mouseup', (e) ->
       e.preventDefault()
+      $(e.target).removeClass "touching"
       $(e.target).trigger('tap', e)
 
 
