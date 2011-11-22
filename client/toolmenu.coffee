@@ -109,6 +109,7 @@ class Button extends Backbone.View
     if @value
       ob = {}
       ob[@field] = @value
+      console.log "button tap setting", ob
       @model.set ob
     @trigger "select", @
 

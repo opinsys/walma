@@ -118,6 +118,7 @@ class exports.Pencil extends BaseTool
 
   constructor: ->
     super
+    @myid = Math.random()
 
   begin: ->
     super
@@ -126,7 +127,6 @@ class exports.Pencil extends BaseTool
   down: (point) ->
 
 
-    console.log "moves is ondwon", @moves
     last = this
 
     # Start drawing
@@ -151,10 +151,6 @@ class exports.Pencil extends BaseTool
     to = _.clone to
     to.op = "move"
 
-    try
-      @moves.push to
-    catch e
-      console.log e
 
     from = @lastPoint
     @drawLine from, to

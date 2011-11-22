@@ -43,8 +43,13 @@ class maindrawer.Main
     @bindEvents()
 
   setTool: =>
+    toolName = @toolSettings.get "tool"
 
-    if Tool = tools[@toolSettings.get "tool"]
+    if @input.tool?.name is toolName
+      console.log "Already using #{ toolName }"
+      return
+
+    if Tool = tools[toolName]
       tool = new Tool
         model: @toolSettings
         area: @area
@@ -96,7 +101,8 @@ class maindrawer.Main
         @drawHistory history.draws
 
 
-    @toolSettings.bind "change:tool", @setTool
+    @toolSettings.bind "change:tool", =>
+      @setTool()
 
     @status.set status: "Connecting"
     if @socket.socket.connected
