@@ -41,6 +41,7 @@ class views.Navigation extends Backbone.View
     @delegateEvents()
 
   render: ->
+    $(@el).show()
 
     if @model.get("position") <= 1
       @$(".prev").hide()

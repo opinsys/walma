@@ -116,8 +116,19 @@ class exports.Pencil extends BaseTool
 
   name: "Pencil"
 
+  constructor: ->
+    super
 
+  begin: ->
+    super
+
+  last = null
   down: (point) ->
+
+
+    console.log "moves is ondwon", @moves
+    last = this
+
     # Start drawing
     point = _.clone point
     point.op = "down"
@@ -139,9 +150,13 @@ class exports.Pencil extends BaseTool
   move: (to) ->
     to = _.clone to
     to.op = "move"
-    @moves.push to
-    from = @lastPoint
 
+    try
+      @moves.push to
+    catch e
+      console.log e
+
+    from = @lastPoint
     @drawLine from, to
 
     @lastPoint = to
@@ -261,9 +276,8 @@ class exports.Move
       @updateSettings()
     @updateSettings()
 
-
-
   begin: ->
+
   end: ->
 
   updateSettings: ->

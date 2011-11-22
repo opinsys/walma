@@ -5,7 +5,7 @@ body
   font-family arial
 
 
-.status, toolSettings
+.status
   -webkit-tap-highlight-color rgba(0, 0, 0, 0)
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -146,43 +146,12 @@ canvas.loading
 
 
 
-.toolSettings
-  z-index 500
-  position fixed
-
-  top 0px
-  left 0px
-
-  overflow none
-  display block
-
-
-  z-index 50
-  .options
-    display none
-    height buttonSize
-    overflow hidden
-  button.selected
-    border 3px inset
-  button
-    margin 0.5em
-    width buttonSize
-    height buttonSize
-    cursor pointer
-    border-radius 0.5em
-    border 3px outset
-
-
-
-  button.toggle
-    display block
-
-
-  .options,.toggle
-    float left
 
 .clear
   clear both
+
+.navigation
+  display none
 
 .bg-size
   top 0
@@ -194,9 +163,10 @@ canvas.loading
 
 
 .menuContainer
+  display none
   selectionColor = #DDD
-  left 300px
-  top 200px
+  left 10px
+  top 10px
   position absolute
   z-index 60
 
@@ -231,9 +201,11 @@ canvas.loading
     .dragArea.touching
       box-shadow 0px 0px 40px black
     .dragArea
+      position relative
+      top 12px
       cursor move
       width buttonSize * 0.8
-      height buttonSize
+      height buttonSize * 0.8
       box-shadow 0px 0px 10px black
 
       // http://www.colorzilla.com/gradient-editor/

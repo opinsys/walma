@@ -120,36 +120,6 @@ $ ->
   notifications = new Notification
 
 
-  ## OLDIES
-  new views.ToolSelection
-    el: ".toolSettings"
-  .render()
-
-  new views.ColorSelector
-    el: ".colorSelector"
-    model: toolSettings
-  .render()
-
-
-  new views.SizeSelector
-    el: ".sizeSelector"
-    model: toolSettings
-  .render()
-
-
-  new views.ToolSelector
-    el: ".toolSelector"
-    model: toolSettings
-  .render()
-
-
-  menu = new views.Menu
-    el: ".menu"
-    model: toolSettings
-
-  menu.render()
-
-  ## /OLDIES
 
 
   area = new DrawArea

@@ -287,11 +287,13 @@ class toolmenu.ToolMenu extends Draggable
   closeMenu: ->
     @$(".wrapper").removeClass "openDown"
     @selectedButton = null
+    @model.trigger "change:tool"
 
   openMenu: ->
     @$(".wrapper").addClass "openDown"
 
   render: ->
+    $(@el).show()
     @$(".buttons").empty()
     for b in @toolButtons
       b.render()

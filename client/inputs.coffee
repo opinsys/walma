@@ -29,7 +29,6 @@ class BaseInput extends Backbone.View
   constructor: (@opts) -> super
 
   use: (tool) ->
-    console.log "Using tool", tool
     @tool.unbind() if @tool
     @tool = tool
 
@@ -53,8 +52,11 @@ class drawers.MouseInput extends BaseInput
 
     false
 
+
+
   cursorMove: (e) =>
     return if not @down
+
 
     @tool.move @lastPoint = @getCoords e
 
@@ -90,7 +92,9 @@ class drawers.TouchInput extends BaseInput
     e.preventDefault()
     @tool.move @lastTouch = @getCoords e
 
+
   down: (e) =>
+    test @
     e.preventDefault()
     @tool.begin()
     @tool.down @lastTouch = @getCoords e
