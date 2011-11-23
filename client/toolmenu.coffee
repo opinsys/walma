@@ -154,7 +154,7 @@ class Description extends Backbone.View
     $(@el).html @template @
 
 class toolmenu.ColorSelect extends Options
-  label: "Color"
+  label: "Färg"
   description: ""
 
   constructor: ->
@@ -185,7 +185,7 @@ class toolmenu.ColorSelect extends Options
 
 class toolmenu.SizeSelect extends Options
 
-  label: "Size"
+  label: "Storlek"
   description: ""
 
   constructor: ->
@@ -215,8 +215,8 @@ class toolmenu.SizeSelect extends Options
 
 class toolmenu.SpeedSelect extends Options
 
-  label: "Panning speed"
-  description: "Use normal on tablets and desktop. Fast for large smartboards etc."
+  label: "Panoreringshastighet"
+  description: "Använd normal för dator och pekdator, snabb för smartboards o.dyl"
 
   constructor: ->
     super

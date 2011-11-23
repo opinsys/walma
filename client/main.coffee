@@ -79,7 +79,7 @@ $ ->
       human: "Normal"
     ,
       speed: 10
-      human: "Fast"
+      human: "Snabb"
     ]
   speedSelect.render()
 
@@ -88,33 +88,33 @@ $ ->
     el: ".menuContainer"
     model: toolSettings
     tools: [
-      label: "Menu"
+      label: "Meny"
       description: ""
       subviews: [ navigation ]
     ,
       value: "Pencil"
-      label: "Pencil"
-      description: "Free drawing tool"
+      label: "Penna"
+      description: "Fri hand"
       subviews: [ sizeSelect, colorSelect ]
     ,
       value: "Line"
-      label: "Line"
-      description: "Lines"
+      label: "Linje"
+      description: ""
       subviews: [ sizeSelect, colorSelect ]
     ,
       value: "Circle"
-      label: "Circle"
-      description: "Circles"
+      label: "Cirkle"
+      description: ""
       subviews: [ colorSelect ]
     ,
       value: "Eraser"
-      label: "Eraser"
-      description: "Erase drawings"
+      label: "Radergummi"
+      description: ""
       subviews: [ sizeSelect ]
     ,
       value: "Move"
-      label: "Pan"
-      description: "Pan drawing area"
+      label: "Panorera"
+      description: "Flytta på bakgrunden"
       subviews: [ speedSelect ]
     ]
 
