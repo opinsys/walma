@@ -107,6 +107,11 @@ $ ->
       description: "Circles"
       subviews: [ colorSelect ]
     ,
+      value: "Eraser"
+      label: "Eraser"
+      description: "Erase drawings"
+      subviews: [ sizeSelect ]
+    ,
       value: "Move"
       label: "Pan"
       description: "Pan drawing area"
