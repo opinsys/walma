@@ -168,6 +168,7 @@ class toolmenu.ColorSelect extends Options
         description: "Tool color"
 
       button.render()
+      button.bind "select", (e) => @trigger "select", e
 
       button
 
@@ -198,6 +199,7 @@ class toolmenu.SizeSelect extends Options
         description: "Tool size"
 
       button.render()
+      button.bind "select", (e) => @trigger "select", e
 
       button
 
@@ -228,6 +230,8 @@ class toolmenu.SpeedSelect extends Options
 
       button.render()
 
+      button.bind "select", (e) => @trigger "select", e
+
       button
 
   update: ->
@@ -250,12 +254,16 @@ class toolmenu.ToolMenu extends Draggable
     @$(".buttons,.tabs").bind "mousemove mousedown", (e) ->
       e.preventDefault()
 
+
+
     @toolButtons = for tool in opts.tools then do (tool) =>
       tool.field = "tool"
       tool.model = @model
       button = new Button tool
       description = new Description tool
       description.render()
+      for view in tool.subviews
+        view.bind "select", => @closeMenu()
 
       button.bind "select", =>
         @$(".content").empty()
@@ -268,6 +276,7 @@ class toolmenu.ToolMenu extends Draggable
         @toolSelected button
 
       button
+
     groupButtons @toolButtons
 
     $("body").bind "mousedown touchstart", (e) =>
