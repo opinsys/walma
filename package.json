@@ -18,7 +18,7 @@
       , "markdown-js": "0.0.3"
       , "piler": ""
       , "useragent": ""
-      , "mongodb": ""
+      , "mongodb": "0.9.6-23"
       , "connect-form": ""
       , "socket.io": "0.8.5"
       , "socket.io-client": "0.8.5"
