@@ -46,6 +46,10 @@ $ ->
   [__, roomName, position] = window.location.pathname.split("/")
   toolSettings = new models.ToolSettings
 
+
+  area = new DrawArea
+    el: ".whiteboard"
+
   roomModel = new models.RoomModel
     socket: socket
 
@@ -59,7 +63,11 @@ $ ->
     settings: toolSettings
     el: ".navigation"
 
-  navigation.render()
+  publishView = new views.Publish
+    model: roomModel
+    area: area
+    settings: toolSettings
+    el: ".group.publish"
 
 
   colorSelect = new toolmenu.ColorSelect
@@ -90,7 +98,7 @@ $ ->
     tools: [
       label: "Menu"
       description: ""
-      subviews: [ navigation ]
+      subviews: [ navigation, publishView ]
     ,
       value: "Pencil"
       label: "Pencil"
@@ -127,23 +135,9 @@ $ ->
 
 
 
-  area = new DrawArea
-    el: ".whiteboard"
 
-  window._area = area
-
-  # XXX
-  navigation.bind "publish", ->
-    toolMenu.closeMenu()
-
-    linkView = new views.PublicLink
-      el: ".lightbox"
-      model: roomModel
-      area: area
-
-    linkView.render()
-
-    linkView.bind "published", -> notifications.info "Drawing published"
+  publishView.bind "publish", ->
+    notifications.info "Drawing published"
 
 
   statusView = new views.Status

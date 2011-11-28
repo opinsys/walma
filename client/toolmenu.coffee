@@ -74,6 +74,10 @@ class Draggable extends Backbone.View
       @down = false
 
 
+
+
+
+
 groupButtons = (buttons) ->
 
   for button in buttons then do (button) ->
@@ -103,6 +107,7 @@ class Button extends Backbone.View
     $(@el).html @template @
     if @model.get(@field) is @value
       @select()
+    @delegateEvents()
 
 
   tap: ->
@@ -173,13 +178,11 @@ class toolmenu.ColorSelect extends Options
       button
 
 
-  update: ->
-    for b in @colorButtons
-      b.delegateEvents()
 
   render: ->
     super
     for button in @colorButtons
+      button.render()
       @$(".buttons").append button.el
 
 
@@ -203,14 +206,12 @@ class toolmenu.SizeSelect extends Options
 
       button
 
-  update: ->
-    for b in @sizeButtons
-      b.delegateEvents()
 
   render: ->
     super
     for button in @sizeButtons
       @$(".buttons").append button.el
+      button.render()
 
 
 class toolmenu.SpeedSelect extends Options
@@ -234,9 +235,6 @@ class toolmenu.SpeedSelect extends Options
 
       button
 
-  update: ->
-    for b in @sizeButtons
-      b.delegateEvents()
 
   render: ->
     super
@@ -271,7 +269,7 @@ class toolmenu.ToolMenu extends Draggable
         @$(".content").append description.el
         for view in tool.subviews
           @$(".content").append view.el
-          view.update()
+          view.render()
 
         @toolSelected button
 

@@ -4,6 +4,31 @@ Backbone = require "backbone"
 views = NS "PWB.drawers.views"
 
 
+class views.Publish extends Backbone.View
+
+  constructor: ({ @area, @model }) ->
+    super
+
+  events:
+    "tap .publish": "openPublishView"
+
+  render: ->
+    $(@el).css "display", "block"
+    @delegateEvents()
+
+  openPublishView: ->
+    @trigger "select"
+
+    linkView = new views.PublicLink
+      el: ".lightbox"
+      model: @model
+      area: @area
+
+    linkView.render()
+
+    linkView.bind "published", ->
+      @trigger "publish"
+
 
 class views.Navigation extends Backbone.View
 
@@ -11,13 +36,6 @@ class views.Navigation extends Backbone.View
     "tap .next": "navigateToNext"
     "tap .prev": "navigateToPrev"
     "tap .remote": "toggleRemote"
-    # XXX
-    "tap .publish": "triggerPublish"
-
-  # XXX
-  triggerPublish: ->
-    @trigger "publish"
-
 
 
   constructor: (opts) ->
@@ -32,13 +50,10 @@ class views.Navigation extends Backbone.View
     @settings.bind "change:remote", => @render()
 
 
-
   toggleRemote: ->
     @settings.set remote: !@settings.get("remote")
     @render()
 
-  update: ->
-    @delegateEvents()
 
   render: ->
     $(@el).show()
@@ -53,6 +68,7 @@ class views.Navigation extends Backbone.View
     else
       @$(".remote").parent().removeClass "selected"
 
+    @delegateEvents()
 
 
   navigateToNext: (e) ->
