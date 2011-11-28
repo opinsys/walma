@@ -126,7 +126,6 @@ class exports.Pencil extends BaseTool
   last = null
   down: (point) ->
 
-    console.log "down", @myid, JSON.stringify @moves
 
     last = this
 
@@ -154,7 +153,6 @@ class exports.Pencil extends BaseTool
     to = _.clone to
     to.op = "move"
 
-    console.log "down", @myid, JSON.stringify @moves
     @moves.push to
 
     from = @lastPoint
@@ -164,7 +162,6 @@ class exports.Pencil extends BaseTool
 
   up: (point) ->
     @move point
-    console.log "up", @myid, JSON.stringify @moves
     @draw()
 
 
@@ -319,7 +316,6 @@ class exports.Move
 
   up: (point) ->
     @area.resize()
-    console.log @area.debugPrint()
 
 
 class exports.FastMove extends exports.Move
