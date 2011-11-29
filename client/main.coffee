@@ -34,9 +34,9 @@ $ ->
 
 
 $ ->
-  $(document).scroll (e) ->
-    console.log "SCRolling"
-    false
+  # $(document).scroll (e) ->
+  #   console.log "SCRolling"
+  #   false
 
   socket = io.connect().of("/drawer")
 

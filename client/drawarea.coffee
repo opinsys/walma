@@ -74,6 +74,8 @@ class drawarea.DrawArea extends Backbone.View
     @syncViewSize()
     @resize()
 
+
+
     @resizeTimer = null
     $(window).resize =>
       @syncViewSize()
