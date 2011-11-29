@@ -14,7 +14,6 @@ class views.Publish extends Backbone.View
 
   render: ->
     $(@el).css "display", "block"
-    @delegateEvents()
 
   openPublishView: ->
     @trigger "select"
@@ -68,7 +67,6 @@ class views.Navigation extends Backbone.View
     else
       @$(".remote").parent().removeClass "selected"
 
-    @delegateEvents()
 
 
   navigateToNext: (e) ->

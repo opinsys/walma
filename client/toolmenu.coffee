@@ -107,7 +107,6 @@ class Button extends Backbone.View
     $(@el).html @template @
     if @model.get(@field) is @value
       @select()
-    @delegateEvents()
 
 
   tap: ->
@@ -142,6 +141,8 @@ class Options extends Backbone.View
     @template = Handlebars.compile source
 
   render: ->
+    # First detach from DOM so that elements won't lose their event bindings.
+    $(@el).children().detach()
     $(@el).html @template @
 
 
@@ -264,7 +265,7 @@ class toolmenu.ToolMenu extends Draggable
         view.bind "select", => @closeMenu()
 
       button.bind "select", =>
-        @$(".content").empty()
+        @$(".content").children().detach()
 
         @$(".content").append description.el
         for view in tool.subviews
@@ -302,12 +303,17 @@ class toolmenu.ToolMenu extends Draggable
 
   render: ->
     $(@el).show()
-    @$(".buttons").empty()
+
+    @$(".buttons").children().detach()
+
     for b in @toolButtons
       b.render()
       @$(".buttons").append b.el
 
-    @$(".buttons").css "width", "#{ @$(".dragArea").parent().width() + @$(".buttons").width() * (@toolButtons.length+1) }px"
+    newWidth = @$(".dragArea").parent().width() +
+      @$(".buttons").width() * (@toolButtons.length+1)
+
+    @$(".buttons").css "width", "#{ newWidth }px"
 
 
 
