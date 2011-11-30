@@ -27,7 +27,27 @@ toImage = (url, cb) ->
   else
     cb new Error "Could not convert to image"
 
+downscale = (width, height, maxWidth) ->
+  if width < maxWidth and height < maxWidth
+    height = height
+    width = width
+  else if width > height
+    scale = maxWidth / width
+    width = maxWidth
+    height = height * scale
+  else
+    scale = maxWidth / height
+    height = maxWidth
+    width = width * scale
+
+  [width, height]
+
+
 class drawarea.DrawArea extends Backbone.View
+
+  # Threshold value for large backgrounds. If background height or widht
+  # exceeds this show button which will resize the background to this size.
+  backgroundSizeThreshold: 1000
 
   constructor: (opts) ->
     super
@@ -153,10 +173,31 @@ class drawarea.DrawArea extends Backbone.View
 
   hasBackground: -> !!@bgURL
 
+
   setBackground: (url, cb=->) ->
     @$("canvas.main").css "background-image", "url(#{ url })"
     @bgURL = url
     @updateDrawingSizeFromImage url, => @resize cb
+
+    toImage url, (err, img) =>
+      throw err if err
+      isBig = img.with > @backgroundSizeThreshold or img.height > @backgroundSizeThreshold
+      @model.set bigBackground: isBig
+
+  resizeBackgroundToThreshold: ->
+    toImage @model.getBackgroundURL(), (err, img) =>
+      throw err if err
+
+      [width, height] = downscale img.width, img.height, @backgroundSizeThreshold
+      canvas = document.createElement "canvas"
+      canvas.width = width
+      canvas.height = height
+
+      ctx = canvas.getContext "2d"
+      ctx.drawImage(img, 0, 0, width, height)
+
+      @model.saveBackground canvas.toDataURL("image/png")
+
 
 
   updateDrawingSizeFromImage: (url, cb=->) ->

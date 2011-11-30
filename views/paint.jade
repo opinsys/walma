@@ -83,9 +83,19 @@ script.toolTitle(type="x-handlebars-template")
 
 script.backgroundSelectTemplate(type="x-handlebars-template")
   .group.backgroundSelect
-  h2 Select background
-  input.backgroundInput(type="file", value="Select")
-  button.backgroundDelete Delete
+  h2 Background
+
+  .select
+    p Select background
+    input.backgroundInput(type="file", value="Select")
+
+  .delete
+    p Remove background from the drawing
+    button.backgroundDelete Delete
+
+  .resize
+    p Background seems to be very big. Click resize to make it smaller
+    button.backgroundResize Resize
 
 h1
 

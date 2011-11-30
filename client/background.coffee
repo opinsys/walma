@@ -11,6 +11,7 @@ class views.BackgroundSelect extends Backbone.View
 
   events:
     "tap .backgroundDelete": "deleteBackground"
+    "tap .backgroundResize": "resizeBackground"
     "change input": "setBackgroundFromEvent"
 
   constructor: ({ @area, @background }) ->
@@ -26,6 +27,9 @@ class views.BackgroundSelect extends Backbone.View
     @model.deleteBackground()
     @trigger "select"
 
+  resizeBackground: ->
+    @area.resizeBackgroundToThreshold()
+    @trigger "select"
 
   setBackgroundFromEvent: (e) ->
     @readFileToModel e.target.files[0]
@@ -44,8 +48,10 @@ class views.BackgroundSelect extends Backbone.View
     $(@el).html @template
 
     if not @area.hasBackground()
-      @$("button.backgroundDelete").remove()
+      @$(".delete").remove()
 
+    if not @model.get "bigBackground"
+      @$(".resize").remove()
 
   bindDragAndDrop: ->
 
