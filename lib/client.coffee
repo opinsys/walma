@@ -50,7 +50,8 @@ class exports.Client extends EventEmitter
       cb?()
 
 
-    @socket.on "draw", (draw) =>
+    @socket.on "draw", (draw, cb) =>
+      cb()
       @socket.broadcast.to(@model.getCombinedRoomName()).emit "draw", draw
       @model.addDraw draw, (err, status) =>
         if err

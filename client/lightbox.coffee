@@ -7,7 +7,18 @@ views = NS "PWB.drawers.views"
 
 class views.LightBox extends Backbone.View
 
-
+  constructor: ->
+    super
+    # Close lightbox when tabbed or clicked somewhere else
+    #
+    # Add small timeout so that event loop gets cleared. Otherwise menu click
+    # trigger this.
+    setTimeout =>
+      $("body").bind "tap", cb = (e) =>
+        if $(@el).has(e.target).length is 0
+          $("body").unbind "tap", cb
+          @remove()
+    , 10
 
   remove: ->
     @$(".content").empty()
@@ -27,6 +38,7 @@ class views.PublicLink extends views.LightBox
     @template = Handlebars.compile source
 
     @model.bind "change:publishedImage", => @render()
+
 
 
   publishImage: ->
@@ -62,14 +74,4 @@ class views.PublicLink extends views.LightBox
     @$(".close a").bind "tap", => @remove()
     @$("input").select()
 
-    # Close lightbox when tabbed or clicked somewhere else
-    #
-    # Add small timeout so that event loop gets cleared. Otherwise menu click
-    # trigger this.
-    setTimeout =>
-      $("body").bind "tap", cb = (e) =>
-        if $(@el).has(e.target).length is 0
-          $("body").unbind "tap", cb
-          @remove()
-    , 10
 

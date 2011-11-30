@@ -101,6 +101,7 @@ class models.StatusModel extends Backbone.Model
     userDraws: 0
     remoteDraws: 0
     totalDraws: 0
+    lag: "n/a "
     position:
       x: 0
       y: 0

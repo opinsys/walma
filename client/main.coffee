@@ -138,8 +138,8 @@ $ ->
 
 
   notifications = new Notification
-
-
+  socket.on "disconnect", ->
+    notifications.error "Disconnected. Please reload page"
 
 
 
@@ -179,6 +179,14 @@ $ ->
     status: status
     input: new Input
       el: "canvas.localBuffer"
+
+  main.bind "timeout", ->
+    notifications.error "Timeout occurred when saving the drawing. Bad network connection."
+
+  status.bind "change:lag", ->
+    lag = status.get "lag"
+    if lag > 1000 * 5
+      notifications.warning "Network connection is really slow. (#{ lag }ms)"
 
   main.bind "ready", ->
     $("canvas.loading").removeClass "loading"

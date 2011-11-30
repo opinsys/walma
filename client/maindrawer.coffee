@@ -61,9 +61,19 @@ class maindrawer.Main
       @drawCount += 1
       console.log "We have #{ @drawCount } draws"
       @_setDrawingInfo()
+
+      timeout = setTimeout =>
+        @trigger "timeout"
+      , 1000 * 15
+
+      start = now()
       @socket.emit "draw",
         shape: shape
         user: "Epeli"
+      , =>
+        clearTimeout timeout
+        @status.set lag: now() - start
+
       @status.addUserDraw()
 
     @input.use tool
