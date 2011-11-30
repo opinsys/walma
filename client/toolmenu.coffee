@@ -43,35 +43,51 @@ class Draggable extends Backbone.View
 
 
   move: (e) =>
-    if @down and @last
-
-      diffPoint =
-        x: e.pageX - @last.pageX
-        y: e.pageY - @last.pageY
-
-      newPoint = _.clone @current
-      newX = @current.x + diffPoint.x
-      newY = @current.y + diffPoint.y
 
 
-      if newX > 0 and newX + @size.width < $(window).width()
-        @toolBar.css "left", "#{ newX }px"
-        newPoint.x = newX
+    return if not @down
 
-      if newY > 0 and newY + @size.height < $(window).height()
-        @toolBar.css "top", "#{ newY }px"
-        newPoint.y = newY
+    if not @_last
+      console.log "setting last"
+      return @_last = e
 
-      @current = newPoint
-    @last = e
+    console.log "TOUCH move", e.pageX, @_last.pageX, @_last is e
+
+    diffPoint =
+      x: e.pageX - @_last.pageX
+      y: e.pageY - @_last.pageY
+
+
+    newPoint = _.clone @current
+    newX = @current.x + diffPoint.x
+    newY = @current.y + diffPoint.y
+
+
+    if newX > 0 and newX + @size.width < $(window).width()
+      @toolBar.css "left", "#{ newX }px"
+      newPoint.x = newX
+
+    if newY > 0 and newY + @size.height < $(window).height()
+      @toolBar.css "top", "#{ newY }px"
+      newPoint.y = newY
+
+    @current = newPoint
+
+    @_last = e
+
+
+
 
   startMove: (e) =>
     @down = true
+    console.log "TOUCH start"
 
   stopMove: =>
+    console.log "stopping"
     if @down
       @last = null
       @down = false
+      console.log "TOUCH end"
 
 
 
@@ -269,8 +285,8 @@ class toolmenu.ToolMenu extends Draggable
 
         @$(".content").append description.el
         for view in tool.subviews
-          @$(".content").append view.el
           view.render()
+          @$(".content").append view.el
 
         @toolSelected button
 

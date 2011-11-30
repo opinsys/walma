@@ -2,23 +2,48 @@ Backbone = require "backbone"
 _  = require 'underscore'
 
 background = NS "PWB.background"
+views = NS "PWB.drawers.views"
 
-class background.Background extends Backbone.View
 
-  constructor: (opts) ->
+
+
+class views.BackgroundSelect extends Backbone.View
+
+  events:
+    "tap .backgroundDelete": "deleteBackground"
+    "change input": "setBackgroundFromEvent"
+
+  constructor: ({ @area, @background }) ->
     super
-    {@socket} = opts
-    {@area} = opts
-    @bindDrag()
 
-    @model.bind "change:background", =>
-      # Background has been updated. Lets just append timestamp to the url so
-      # it will get reloaded.
-      console.log "BG model bind"
-      @area.setBackground "#{ @model.getBackgroundURL() }?v=#{ new Date().getTime() }"
+    source = $("script.backgroundSelectTemplate").html()
+    @template = Handlebars.compile source
+
+    @bindDragAndDrop()
 
 
-  bindDrag: ->
+  deleteBackground: -> alert "not implemented"
+
+
+  setBackgroundFromEvent: (e) ->
+    @readFileToModel e.target.files[0]
+
+
+  readFileToModel: (file) ->
+    reader = new FileReader()
+    reader.onload = =>
+      @model.saveBackground reader.result, =>
+        @render()
+    reader.readAsDataURL file
+
+
+  render: ->
+    $(@el).html @template()
+    if not @area.hasBackground()
+      @$("button.backgroundDelete").remove()
+
+
+  bindDragAndDrop: ->
 
     $(document).bind "dragenter", (e) ->
       e.preventDefault()
@@ -32,13 +57,5 @@ class background.Background extends Backbone.View
     $(document).bind "dragend", (e) -> e.preventDefault()
     $(document).bind "drop", (e) =>
       e.preventDefault()
-      reader = new FileReader
-      reader.onload = @fileRead
-      reader.readAsDataURL e.originalEvent.dataTransfer.files[0]
-
-  fileRead: (e) =>
-    dataURL = e.target.result
-    @area.setBackground dataURL
-    @model.setBackground dataURL, =>
-      @trigger "bgsaved"
+      @readFileToModel e.originalEvent.dataTransfer.files[0]
 

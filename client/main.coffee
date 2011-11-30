@@ -34,9 +34,11 @@ $ ->
 
 
 $ ->
-  # $(document).scroll (e) ->
-  #   console.log "SCRolling"
-  #   false
+
+  statusView = new views.Status
+    el: ".status"
+    model: status = new models.StatusModel
+  statusView.render()
 
   socket = io.connect().of("/drawer")
 
@@ -46,12 +48,17 @@ $ ->
   [__, roomName, position] = window.location.pathname.split("/")
   toolSettings = new models.ToolSettings
 
-
-  area = new DrawArea
-    el: ".whiteboard"
-
   roomModel = new models.RoomModel
     socket: socket
+
+  area = new DrawArea
+    model: roomModel
+    el: ".whiteboard"
+
+
+  backgroundSelect = new views.BackgroundSelect
+    model: roomModel
+    area: area
 
   roomModel.set
     roomName: roomName
@@ -98,7 +105,7 @@ $ ->
     tools: [
       label: "Menu"
       description: ""
-      subviews: [ navigation, publishView ]
+      subviews: [ navigation, publishView, backgroundSelect ]
     ,
       value: "Pencil"
       label: "Pencil"
@@ -140,9 +147,6 @@ $ ->
     notifications.info "Drawing published"
 
 
-  statusView = new views.Status
-    el: ".status"
-    model: status = new models.StatusModel
 
   status.set status: "starting"
 
@@ -162,13 +166,8 @@ $ ->
   else
     Input = drawers.MouseInput
 
-  bg = new Background
-    model: roomModel
-    el: "canvas.main"
-    socket: socket
-    area: area
 
-  bg.bind "bgsaved", -> notifications.info "Background saved"
+  roomModel.bind "background-saved", -> notifications.info "Background saved"
 
 
   main = new maindrawer.Main

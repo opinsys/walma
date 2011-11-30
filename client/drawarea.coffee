@@ -32,6 +32,7 @@ class drawarea.DrawArea extends Backbone.View
   constructor: (opts) ->
     super
 
+
     # Where the actual drawing is. Including background.  Start with 100x100
     # because serializing it to png will fail if the size is zero
     @drawingSize =
@@ -74,6 +75,10 @@ class drawarea.DrawArea extends Backbone.View
     @syncViewSize()
     @resize()
 
+
+    @model.bind "change:background", =>
+      if @model.get "background"
+        @setBackground @model.getBackgroundURL()
 
 
     @resizeTimer = null
@@ -146,11 +151,13 @@ class drawarea.DrawArea extends Backbone.View
           @main.getContext("2d").drawImage img, 0, 0
           cb()
 
+  hasBackground: -> !!@bgURL
 
   setBackground: (url, cb=->) ->
     @$("canvas.main").css "background-image", "url(#{ url })"
     @bgURL = url
     @updateDrawingSizeFromImage url, => @resize cb
+
 
   updateDrawingSizeFromImage: (url, cb=->) ->
     toImage url, (err, img) =>

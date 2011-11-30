@@ -42,21 +42,34 @@ class models.RoomModel extends Backbone.Model
   constructor: (opts) ->
     super
     {@socket} = opts
-    @socket.on "updateAttrs", (attrs) => @set attrs
+
+    # updateAttrs is a socket message that updates models on all clients
+    @socket.on "updateAttrs", (attrs) =>
+
+      # If remote changed the background we need to clear this local cache
+      if attrs.background
+        delete @backgroundDataURL
+
+      @set attrs
 
   setPublishedImage: (dataURL, cb=->) ->
     @socket.emit "publishedImageData", dataURL, =>
       @set publishedImage: new Date().getTime()
       cb()
 
-  setBackground: (dataURL, cb=->) ->
-    console.log "BG setting"
-    @set background: "initial", { silent: true }
+  saveBackground: (dataURL, cb=->) ->
+    @backgroundDataURL = dataURL
+    @set background: new Date().getTime()
 
-    @socket.emit "backgroundData", dataURL, cb
+    @socket.emit "backgroundData", dataURL, =>
+      @trigger "background-saved"
+      cb()
 
   getBackgroundURL: ->
-    "#{ location.protocol }//#{ location.host }/#{ @get "roomName" }/#{ @get "position" }/bg"
+    # We created the background. No need to download it.
+    return @backgroundDataURL if @backgroundDataURL
+
+    "#{ location.protocol }//#{ location.host }/#{ @get "roomName" }/#{ @get "position" }/bg?v=#{ @get "background" }"
 
   getPublishedImageURL: ->
     "#{ location.protocol }//#{ location.host }/#{ @get "roomName" }/#{ @get "position" }/published.png"

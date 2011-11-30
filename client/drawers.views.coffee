@@ -18,3 +18,7 @@ class views.Status extends Backbone.View
     $(@el).html @template @model.toJSON()
 
 
+
+
+
+

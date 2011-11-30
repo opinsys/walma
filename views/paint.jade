@@ -78,6 +78,12 @@ script.toolTitle(type="x-handlebars-template")
     .description {{description}}
     .clear
 
+script.backgroundSelectTemplate(type="x-handlebars-template")
+  .group.backgroundSelect
+  h2 Select Background
+  input.backgroundInput(type="file", value="Select")
+  button.backgroundDelete Delete
+
 h1
 
 .status Status template goes here
