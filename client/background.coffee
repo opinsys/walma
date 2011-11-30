@@ -41,7 +41,8 @@ class views.BackgroundSelect extends Backbone.View
 
 
   render: ->
-    $(@el).html @template()
+    $(@el).html @template
+
     if not @area.hasBackground()
       @$("button.backgroundDelete").remove()
 

@@ -288,6 +288,7 @@ class exports.Move
 
 
   down: (point) ->
+    clearTimeout @timeout
     @startPoint = @lastPoint = point
     @count = 0
 
@@ -315,7 +316,9 @@ class exports.Move
 
 
   up: (point) ->
-    @area.resize()
+    @timeout = setTimeout =>
+      @area.resize()
+    , 1000
 
 
 
