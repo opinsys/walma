@@ -318,9 +318,5 @@ class exports.Move
     @area.resize()
 
 
-class exports.FastMove extends exports.Move
-
-  name: "FastMove"
-  speedUp: @::threshold * 4
 
 
