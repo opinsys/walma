@@ -22,7 +22,9 @@ class views.BackgroundSelect extends Backbone.View
     @bindDragAndDrop()
 
 
-  deleteBackground: -> alert "not implemented"
+  deleteBackground: ->
+    @model.deleteBackground()
+    @trigger "select"
 
 
   setBackgroundFromEvent: (e) ->
@@ -32,6 +34,7 @@ class views.BackgroundSelect extends Backbone.View
   readFileToModel: (file) ->
     reader = new FileReader()
     reader.onload = =>
+      @trigger "select"
       @model.saveBackground reader.result, =>
         @render()
     reader.readAsDataURL file
