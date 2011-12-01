@@ -104,9 +104,11 @@ describe "image saver", ->
     room.saveImage "testdata", new Buffer([ 1, 2, 3 ]), (err) ->
       room.deleteImage "testdata", (err) ->
         throw err if err
+
         room.getImage "testdata", (err) ->
           should.exist err, "should get error when reading deleted image"
           err.message.should.equal 'File does not exist'
+
           room.fetch (err, doc) ->
             throw err if err
             should.not.exist doc['testdata'],

@@ -29,8 +29,6 @@ class models.ToolSettings extends Backbone.Model
 
 
 
-# 1x1 Transparent PNG
-empty = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII="
 
 
 # Persistent shared model between clients.
@@ -56,10 +54,9 @@ class models.RoomModel extends Backbone.Model
       @set attrs
 
 
-  # Cheap delete background implementation. Just replace it with transparent
-  # 1x1px PNG.
   deleteBackground: (cb=->) ->
-    @saveBackground empty, cb
+    @socket.emit "backgroundDelete", cb
+    @set background: null
 
 
   setPublishedImage: (dataURL, cb=->) ->

@@ -4,6 +4,9 @@ drawarea = NS "PWB.drawarea"
 Backbone = require "backbone"
 _  = require 'underscore'
 
+# 1x1 Transparent PNG
+empty = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII="
+
 resizeCanvas = (width, height, canvas, cb=->) ->
   img = new Image
   data = canvas.toDataURL("image/png")
@@ -99,6 +102,8 @@ class drawarea.DrawArea extends Backbone.View
     @model.bind "change:background", =>
       if @model.get "background"
         @setBackground @model.getBackgroundURL()
+      else
+        @setBackground empty
 
 
     @resizeTimer = null

@@ -29,10 +29,13 @@ class exports.Client extends EventEmitter
         if err
           # TODO: send error msg to user
           console.log "Error while saving background", err
-          return cb err
+          return cb? err
         @updateAttrs background: new Date().getTime()
         cb?()
 
+    @socket.on "backgroundDelete", (cb=->) =>
+      @model.deleteImage "background", cb
+      @updateAttrs background: null
 
     @socket.on "publishedImageData", (dataURL, cb) =>
       @model.saveImage "publishedImage", parseDataURL(dataURL), (err) =>
