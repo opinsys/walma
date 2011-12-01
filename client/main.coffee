@@ -142,10 +142,8 @@ $ ->
     notifications.error "Disconnected. Please reload page"
 
 
-
   publishView.bind "publish", ->
     notifications.info "Drawing published"
-
 
 
   status.set status: "starting"

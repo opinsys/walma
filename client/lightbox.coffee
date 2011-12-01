@@ -26,7 +26,24 @@ class views.LightBox extends Backbone.View
 
 
   render: ->
+    @$(".close a").bind "tap", => @remove()
     @$(@el).show()
+
+
+class views.InfoBox extends views.LightBox
+
+  constructor: ({ @msg, @type }) ->
+    super
+
+
+  render: ->
+    super
+    @$(".content").html """
+      <h1>#{ @type }</h1>
+      <p>#{ @msg }</p>
+    """
+
+
 
 class views.PublicLink extends views.LightBox
 
@@ -71,7 +88,6 @@ class views.PublicLink extends views.LightBox
 
 
     @$("button.publish").bind "tap", => @publishImage()
-    @$(".close a").bind "tap", => @remove()
     @$("input").select()
 
 

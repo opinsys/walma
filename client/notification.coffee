@@ -3,6 +3,7 @@ _  = require 'underscore'
 Backbone = require "backbone"
 
 notification = NS "PWB.notification"
+views = NS "PWB.drawers.views"
 
 class notification.Notification extends Backbone.View
 
@@ -19,5 +20,9 @@ class notification.Notification extends Backbone.View
 
   error: (msg) ->
     console.log "ERROR: #{ msg }"
-    # XXX
-    alert "ERROR: #{ msg }"
+    e = new views.InfoBox
+      el: ".lightbox"
+      type: "Error"
+      msg: msg
+
+    e.render()
