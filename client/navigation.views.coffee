@@ -4,6 +4,8 @@ Backbone = require "backbone"
 views = NS "PWB.drawers.views"
 
 
+
+# XXX wrong file
 class views.Publish extends Backbone.View
 
   constructor: ({ @area, @model }) ->
@@ -11,22 +13,36 @@ class views.Publish extends Backbone.View
 
   events:
     "tap .publish": "openPublishView"
+    "tap .background": "openBackgroundView"
 
   render: ->
-    $(@el).css "display", "block"
+    $(@el).show()
+
+  openBackgroundView: ->
+    backgroundSelect = new views.BackgroundSelect
+      model: @model
+      area: @area
+    @openInLightBox backgroundSelect
+
+  openInLightBox: (view) ->
+    view.render()
+    box = new views.LightBox
+      subviews: [ view ]
+    box.render()
 
   openPublishView: ->
     @trigger "select"
 
     linkView = new views.PublicLink
-      el: ".lightbox"
       model: @model
       area: @area
 
-    linkView.render()
-
     linkView.bind "published", ->
       @trigger "publish"
+
+    @openInLightBox linkView
+
+
 
 
 class views.Navigation extends Backbone.View

@@ -21,7 +21,6 @@ class notification.Notification extends Backbone.View
   error: (msg) ->
     console.log "ERROR: #{ msg }"
     e = new views.InfoBox
-      el: ".lightbox"
       type: "Error"
       msg: msg
 

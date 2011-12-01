@@ -83,10 +83,10 @@ $ ->
     el: ".navigation"
 
   publishView = new views.Publish
+    el: ".group.publish"
     model: roomModel
     area: area
     settings: toolSettings
-    el: ".group.publish"
 
 
   colorSelect = new toolmenu.ColorSelect

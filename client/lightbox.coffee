@@ -7,8 +7,12 @@ views = NS "PWB.drawers.views"
 
 class views.LightBox extends Backbone.View
 
-  constructor: ->
+  el: ".lightbox"
+
+  constructor: ({ @subviews }) ->
     super
+    @subviews = [] unless @subviews
+
     # Close lightbox when tabbed or clicked somewhere else
     #
     # Add small timeout so that event loop gets cleared. Otherwise menu click
@@ -21,12 +25,16 @@ class views.LightBox extends Backbone.View
     , 10
 
   remove: ->
-    @$(".content").empty()
     @$(@el).hide()
 
 
   render: ->
+    @$(".content").children().detach()
+    @$(".content").empty()
     @$(".close a").bind "tap", => @remove()
+    for view in @subviews
+      view.render()
+      @$(".content").append view.el
     @$(@el).show()
 
 
@@ -45,7 +53,7 @@ class views.InfoBox extends views.LightBox
 
 
 
-class views.PublicLink extends views.LightBox
+class views.PublicLink extends Backbone.View
 
   constructor: (opts) ->
     super
@@ -68,7 +76,6 @@ class views.PublicLink extends views.LightBox
 
 
   render: ->
-    super
 
     if not @currentImageDataURL
       @area.getDataURLWithBackground (err, dataURL) =>
@@ -77,7 +84,7 @@ class views.PublicLink extends views.LightBox
       return
 
 
-    @$(".content").html @template
+    $(@el).html @template
       published: @model.get "publishedImage"
       publishedImageURL: @model.getPublishedImageURL()
       currentImageDataURL: @currentImageDataURL
