@@ -6,6 +6,7 @@ _.mixin require 'underscore.string'
 
 app = express.createServer()
 io = require('socket.io').listen app
+io.set "log level", 0
 
 {Drawing} = require "./lib/drawmodel"
 {Client} = require "./lib/client"
