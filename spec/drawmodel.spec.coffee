@@ -12,10 +12,8 @@ model = require "../lib/drawmodel"
 
 
 class FakeSocket extends EventEmitter
-
   broadcast:
     to: -> emit: ->
-
   join: ->
 
 

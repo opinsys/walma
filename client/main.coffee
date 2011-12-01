@@ -40,7 +40,19 @@ $ ->
     model: status = new models.StatusModel
   statusView.render()
 
-  socket = io.connect().of("/drawer")
+  window.socket = io.connect().of("/drawer")
+  setSocketStatus = ->
+    s = ""
+
+    for name in [ "open", "connected", "connecting", "reconnecting"]
+      if socket.socket[name]
+        s += name + " "
+
+    status.set socketStatus: $.trim s
+
+  socket.on "connect", setSocketStatus
+  socket.on "disconnect", setSocketStatus
+  setInterval setSocketStatus, 1000
 
   $("body").bind "touchmove", (e) -> e.preventDefault()
 
@@ -105,7 +117,7 @@ $ ->
     tools: [
       label: "Menu"
       description: ""
-      subviews: [ navigation, publishView, backgroundSelect ]
+      subviews: [ publishView, backgroundSelect ]
     ,
       value: "Pencil"
       label: "Pencil"
