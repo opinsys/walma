@@ -118,7 +118,7 @@ class maindrawer.Main
     if @socket.socket.connected
       @join()
     else
-      @socket.on "connect", => @join()
+      @socket.on "connect", _.once => @join()
 
     @socket.on "getbitmap", =>
       console.log "I should send bitmap! pos:#{ @drawCount }", @id
