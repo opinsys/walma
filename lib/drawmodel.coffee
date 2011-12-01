@@ -73,7 +73,20 @@ class exports.Drawing
     @_readData @_getImageDBName(name), cb
 
 
-  _setAttributes: (attrs, cb=->) ->
+
+  deleteImage: (name, cb=->) ->
+    GridStore.unlink Drawing.db, @_getImageDBName(name), {}, (err) =>
+      return cb err if err
+      attrs = {}
+      attrs[name] = 1
+      Drawing.collection.update
+        name: @name,
+        position: @position
+      , $unset: attrs
+      , cb
+
+
+  _setAttributes: mustBeOpened (attrs, cb=->) ->
     Drawing.collection.update
       name: @name,
       position: @position
@@ -82,7 +95,6 @@ class exports.Drawing
 
 
   _saveData: (name, data, cb=->) ->
-    console.log "SAving", name
     gs = new GridStore Drawing.db, name, "w"
     gs.open (err) ->
       return cb err if err
@@ -91,7 +103,6 @@ class exports.Drawing
         gs.close (err) -> cb err
 
   _readData: (name, cb=->) ->
-    console.log "reading", name
     gs = new GridStore Drawing.db, name, "r"
     gs.open (err) ->
       return cb err if err

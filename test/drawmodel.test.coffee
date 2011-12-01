@@ -95,6 +95,9 @@ describe "image saver", ->
           data[0].should.equal 1
           data[1].should.equal 2
           data[2].should.equal 3
+          room.fetch (err, doc) ->
+            throw err if err
+            doc['testdata'].should.equal true
           done()
 
   it "can delete drawing", (done) ->
@@ -104,7 +107,11 @@ describe "image saver", ->
         room.getImage "testdata", (err) ->
           should.exist err, "should get error when reading deleted image"
           err.message.should.equal 'File does not exist'
-          done()
+          room.fetch (err, doc) ->
+            throw err if err
+            should.not.exist doc['testdata'],
+              "reference to saved image should have been removed. Is: #{ doc['testdata'] }"
+            done()
 
 
 
