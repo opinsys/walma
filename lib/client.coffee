@@ -55,12 +55,14 @@ class exports.Client extends EventEmitter
 
     @socket.on "draw", (draw, cb) =>
       cb()
+      console.log "Routing draw"
       @socket.broadcast.to(@model.getCombinedRoomName()).emit "draw", draw
       @model.addDraw draw, (err, status) =>
         if err
           console.log "Failed to save draw to db: #{ err }"
           return
         if status?.needCache
+          console.log "asking for cache"
           @fetchBitmap (err, bitmap) =>
             if err
               console.log "Could not get cache bitmap #{ err.message } #{ client.id }"
