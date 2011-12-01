@@ -9,6 +9,8 @@
   , "devDependencies": {
       "supervisor": ""
       , "jasmine-node": ""
+      , "mocha": ""
+      , "should": ""
       , "node-inspector": ""
   }
   , "dependencies": {
