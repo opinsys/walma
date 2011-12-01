@@ -47,7 +47,7 @@ class views.BackgroundSelect extends Backbone.View
   render: ->
     $(@el).html @template
 
-    if not @area.hasBackground()
+    if not @model.get "background"
       @$(".delete").remove()
 
     if not @model.get "bigBackground"
