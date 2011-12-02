@@ -92,6 +92,8 @@ script.backgroundSelectTemplate(type="x-handlebars-template")
     .group.select
       p Select background
       input.backgroundInput(type="file", value="Select")
+      // Use camera directly:
+      // input.backgroundInput(type="file", value="Select", accept="image/*;capture=camera")
 
     .group.delete
       p Remove background from the drawing
