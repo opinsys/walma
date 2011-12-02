@@ -19,6 +19,24 @@ class views.Status extends Backbone.View
 
 
 
+class views.RoomInfo extends Backbone.View
 
+  constructor: ->
+    super
+    source = $(".roomInfoTemplate").html()
+    @template = Handlebars.compile source
+
+  events:
+    "tap button.delete": "delete"
+    "tap button.persist": "persist"
+
+  delete: -> alert "implement me"
+
+  persist: -> alert "implement me"
+
+  render: ->
+    $(@el).html @template
+      persistent: @model.get "persistent"
+      name: @model.get "roomName"
 
 

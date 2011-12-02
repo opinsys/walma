@@ -91,6 +91,7 @@ class maindrawer.Main
       @model.set
         publishedImage: !! history.publishedImage
         background: !! history.background
+        persistent: !! history.persistent
 
       @status.set
         cachedDraws: history.latestCachePosition or 0

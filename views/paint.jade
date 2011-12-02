@@ -40,6 +40,19 @@ script.status-template(type="x-handlebars-template").
     span.value  {{socketStatus}}
 
 
+script.roomInfoTemplate(type="x-handlebars-template")
+  .group.info
+    h1 Room {{name}}
+    | {{#if persistent}}
+    p This room is persistent. All drawings are saved automatically. Tap here to delete it.
+    button.delete Delete now
+    | {{else}}
+    p This room is not persistent. It will be deleted automatically when it becomes inactive
+    button.persist Persist
+    button.delete Delete now
+    | {{/if}}
+
+
 script.image-template(type="x-handlebars-template")
 
   .imageWrapper
@@ -84,6 +97,7 @@ script.toolTitle(type="x-handlebars-template")
     .description {{description}}
     .clear
 
+
 script.backgroundSelectTemplate(type="x-handlebars-template")
   .backgroundSelect
     .group
@@ -92,8 +106,8 @@ script.backgroundSelectTemplate(type="x-handlebars-template")
     .group.select
       p Select background
       input.backgroundInput(type="file", value="Select")
-      // Use camera directly:
-      // input.backgroundInput(type="file", value="Select", accept="image/*;capture=camera")
+    // Use camera directly:
+    // input.backgroundInput(type="file", value="Select", accept="image/*;capture=camera")
 
     .group.delete
       p Remove background from the drawing
@@ -191,6 +205,7 @@ h1
 
 .group.miscMenu
   .clear
+  h2 Tools
   div
     button.publish Publish
     button.background Background

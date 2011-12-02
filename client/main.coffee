@@ -79,6 +79,10 @@ $ ->
     settings: toolSettings
     el: ".navigation"
 
+  roomInfo = new views.RoomInfo
+    socket: socket
+    model: roomModel
+
   miscMenu = new views.MiscMenu
     el: ".group.miscMenu"
     model: roomModel
@@ -114,7 +118,7 @@ $ ->
     tools: [
       label: "Menu"
       description: ""
-      subviews: [ miscMenu ]
+      subviews: [ roomInfo, miscMenu ]
     ,
       value: "Pencil"
       label: "Pencil"

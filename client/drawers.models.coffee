@@ -39,6 +39,7 @@ class models.RoomModel extends Backbone.Model
     publishedImage: false
     position: 0
     name: null
+    persistent: false
 
   constructor: (opts) ->
     super
