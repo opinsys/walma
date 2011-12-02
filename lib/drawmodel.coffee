@@ -17,6 +17,9 @@ class exports.Drawing
 
   cacheInterval: 10
 
+  # One hour
+  inactivityThreshold: 1000 * 60 * 60
+
   constructor: (@name, @position) ->
     @position = parseInt @position, 10
 
@@ -41,6 +44,7 @@ class exports.Drawing
     position: @position
 
   remove: (cb=->) ->
+    @_doc = null
     @clearCache 0, (err) =>
       return cb err if err
       @deleteImage "background", (err) =>
@@ -190,10 +194,18 @@ class exports.Drawing
       history: []
       cache: []
       created: Date.now()
+      modified: Date.now()
     , safe: true
     , (err, docs) =>
       return cb err if err
       cb null, docs[0]
+
+
+  # Returns true if inactivity timeout has occured
+  hasExpired: mustBeOpened (cb) ->
+    console.log "EXP", Date.now() - @_doc.modified, @inactivityThreshold
+    Date.now() - @_doc.modified > @inactivityThreshold
+
 
   fetch: (cb=->) =>
     Drawing.collection.find(@getQuery()).nextObject (err, doc) =>
@@ -211,6 +223,15 @@ class exports.Drawing
           doc.modified = doc.created
 
         @_doc = doc
+
+        if @hasExpired()
+          console.log "Expired!"
+          @remove (err) =>
+            console.log "REMV"
+            return cb err if err
+            return @init cb
+          return
+
         cb null, doc
       else
         @init cb

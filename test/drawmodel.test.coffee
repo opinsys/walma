@@ -207,6 +207,19 @@ describe "Drawing", ->
     ], done
 
 
+  it "gets deleted by default when it is inactive", (done) ->
+    orig = room.inactivityThreshold
+    room.inactivityThreshold = 100
+    room.addDraw createExampleDraw(), (err) ->
+      throw err if err
+      setTimeout ->
+        room.fetch (err, doc) ->
+          throw err if err
+          doc.history.should.have.lengthOf 0, "Inactivity should have destroyed the drawing"
+          room.inactivityThreshold = orig
+          done()
+      , 1000
+
 
 describe "clearCache method in drawing", ->
 
