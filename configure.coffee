@@ -65,17 +65,6 @@ module.exports = (app, io) ->
     js.addFile "frontpage", clientFiles + "/frontpage.coffee"
 
 
-  app.configure "development", ->
-    css.addFile "spec", clientFiles + "/vendor/jasmine/jasmine.css"
-
-    js.addFile "spec", clientFiles + "/vendor/jasmine/jasmine.js"
-    js.addFile "spec", clientFiles + "/vendor/jasmine/jasmine-html.js"
-    js.addFile "spec", __dirname + "/spec/tools.spec.coffee"
-    js.addFile "spec", clientFiles + "/specrunner.js"
-
-    app.get "/spec", (req, res) ->
-      res.render "spec.jade",
-        layout: false
 
 
   app.listen 1337
