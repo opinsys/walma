@@ -94,9 +94,7 @@ class exports.Drawing
       return cb err if err
       attrs = {}
       attrs[name] = 1
-      Drawing.collection.update
-        name: @name,
-        position: @position
+      Drawing.collection.update @getQuery()
       , $unset: attrs
       , cb
 
@@ -126,9 +124,7 @@ class exports.Drawing
 
 
   _setAttributes: mustBeOpened (attrs, cb=->) ->
-    Drawing.collection.update
-      name: @name,
-      position: @position
+    Drawing.collection.update @getQuery()
     , $set: attrs
     , cb
 
@@ -161,9 +157,7 @@ class exports.Drawing
     @fethingBitmap = false
     @drawsAfterLastCache = 0
     @_saveData @getCacheName(drawCount), data, =>
-      Drawing.collection.update
-        name: @name,
-        position: @position
+      Drawing.collection.update @getQuery()
       , $push: cache: drawCount
       , (err) ->
         return cb err if err
@@ -200,7 +194,7 @@ class exports.Drawing
       cb null, docs[0]
 
   fetch: (cb=->) =>
-    Drawing.collection.find(name: @name, position: @position).nextObject (err, doc) =>
+    Drawing.collection.find(@getQuery()).nextObject (err, doc) =>
       return cb err if err
       if doc
         @_doc = doc
