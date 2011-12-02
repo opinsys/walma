@@ -29,7 +29,7 @@ class views.LightBox extends Backbone.View
   remove: =>
     @$(@el).hide()
     for view in @subviews
-      view.unbind "select"
+      view.unbind "select", @remove
 
 
   render: ->
