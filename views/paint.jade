@@ -85,20 +85,21 @@ script.toolTitle(type="x-handlebars-template")
     .clear
 
 script.backgroundSelectTemplate(type="x-handlebars-template")
-  .group.backgroundSelect
-  h2 Background
+  .backgroundSelect
+    .group
+    h2 Background
 
-  .select
-    p Select background
-    input.backgroundInput(type="file", value="Select")
+    .group.select
+      p Select background
+      input.backgroundInput(type="file", value="Select")
 
-  .delete
-    p Remove background from the drawing
-    button.backgroundDelete Delete
+    .group.delete
+      p Remove background from the drawing
+      button.backgroundDelete Delete
 
-  .resize
-    p Background seems to be very big. Click resize to make it smaller
-    button.backgroundResize Resize
+    .group.resize
+      p Background seems to be very big. Tap to make it smaller
+      button.backgroundResize Resize
 
 h1
 
@@ -185,10 +186,10 @@ h1
     button.remote Remote
   .clear
 
-.group.publish
-  h2 Publish
-  .description Publish drawing
-  .buttonBorder
+
+.group.miscMenu
+  .clear
+  div
     button.publish Publish
     button.background Background
   .clear

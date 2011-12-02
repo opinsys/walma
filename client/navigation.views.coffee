@@ -6,7 +6,7 @@ views = NS "PWB.drawers.views"
 
 
 # XXX wrong file
-class views.Publish extends Backbone.View
+class views.MiscMenu extends Backbone.View
 
   constructor: ({ @area, @model }) ->
     super

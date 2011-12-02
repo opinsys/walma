@@ -145,8 +145,18 @@ canvas.loading
       border 3px solid black
       border-radius 2px
 
+.backgroundSelect
+  h2
+    font-size 2em
 
-
+  .group
+    margin 1em
+    p
+      font-size 12pt
+      margin 0.6em
+    button,input
+      margin 0.6em
+      margin-left 1em
 
 
 .clear
@@ -163,6 +173,19 @@ canvas.loading
   height 200px
 
 
+button
+  margin 0.5em
+  cursor pointer
+  padding 1em
+
+
+  background-color white
+  border 0px solid black
+  border-bottom-color selectionColor
+
+  box-shadow 0px 0px 10px black
+  border-radius 15px
+  border 1px solid #DDD
 
 .menuContainer
   display none
@@ -177,17 +200,6 @@ canvas.loading
   button
     width buttonSize
     height buttonSize
-    margin 0.5em
-    cursor pointer
-
-
-    background-color white
-    border 0px solid black
-    border-bottom-color selectionColor
-
-    box-shadow 0px 0px 10px black
-    border-radius 15px
-    border 1px solid #DDD
 
 
   .buttonBorder, .dragArea
@@ -266,5 +278,11 @@ canvas.loading
     border 8px solid selectionColor
     border-radius 5px
 
-.group.publish
+
+.miscMenu
   display none
+  h1
+    margin-bottom 1em
+  button
+    width auto
+

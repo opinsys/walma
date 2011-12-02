@@ -68,9 +68,6 @@ $ ->
     el: ".whiteboard"
 
 
-  backgroundSelect = new views.BackgroundSelect
-    model: roomModel
-    area: area
 
   roomModel.set
     roomName: roomName
@@ -82,8 +79,8 @@ $ ->
     settings: toolSettings
     el: ".navigation"
 
-  publishView = new views.Publish
-    el: ".group.publish"
+  miscMenu = new views.MiscMenu
+    el: ".group.miscMenu"
     model: roomModel
     area: area
     settings: toolSettings
@@ -117,7 +114,7 @@ $ ->
     tools: [
       label: "Menu"
       description: ""
-      subviews: [ publishView, backgroundSelect ]
+      subviews: [ miscMenu ]
     ,
       value: "Pencil"
       label: "Pencil"
@@ -154,7 +151,7 @@ $ ->
     notifications.error "Disconnected. Please reload page"
 
 
-  publishView.bind "publish", ->
+  miscMenu.bind "publish", ->
     notifications.info "Drawing published"
 
 

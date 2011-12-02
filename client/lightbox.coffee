@@ -12,6 +12,8 @@ class views.LightBox extends Backbone.View
   constructor: ({ @subviews }) ->
     super
     @subviews = [] unless @subviews
+    for view in @subviews
+      view.bind "select", @remove
 
     # Close lightbox when tabbed or clicked somewhere else
     #
@@ -24,8 +26,10 @@ class views.LightBox extends Backbone.View
           @remove()
     , 10
 
-  remove: ->
+  remove: =>
     @$(@el).hide()
+    for view in @subviews
+      view.unbind "select"
 
 
   render: ->
