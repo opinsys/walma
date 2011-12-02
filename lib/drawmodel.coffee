@@ -54,6 +54,8 @@ class exports.Drawing
 
   addDraw: mustBeOpened (draw, cb=->) ->
 
+    draw.timestamp = Date.now()
+
     if not draw?.shape?.moves
       console.log "missing moves", draw
     else
@@ -197,11 +199,18 @@ class exports.Drawing
     Drawing.collection.find(@getQuery()).nextObject (err, doc) =>
       return cb err if err
       if doc
-        @_doc = doc
-        console.log "We have #{ doc.history.length } draws"
+
         for draw in doc.history
           for point in draw.shape?.moves
             @updateResolution point
+
+
+        if lastDraw = _.last(doc.history)
+          doc.modified = lastDraw.timestamp
+        else
+          doc.modified = doc.created
+
+        @_doc = doc
         cb null, doc
       else
         @init cb

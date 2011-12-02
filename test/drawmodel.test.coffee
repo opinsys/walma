@@ -90,6 +90,28 @@ describe "Drawing", ->
     room = new Drawing "image room", 1
     room.fetch done
 
+  it "updates the time stamp", (done) ->
+    firstModified = null
+    async.series [
+      (cb) -> room.addDraw createExampleDraw(), cb
+    ,
+      (cb) -> room.fetch (err, doc) ->
+        return cb err if err
+        firstModified = doc.modified
+        isFinite(firstModified).should.be.true
+        cb()
+      ,
+      (cb) -> setTimeout cb, 1000
+    ,
+      (cb) -> room.addDraw createExampleDraw(), cb
+    ,
+      (cb) -> room.fetch (err, doc) ->
+        return cb err if err
+        (doc.modified - firstModified).should.be.above 0
+        cb()
+
+    ], done
+
 
   it "can save and read the image", (done) ->
       room.saveImage "testdata", new Buffer([ 1, 2, 3 ]), (err) ->
