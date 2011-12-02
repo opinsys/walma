@@ -1,5 +1,6 @@
 
 _  = require 'underscore'
+async = require "async"
 
 {GridStore} = require "mongodb"
 
@@ -35,6 +36,20 @@ class exports.Drawing
     @resolution.x = point.x if point.x > @resolution.x
     @resolution.y = point.y if point.y > @resolution.y
 
+  getQuery: ->
+    name: @name,
+    position: @position
+
+  remove: (cb=->) ->
+    @clearCache 0, (err) =>
+      return cb err if err
+      @deleteImage "background", (err) =>
+        return cb err if err
+        Drawing.collection.findAndModify @getQuery()
+        , [['_id','asc']] # sorting
+        , {} # update
+        , remove: true # options
+        , cb
 
 
   addDraw: mustBeOpened (draw, cb=->) ->
@@ -86,6 +101,30 @@ class exports.Drawing
       , cb
 
 
+  # Use preserver=0 to clear all caches. preserve=1 to leave latest in cache,
+  # preserve=2 to leave two latests cache points
+  clearCache: (preserve, cb=->) ->
+    if typeof preserve is "function"
+      cb = preserve
+      preserve = 0
+
+    @fetch (err, doc) =>
+      return cb err if err
+
+      doc.cache.sort (a, b) -> b - a
+      drawCounts = _.rest doc.cache, preserve
+
+      # MongoDB does only in place write, so we can as well just delete in
+      # series
+      async.forEachSeries drawCounts, (drawCount, asyncCb) =>
+        GridStore.unlink Drawing.db, @getCacheName(drawCount), {}, (err) =>
+          Drawing.collection.update @getQuery()
+          , $pull:
+              cache: drawCount
+          , asyncCb
+      , cb
+
+
   _setAttributes: mustBeOpened (attrs, cb=->) ->
     Drawing.collection.update
       name: @name,
@@ -106,16 +145,22 @@ class exports.Drawing
     gs = new GridStore Drawing.db, name, "r"
     gs.open (err) ->
       return cb err if err
+      console.log "opened", name, "end"
       gs.readBuffer gs.length, (err, data) ->
         return cb err if err
-        gs.close ->
+        console.log "read", name
+        gs.close (err) ->
+          return cb err if err
+          console.log "closed", name
           cb null, data
 
+  getCacheName: (drawCount) ->
+    "#{ @_getImageDBName("cache") }-#{ drawCount }"
 
   setCache: (drawCount, data, cb=->) ->
     @fethingBitmap = false
     @drawsAfterLastCache = 0
-    @_saveData "#{ @_getImageDBName("cache") }-#{ drawCount }", data, =>
+    @_saveData @getCacheName(drawCount), data, =>
       Drawing.collection.update
         name: @name,
         position: @position
@@ -126,7 +171,7 @@ class exports.Drawing
 
 
   getCache: (drawCount, cb=->) ->
-    @_readData "#{ @_getImageDBName("cache") }-#{ drawCount }", cb
+    @_readData @getCacheName(drawCount), cb
 
 
   getLatestCachePosition: (cb=->) =>
