@@ -128,8 +128,8 @@ class exports.Drawing
           , asyncCb
       , cb
 
-  persist: (cb) ->
-    @_setAttributes persist: true, cb
+  persist: (cb=->) ->
+    @_setAttributes persistent: true, cb
 
   _setAttributes: mustBeOpened (attrs, cb=->) ->
     Drawing.collection.update @getQuery()
@@ -233,7 +233,7 @@ class exports.Drawing
 
         @_doc = doc
 
-        if not force and @hasExpired() and not doc.persist
+        if not force and @hasExpired() and not doc.persistent
           @remove (err) =>
             return cb err if err
             @init cb

@@ -35,6 +35,7 @@ $ ->
 
 $ ->
 
+  notifications = new Notification
   statusView = new views.Status
     el: ".status"
     model: status = new models.StatusModel
@@ -82,6 +83,7 @@ $ ->
   roomInfo = new views.RoomInfo
     socket: socket
     model: roomModel
+    notifications: notifications
 
   miscMenu = new views.MiscMenu
     el: ".group.miscMenu"
@@ -149,8 +151,11 @@ $ ->
   toolMenu.render()
 
 
+  unsavedWarning = new views.UnsavedWarning
+    model: roomModel
+    toolMenu: toolMenu
 
-  notifications = new Notification
+
   socket.on "disconnect", ->
     notifications.error "Disconnected. Please reload page"
 

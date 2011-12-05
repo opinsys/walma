@@ -270,6 +270,7 @@ class toolmenu.ToolMenu extends Draggable
       e.preventDefault()
 
 
+    @menus = {}
 
     @toolButtons = for tool in opts.tools then do (tool) =>
       tool.field = "tool"
@@ -280,6 +281,7 @@ class toolmenu.ToolMenu extends Draggable
       for view in tool.subviews
         view.bind "select", => @closeMenu()
 
+      @menus[tool.label] = -> button.tap()
       button.bind "select", =>
         @$(".content").children().detach()
 

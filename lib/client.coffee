@@ -24,6 +24,12 @@ class exports.Client extends EventEmitter
     @socket.on "state", (state) =>
       @state = state
 
+    @socket.on "persist", (cb) =>
+      @model.persist cb
+
+    @socket.on "remove", (cb) =>
+      @model.remove cb
+
     @socket.on "backgroundData", (dataURL, cb) =>
       @model.saveImage "background", parseDataURL(dataURL), (err) =>
         if err
@@ -118,6 +124,7 @@ class exports.Client extends EventEmitter
         publishedImage: !! doc.publishedImage
         draws: history
         latestCachePosition: latest
+        persistent: !!doc.persistent
 
 
 

@@ -44,12 +44,16 @@ script.roomInfoTemplate(type="x-handlebars-template")
   .group.info
     h1 Room {{name}}
     | {{#if persistent}}
-    p This room is persistent. All drawings are saved automatically. Tap here to delete it.
+
+    p This room is persistent. All drawings are saved automatically.
     button.delete Delete now
+
     | {{else}}
-    p This room is not persistent. It will be deleted automatically when it becomes inactive
+
+    p.warning This room is not persistent. It will be deleted automatically when it becomes inactive.
     button.persist Persist
     button.delete Delete now
+
     | {{/if}}
 
 
@@ -121,12 +125,15 @@ h1
 
 .status Status template goes here
 
+.unsavedWarning
+  h1 Warning: This drawning is not persistent!
+
 
 .lightbox
   .wrapper
     .close
       a(href="#") X
-    .content hello sdaf sadfkj asdlasdfk asdfsd
+    .content
 
 
 .menuContainer
