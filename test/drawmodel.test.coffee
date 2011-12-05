@@ -206,9 +206,20 @@ describe "Drawing", ->
 
     ], done
 
+  it "gets expired", (done) ->
+    room.inactivityThreshold = 100
+    setTimeout ->
+      room.hasExpired().should.be.ok
+      done()
+    , 200
+
+  it "is not yet expired", (done) ->
+    setTimeout ->
+      room.hasExpired().should.not.be.ok
+      done()
+    , 200
 
   it "gets deleted by default when it is inactive", (done) ->
-    orig = room.inactivityThreshold
     room.inactivityThreshold = 100
     room.addDraw createExampleDraw(), (err) ->
       throw err if err
@@ -216,9 +227,8 @@ describe "Drawing", ->
         room.fetch (err, doc) ->
           throw err if err
           doc.history.should.have.lengthOf 0, "Inactivity should have destroyed the drawing"
-          room.inactivityThreshold = orig
           done()
-      , 1000
+      , 200
 
 
 describe "clearCache method in drawing", ->

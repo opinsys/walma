@@ -112,7 +112,7 @@ class exports.Drawing
       cb = preserve
       preserve = 0
 
-    @fetch (err, doc) =>
+    @fetch true, (err, doc) =>
       return cb err if err
 
       doc.cache.sort (a, b) -> b - a
@@ -207,7 +207,11 @@ class exports.Drawing
     Date.now() - @_doc.modified > @inactivityThreshold
 
 
-  fetch: (cb=->) =>
+  fetch: (force, cb=->) =>
+    if typeof force is "function"
+      cb = force
+      force = false
+
     Drawing.collection.find(@getQuery()).nextObject (err, doc) =>
       return cb err if err
       if doc
@@ -224,12 +228,11 @@ class exports.Drawing
 
         @_doc = doc
 
-        if @hasExpired()
-          console.log "Expired!"
+        if not force and @hasExpired()
           @remove (err) =>
-            console.log "REMV"
             return cb err if err
-            return @init cb
+            @init cb
+
           return
 
         cb null, doc
