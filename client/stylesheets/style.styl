@@ -101,6 +101,14 @@ canvas
 canvas.loading
   top -200%
 
+.close
+  text-align right
+  a
+    color black
+    font-size 2em
+    text-decoration none
+    cursor pointer
+
 .lightbox
   display none
   position fixed
@@ -125,12 +133,6 @@ canvas.loading
     h1
       margin-bottom 0.5em
 
-  .close
-    text-align right
-    a
-      color black
-      font-size 2em
-      text-decoration none
 
   .imageWrapper, .linkBox
       margin 1em
@@ -195,6 +197,15 @@ button
   position absolute
   z-index 60
 
+  .close
+    position relative
+    top 6em
+    right 2em
+    display none
+
+  .openDown .close, .openUp .close
+    display block
+
 
 
   button
@@ -230,6 +241,7 @@ button
       background: -o-linear-gradient(left, #ffffff 0%,#f1f1f1 33%,#e1e1e1 66%,#f6f6f6 100%); /* Opera 11.10+ */
       background: -ms-linear-gradient(left, #ffffff 0%,#f1f1f1 33%,#e1e1e1 66%,#f6f6f6 100%); /* IE10+ */
       background: linear-gradient(left, #ffffff 0%,#f1f1f1 33%,#e1e1e1 66%,#f6f6f6 100%); /* W3C */
+
 
 
 

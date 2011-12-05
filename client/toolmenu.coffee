@@ -236,6 +236,7 @@ class toolmenu.SpeedSelect extends Options
   label: "Panning speed"
   description: "Use normal on tablets and desktop. Fast for large smartboards etc."
 
+
   constructor: ->
     super
     @sizeButtons = for speedOpt in @opts.speeds then do (speedOpt) =>
@@ -299,6 +300,9 @@ class toolmenu.ToolMenu extends Draggable
     $("body").bind "mousedown touchstart", (e) =>
       if $(this.el).has(e.target).length is 0
         @closeMenu()
+
+  events:
+    "tap .close a": "closeMenu"
 
   toolSelected: (button) ->
 
