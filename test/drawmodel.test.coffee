@@ -301,3 +301,38 @@ describe "clearCache method in drawing", ->
         doc.cache[0].should.equal 10
         done()
 
+
+
+describe "cache request in drawing", ->
+
+  room = null
+  beforeEach (done) ->
+    room = new Drawing "cache request", 1
+    room.cacheThreshold = 10
+    room.fetch (err) ->
+      throw err if err
+      async.forEachSeries [1..9], (i, cb) ->
+        room.addDraw createExampleDraw(), cb
+      , done
+
+  it "ask for cache when interval occurs", (done) ->
+    room.addDraw createExampleDraw(), (err, result) ->
+      throw err if err
+      result.needCache.should.be.true
+      done()
+
+  it "does not lose cache counting when refetched", (done) ->
+    room2 = new Drawing "cache request", 1
+    room2.cacheThreshold = 10
+    room2.fetch (err, doc) ->
+      throw err if err
+      room.drawsAfterLastCache.should.equal 9
+      console.log "Adding draw in test"
+      room2.addDraw createExampleDraw(), (err, result) ->
+        throw err if err
+        room2.drawsAfterLastCache.should.equal 10
+        result.needCache.should.be.true
+        done()
+
+
+

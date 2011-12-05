@@ -15,7 +15,7 @@ class exports.Drawing
   Drawing.collection = null
   Drawing.db = null
 
-  cacheInterval: 10
+  cacheThreshold: 100
 
   # One hour
   inactivityThreshold: 1000 * 60 * 60
@@ -73,8 +73,11 @@ class exports.Drawing
     , $push: history: draw
     , (err, coll) =>
       return cb err if err
+
       @drawsAfterLastCache += 1
-      if not @fethingBitmap and @drawsAfterLastCache >= @cacheInterval
+
+
+      if not @fethingBitmap and @drawsAfterLastCache >= @cacheThreshold
         @fethingBitmap = true
         cb null, needCache: true
       else
@@ -149,13 +152,10 @@ class exports.Drawing
     gs = new GridStore Drawing.db, name, "r"
     gs.open (err) ->
       return cb err if err
-      console.log "opened", name, "end"
       gs.readBuffer gs.length, (err, data) ->
         return cb err if err
-        console.log "read", name
         gs.close (err) ->
           return cb err if err
-          console.log "closed", name
           cb null, data
 
   getCacheName: (drawCount) ->
@@ -205,7 +205,6 @@ class exports.Drawing
 
   # Returns true if inactivity timeout has occured
   hasExpired: mustBeOpened (cb) ->
-    console.log "EXP", Date.now() - @_doc.modified, @inactivityThreshold
 
     Date.now() - @_doc.modified > @inactivityThreshold
 
@@ -230,6 +229,8 @@ class exports.Drawing
           doc.modified = lastDraw.timestamp
         else
           doc.modified = doc.created
+
+        @drawsAfterLastCache = doc.history.length - (_.last(doc.cache) or 0)
 
         @_doc = doc
 
