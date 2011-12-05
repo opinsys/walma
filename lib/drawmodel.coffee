@@ -128,6 +128,8 @@ class exports.Drawing
           , asyncCb
       , cb
 
+  persist: (cb) ->
+    @_setAttributes persist: true, cb
 
   _setAttributes: mustBeOpened (attrs, cb=->) ->
     Drawing.collection.update @getQuery()
@@ -204,9 +206,12 @@ class exports.Drawing
   # Returns true if inactivity timeout has occured
   hasExpired: mustBeOpened (cb) ->
     console.log "EXP", Date.now() - @_doc.modified, @inactivityThreshold
+
     Date.now() - @_doc.modified > @inactivityThreshold
 
 
+  # Force gets always the drawing. If not set the drawing will be deleted if it
+  # has been expired.
   fetch: (force, cb=->) =>
     if typeof force is "function"
       cb = force
@@ -228,7 +233,7 @@ class exports.Drawing
 
         @_doc = doc
 
-        if not force and @hasExpired()
+        if not force and @hasExpired() and not doc.persist
           @remove (err) =>
             return cb err if err
             @init cb

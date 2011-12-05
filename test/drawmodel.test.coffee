@@ -200,7 +200,6 @@ describe "Drawing", ->
         cb()
     ,
       (cb) -> room.getImage "background", (err, data) ->
-        console.log "BG", err, data
         should.exist err, "background image should have been deleted"
         cb()
 
@@ -229,6 +228,28 @@ describe "Drawing", ->
           doc.history.should.have.lengthOf 0, "Inactivity should have destroyed the drawing"
           done()
       , 200
+
+
+  it "does not get deleted automatically if it is persisted", (done) ->
+    room.inactivityThreshold = 100
+    async.series [
+      (cb) -> room.addDraw createExampleDraw(), cb
+    ,
+      (cb) -> room.fetch cb
+    ,
+      (cb) -> room.persist cb
+    ,
+      (cb) -> setTimeout cb, 200
+    ,
+      (cb) ->
+        room.fetch (err, doc) ->
+          return cb err if err
+          doc.history.should.have.lengthOf 1
+          cb()
+    ], done
+
+
+
 
 
 describe "clearCache method in drawing", ->
