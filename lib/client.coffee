@@ -25,7 +25,9 @@ class exports.Client extends EventEmitter
       @state = state
 
     @socket.on "persist", (cb) =>
-      @model.persist cb
+      @model.persist =>
+        cb()
+        @updateAttrs persistent: true
 
     @socket.on "remove", (cb) =>
       @model.remove cb
