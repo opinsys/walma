@@ -18,6 +18,14 @@ class notification.Notification extends Backbone.View
     console.log "WARNING: #{ msg }"
     jQuery.noticeAdd({ text: "WARNING: #{ msg }" })
 
+  infoModal: (msg) ->
+    console.log "INFO: #{ msg }"
+    e = new views.InfoBox
+      type: "Info"
+      msg: msg
+
+    e.render()
+
   error: (msg) ->
     console.log "ERROR: #{ msg }"
     e = new views.InfoBox

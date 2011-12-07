@@ -19,6 +19,7 @@ socket = io.connect().of("/drawer")
 
 # http://modernizr.github.com/Modernizr/touch.html
 hasTouch = 'ontouchstart' of window
+# For old firefox mobile
 if not hasTouch and typeof DocumentTouch isnt "undefined"
   hasTouch = document instanceof DocumentTouch
 
@@ -124,21 +125,25 @@ $ ->
     ,
       value: "Pencil"
       label: "Pencil"
+      icon: "/img/icons/pencil.png"
       description: "Free drawing tool"
       subviews: [ sizeSelect, colorSelect ]
     ,
       value: "Line"
       label: "Line"
+      icon: "/img/icons/line.png"
       description: "Lines"
       subviews: [ sizeSelect, colorSelect ]
     ,
       value: "Eraser"
       label: "Eraser"
+      icon: "/img/icons/eraser.png"
       description: "Erase drawings"
       subviews: [ sizeSelect ]
     ,
       value: "Move"
       label: "Pan"
+      icon: "/img/icons/pan.png"
       description: "Pan drawing area"
       subviews: [ speedSelect ]
     ]
@@ -202,6 +207,8 @@ $ ->
   main.bind "ready", ->
     $("canvas.loading").removeClass "loading"
     $("div.loading").remove()
+
+
     # http://www.html5rocks.com/en/mobile/mobifying.html#toc-optimizations-scrolling
     window.scrollTo 0, 100
 

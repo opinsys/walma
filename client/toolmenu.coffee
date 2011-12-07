@@ -112,6 +112,7 @@ class Button extends Backbone.View
     super
     {@field, @value, @label, @description} = opts
     {@label, @description} = opts
+    {@icon} = opts
 
     source = $("script.menuButtonTemplate").html()
     @template = Handlebars.compile source
@@ -120,10 +121,15 @@ class Button extends Backbone.View
 
 
   render: ->
+
     $(@el).html @template @
+
     if @model.get(@field) is @value
       @select()
 
+    if @icon
+      @$("button").css("background-image", "url(#{ @icon })")
+      .text " "
 
   tap: ->
     if @value
@@ -279,10 +285,13 @@ class toolmenu.ToolMenu extends Draggable
       button = new Button tool
       description = new Description tool
       description.render()
+
       for view in tool.subviews
         view.bind "select", => @closeMenu()
 
+      # Allow progmatic menu selection
       @menus[tool.label] = -> button.tap()
+
       button.bind "select", =>
         @$(".content").children().detach()
 
