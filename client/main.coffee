@@ -119,6 +119,7 @@ $ ->
     el: ".menuContainer"
     model: toolSettings
     tools: [
+      icon: "/img/icons/menu.png"
       label: "Menu"
       description: ""
       subviews: [ roomInfo, miscMenu ]

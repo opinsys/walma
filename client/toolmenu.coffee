@@ -166,6 +166,8 @@ class Options extends Backbone.View
     # First detach from DOM so that elements won't lose their event bindings.
     $(@el).children().detach()
     $(@el).html @template @
+    if @label
+      $(@el).children().addClass @label.toLowerCase()
 
 
 # Dummy options view. Just shows some text.
