@@ -32,30 +32,35 @@ class Draggable extends Backbone.View
 
     $(".dragArea").bind "touchstart", (e) =>
       @usingTouch = true
-      @startMove e.originalEvent.touches[0]
+      @startMove e.originalEvent.changedTouches[0]
 
     $('body').bind "touchend", (e) =>
-      @stopMove e.originalEvent.touches[0]
+      @stopMove e.originalEvent.changedTouches[0]
       @usingTouch = false
 
     $("body").bind "touchmove", (e) =>
-      @move e.originalEvent.touches[0]
+      @move e.originalEvent.changedTouches[0]
 
 
   move: (e) =>
 
 
+    console.log "TOUCH move", e.pageX, e is @_last
+
     return if not @down
 
-    if not @_last
-      console.log "setting last"
-      return @_last = e
 
-    console.log "TOUCH move", e.pageX, @_last.pageX, @_last is e
+    if not @_last
+      @_last =
+        x: e.pageX
+        y: e.pageY
+      return
+
+    console.log "TOUCH move", e.pageX, @_last.x, @_last is e
 
     diffPoint =
-      x: e.pageX - @_last.pageX
-      y: e.pageY - @_last.pageY
+      x: e.pageX - @_last.x
+      y: e.pageY - @_last.y
 
 
     newPoint = _.clone @current
@@ -73,7 +78,9 @@ class Draggable extends Backbone.View
 
     @current = newPoint
 
-    @_last = e
+    @_last =
+      x: e.pageX
+      y: e.pageY
 
 
 
