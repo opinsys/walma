@@ -132,11 +132,6 @@ $ ->
       description: "Lines"
       subviews: [ sizeSelect, colorSelect ]
     ,
-      value: "Circle"
-      label: "Circle"
-      description: "Circles"
-      subviews: [ colorSelect ]
-    ,
       value: "Eraser"
       label: "Eraser"
       description: "Erase drawings"
