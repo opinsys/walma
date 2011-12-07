@@ -10,17 +10,15 @@ class Draggable extends Backbone.View
     super
     @toolBar = $(@el)
 
-    @current =
-      x: @toolBar.offset().left
-      y: @toolBar.offset().top
-
     @size =
       width: $(@el).width()
       height: $(@el).height()
 
     @usingTouch = false
 
-    @$(".dragArea").mousedown (e) =>
+    @dragArea = @$(".dragArea")
+
+    @dragArea.mousedown (e) =>
       e.preventDefault()
       @startMove e unless @usingTouch
 
@@ -56,27 +54,16 @@ class Draggable extends Backbone.View
         y: e.pageY
       return
 
-    console.log "TOUCH move", e.pageX, @_last.x, @_last is e
 
-    diffPoint =
-      x: e.pageX - @_last.x
-      y: e.pageY - @_last.y
+    newX = e.pageX - @dragArea.width() / 2
+    newY = e.pageY - @dragArea.height() / 2
 
-
-    newPoint = _.clone @current
-    newX = @current.x + diffPoint.x
-    newY = @current.y + diffPoint.y
-
-
-    if newX > 0 and newX + @size.width < $(window).width()
+    if newX > 0 and newX + $(@el).width() < $(window).width()
       @toolBar.css "left", "#{ newX }px"
-      newPoint.x = newX
 
-    if newY > 0 and newY + @size.height < $(window).height()
+    if newY > 0 and newY + $(@el).height() < $(window).height()
       @toolBar.css "top", "#{ newY }px"
-      newPoint.y = newY
 
-    @current = newPoint
 
     @_last =
       x: e.pageX
