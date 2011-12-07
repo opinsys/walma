@@ -14,8 +14,25 @@ class views.Status extends Backbone.View
     @template = Handlebars.compile source
     @model.bind "change", => @render()
 
+    $(window).bind "hashchange", =>
+      @render()
+
+  show: ->
+    $(@el).show()
+
+  hide: ->
+    $(@el).hide()
+
+  isActive: ->
+    options = window.location.hash.substring(1).split ","
+    "debug" in options
+
   render: ->
-    $(@el).html @template @model.toJSON()
+    if @isActive()
+      $(@el).html @template @model.toJSON()
+      @show()
+    else
+      @hide()
 
 
 class views.UnsavedWarning extends Backbone.View

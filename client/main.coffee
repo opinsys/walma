@@ -40,6 +40,7 @@ $ ->
   statusView = new views.Status
     el: ".status"
     model: status = new models.StatusModel
+
   statusView.render()
 
   window.socket = io.connect().of("/drawer")
