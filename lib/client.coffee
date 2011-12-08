@@ -32,7 +32,10 @@ class exports.Client extends EventEmitter
         @updateAttrs persistent: true
 
     @socket.on "remove", (cb) =>
-      @model.remove cb
+      @model.remove (err) =>
+        throw err if err
+        @socket.broadcast.to(@model.name).emit "remove"
+        cb()
 
     @socket.on "backgroundData", (dataURL, cb) =>
       @model.saveImage "background", parseDataURL(dataURL), (err) =>

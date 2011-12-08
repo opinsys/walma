@@ -170,6 +170,12 @@ $ ->
     status.removeClient client
     notifications.info "#{ client.browser } parted. We have now #{ status.getClientCount() - 1 } other users"
 
+  socket.on "remove", ->
+    # TODO: Remove blocking alert!
+    alert "This drawing was removed by some other user. Starting with empty room now."
+    window.location.reload()
+
+
 
   if hasTouch
     Input = drawers.TouchInput
