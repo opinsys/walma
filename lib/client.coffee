@@ -83,10 +83,11 @@ class exports.Client extends EventEmitter
 
 
     @socket.on "disconnect", =>
-      @destroy()
+
       @socket.broadcast.to(@model.getCombinedRoomName()).emit "clientParted",
         @getClientInfo()
 
+      @destroy()
 
     @socket.on "bitmap", (bitmap) =>
       console.log "#{ @id } sent a bitmap", bitmap.data?.length, "k"
