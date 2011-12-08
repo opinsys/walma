@@ -76,9 +76,13 @@ class views.RoomInfo extends Backbone.View
     "tap button.persist": "persist"
 
   delete: ->
-    @socket.emit "remove", =>
-      alert "This drawing is now removed."
-      window.location = "/"
+    # TODO: Do not use crappy blocking dialogs
+    if confirm "Are sure? This cannot be undone"
+      @socket.emit "remove", =>
+        @notifications.info "This drawing is now removed."
+        setTimeout ->
+          window.location = "/"
+        , 2000
 
   persist: ->
     @socket.emit "persist", =>

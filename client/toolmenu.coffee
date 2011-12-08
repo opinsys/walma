@@ -42,10 +42,7 @@ class Draggable extends Backbone.View
 
   move: (e) =>
 
-
-
     return if not @down
-
 
     if not @_last
       @_last =

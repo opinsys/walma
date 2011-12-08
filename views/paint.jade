@@ -43,19 +43,21 @@ script.status-template(type="x-handlebars-template").
 script.roomInfoTemplate(type="x-handlebars-template")
   .group.info
 
-    h1 Room
     | {{#if persistent}}
 
     p This room is persistent. All drawings are saved automatically.
-    button.delete Delete now
+    p
+      button.delete Delete now
 
     | {{else}}
 
     p.warning This room is not persistent. It will be deleted automatically when it becomes inactive.
-    button.persist Persist
-    button.delete Delete now
+    p
+      button.persist Persist
+      button.delete Delete now
 
     | {{/if}}
+
 
 
 script.image-template(type="x-handlebars-template")
@@ -138,17 +140,13 @@ h1
 
 
 .menuContainer
-
   .wrapper
-
     .tabs
-
       .tools
         .sideButtonBorder
           .dragArea
 
         .buttons
-
 
     .contentWrapper
       .close
@@ -158,22 +156,10 @@ h1
 
 
 
-.group.navigation
-  h2 Navigation
-  .description Navigate subrooms
-  .buttonBorder
-    button.prev &lt;
-  .buttonBorder
-    button.next &gt;
-  .buttonBorder
-    button.remote Remote
-  .clear
-
-
 .group.miscMenu
   .clear
   h2 Tools
-  div
+  p
     button.publish Publish
     button.background Background
   .clear
