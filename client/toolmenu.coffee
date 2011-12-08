@@ -264,6 +264,11 @@ class toolmenu.ToolMenu extends Draggable
     @$(".buttons,.tabs").bind "mousemove mousedown", (e) ->
       e.preventDefault()
 
+    # Close menu when user hits esc
+    $(window).keyup (e) =>
+      if e.which is 27
+        @closeMenu()
+
 
     @menus = {}
 
