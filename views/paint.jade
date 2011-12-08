@@ -1,6 +1,23 @@
 
 
 
+script.welcomeTemplate(type="x-handlebars-template").
+  .welcome.en
+    h1 Welcome to Collaborative Whiteboard
+    :markdown
+      Hello there! This is web based drawing board with a twist.
+      You can work on this drawing collaborately with anyone you want.
+      Just send link to this page and they can join in!
+
+      If you run on any issues or you have a good idea for new feature
+      feel free to contact us. 
+
+      TODO: Contact links: email, twitter, github issues.
+      TODO: Links to blog post
+
+
+    button.close Thanks!
+
 script.status-template(type="x-handlebars-template").
   .attr
     span.name Status:

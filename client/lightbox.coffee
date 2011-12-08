@@ -12,6 +12,7 @@ class views.LightBox extends Backbone.View
   constructor: ({ @subviews }) ->
     super
     @subviews = [] unless @subviews
+
     for view in @subviews
       view.bind "select", @remove
 

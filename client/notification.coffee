@@ -20,10 +20,10 @@ class notification.Notification extends Backbone.View
       text: "WARNING: #{ msg }"
       stayTime: 5000
 
-  infoModal: (msg) ->
+  infoModal: (msg, type="Info") ->
     console.log "INFO: #{ msg }"
     e = new views.InfoBox
-      type: "Info"
+      type: info
       msg: msg
       stayTime: 5000
 

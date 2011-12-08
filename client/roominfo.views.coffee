@@ -5,63 +5,6 @@ _  = require 'underscore'
 views = NS "PWB.drawers.views"
 
 
-
-class views.Status extends Backbone.View
-
-  constructor: ->
-    super
-    source = $(".status-template").html()
-    @template = Handlebars.compile source
-    @model.bind "change", => @render()
-
-    $(window).bind "hashchange", =>
-      @render()
-
-  show: ->
-    $(@el).show()
-
-  hide: ->
-    $(@el).hide()
-
-  isActive: ->
-    options = window.location.hash.substring(1).split ","
-    "debug" in options
-
-  render: ->
-    if @isActive()
-      $(@el).html @template @model.toJSON()
-      @show()
-    else
-      @hide()
-
-
-class views.UnsavedWarning extends Backbone.View
-
-  el: ".unsavedWarning"
-
-
-  constructor: ({ @toolMenu }) ->
-    super
-
-    @model.bind "change:persistent", =>
-      @render()
-
-    @render()
-
-
-  render: ->
-    if @model.get "persistent"
-      $(@el).hide()
-    else
-      $(@el).show()
-
-  events:
-    "tap": "openMenu"
-
-  openMenu: ->
-    @toolMenu.menus["Menu"]()
-
-
 class views.RoomInfo extends Backbone.View
 
   constructor: ({ @socket, @notifications }) ->

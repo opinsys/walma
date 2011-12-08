@@ -10,6 +10,7 @@ PWB = NS "PWB"
 {Notification} = NS "PWB.notification"
 toolmenu = NS "PWB.toolmenu"
 helpers = NS "PWB.helpers"
+tags = NS "PWB.tags"
 
 maindrawer = NS "PWB.maindrawer"
 
@@ -24,14 +25,6 @@ if not hasTouch and typeof DocumentTouch isnt "undefined"
   hasTouch = document instanceof DocumentTouch
 
 
-$ ->
-  $(".color button").each ->
-    $el = $ this
-    $el.css "background-color", $el.data "value"
-
-  $(".size button").each ->
-    $el = $ this
-    $el.html  $el.data "value"
 
 
 $ ->
@@ -223,6 +216,17 @@ $ ->
   main.bind "ready", ->
     $("canvas.loading").removeClass "loading"
     $("div.loading").remove()
+
+
+    # We will show welcome message if this is the first time ever user opens
+    # any whiteboard room or the welcome message is requested with "#welcome"
+    # hashtag
+    if tags.has("welcome") or not localStorage.welcomeShown
+      localStorage.welcomeShown = true
+      l = new views.LightBox
+        subviews: [ new views.Welcome ]
+      l.render()
+
 
     notifications.info "There are now #{ status.getClientCount() - 1} other users in this room."
 
