@@ -96,6 +96,7 @@ class exports.Client extends EventEmitter
     @model.removeClient this
     @socket.removeAllListeners()
     @removeAllListeners()
+    delete @model
 
   getClientInfo: ->
     id: @id
