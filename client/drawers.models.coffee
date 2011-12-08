@@ -3,12 +3,10 @@ _  = require 'underscore'
 
 models = NS "PWB.drawers.models"
 
-now = -> new Date().getTime()
-
-
 
 
 # Model for client only settings. Such as selected tool etc.
+# TODO: Named storage
 class models.ToolSettings extends Backbone.Model
   defaults:
     tool: "Pencil"

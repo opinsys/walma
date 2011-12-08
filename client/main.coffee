@@ -61,6 +61,9 @@ $ ->
 
 
   [__, roomName] = window.location.pathname.split("/")
+  $("title").text roomName + " - " + $("title").text()
+
+
   toolSettings = new models.ToolSettings
 
   roomModel = new models.RoomModel
