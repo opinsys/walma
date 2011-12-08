@@ -50,29 +50,24 @@ app.get "/bootstrap", (req, res) ->
   res.render "bootstrap.jade"
 
 withRoom = (fn) -> (req, res) ->
-  room = new Drawing req.params.room, req.params.position
+  room = new Drawing req.params.room
   room.fetch (err) ->
     throw err if err
     fn.call this, req, res, room
 
 # TODO: Proper 404, do not thow error on missing images
-app.get "/:room/:position/bg", withRoom (req, res, room) ->
+app.get "/:room/bg", withRoom (req, res, room) ->
   res.contentType "image/png"
   room.getImage "background", (err, data) ->
     console.log err
     throw err if err
     res.send data
 
-app.get "/:room/:position/published.png", withRoom (req, res, room) ->
+app.get "/:room/published.png", withRoom (req, res, room) ->
   res.contentType "image/png"
   room.getImage "publishedImage", (err, data) ->
     throw err if err
     res.send data
-
-
-app.get "/:room", (req, res) ->
-  res.setHeader "Location", "/#{ req.params.room }/1"
-  res.send 302
 
 
 
@@ -91,14 +86,14 @@ app.post "/api/create", (req, res) ->
 
 
 
-app.get "/:room/:position", (req, res) ->
+app.get "/:room", (req, res) ->
   res.render "paint.jade"
 
 
-app.get "/:room/:position/bitmap/:pos", (req, res) ->
+app.get "/:room/bitmap/:pos", (req, res) ->
   res.header('Content-Type', 'image/png')
 
-  room = new Drawing req.params.room, req.params.position
+  room = new Drawing req.params.room
   room.getCache req.params.pos, (err, data) ->
     throw err if err
     res.send data
@@ -112,25 +107,23 @@ sockets.on "connection", (socket) ->
 
   socket.on "join", (opts) ->
     roomName = opts.room
-    position = opts.position
 
-    id = "#{ roomName }/#{ position }"
-
-    room = rooms[id]
+    room = rooms[roomName]
     if not room
-      room = rooms[id] =new Drawing roomName, position
+      room = rooms[roomName] = new Drawing roomName
+
+      console.log "new room", room.toString()
       room.on "empty", ->
         console.log "Empty room #{ room.toString() }. Removing reference."
-        delete rooms[id]
+        delete rooms[roomName]
+        room.removeAllListeners()
 
-      room.removeAllListeners()
-
-    console.log "Adding client to #{ room.toString() }"
     client = new Client
       socket: socket
       model: room
       userAgent: opts.userAgent
       id: opts.id
+    console.log "added client to #{ room.toString() }"
 
 
     client.join()

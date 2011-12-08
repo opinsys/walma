@@ -37,7 +37,6 @@ class models.RoomModel extends Backbone.Model
   defaults:
     background: false
     publishedImage: false
-    position: 0
     name: null
     persistent: false
 
@@ -77,13 +76,13 @@ class models.RoomModel extends Backbone.Model
     # We created the background. No need to download it.
     return @backgroundDataURL if @backgroundDataURL
 
-    "#{ location.protocol }//#{ location.host }/#{ @get "roomName" }/#{ @get "position" }/bg?v=#{ @get "background" }"
+    "#{ location.protocol }//#{ location.host }/#{ @get "roomName" }/bg?v=#{ @get "background" }"
 
   getPublishedImageURL: ->
-    "#{ location.protocol }//#{ location.host }/#{ @get "roomName" }/#{ @get "position" }/published.png"
+    "#{ location.protocol }//#{ location.host }/#{ @get "roomName" }/published.png"
 
   getCacheImageURL: (pos) ->
-    "/#{ @get "roomName" }/#{ @get "position" }/bitmap/#{ pos }"
+    "/#{ @get "roomName" }/bitmap/#{ pos }"
 
 
 

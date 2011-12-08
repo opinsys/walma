@@ -60,7 +60,7 @@ $ ->
   $("body").bind "touchmove", (e) -> e.preventDefault()
 
 
-  [__, roomName, position] = window.location.pathname.split("/")
+  [__, roomName] = window.location.pathname.split("/")
   toolSettings = new models.ToolSettings
 
   roomModel = new models.RoomModel
@@ -71,16 +71,8 @@ $ ->
     el: ".whiteboard"
 
 
-
   roomModel.set
     roomName: roomName
-    position: parseInt position, 10
-
-  navigation = new views.Navigation
-    socket: socket
-    model: roomModel
-    settings: toolSettings
-    el: ".navigation"
 
   roomInfo = new views.RoomInfo
     socket: socket

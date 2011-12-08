@@ -80,7 +80,6 @@ class maindrawer.Main
 
   _setDrawingInfo: =>
       @status.set
-        position: @area.position
         areaSize: @area.areaSize
         drawingSize: @area.drawingSize
 
@@ -139,7 +138,6 @@ class maindrawer.Main
 
     @socket.emit "join",
       room: @model.get "roomName"
-      position: @model.get "position"
       id: @id
       userAgent: navigator.userAgent
 

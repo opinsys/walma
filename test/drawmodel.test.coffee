@@ -87,7 +87,7 @@ describe "Drawing", ->
   room = null
   beforeEach (done) ->
     console.log "new room"
-    room = new Drawing "image room", 1
+    room = new Drawing "image room"
     room.fetch done
 
   it "updates the time stamp", (done) ->
@@ -256,7 +256,7 @@ describe "clearCache method in drawing", ->
 
   room = null
   beforeEach (done) ->
-    room = new Drawing "cache room", 1
+    room = new Drawing "cache room"
     room.fetch (err) ->
       throw err if err
       room.setCache 3, new Buffer([1,2,3]), (err) ->
@@ -307,7 +307,7 @@ describe "cache request in drawing", ->
 
   room = null
   beforeEach (done) ->
-    room = new Drawing "cache request", 1
+    room = new Drawing "cache request"
     room.cacheThreshold = 10
     room.fetch (err) ->
       throw err if err
@@ -322,7 +322,7 @@ describe "cache request in drawing", ->
       done()
 
   it "does not lose cache counting when refetched", (done) ->
-    room2 = new Drawing "cache request", 1
+    room2 = new Drawing "cache request"
     room2.cacheThreshold = 10
     room2.fetch (err, doc) ->
       throw err if err

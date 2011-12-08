@@ -53,7 +53,7 @@ module.exports = (app, io) ->
     js.addFile clientFiles + "/inputs.coffee"
     js.addFile clientFiles + "/drawers.models.coffee"
     js.addFile clientFiles + "/drawers.views.coffee"
-    js.addFile clientFiles + "/navigation.views.coffee"
+    js.addFile clientFiles + "/miscmenu.views.coffee"
     js.addFile clientFiles + "/lightbox.coffee"
     js.addFile clientFiles + "/notification.coffee"
     js.addFile clientFiles + "/toolmenu.coffee"

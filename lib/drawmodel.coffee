@@ -21,8 +21,7 @@ class exports.Drawing extends EventEmitter
   # One hour
   inactivityThreshold: 1000 * 60 * 60
 
-  constructor: (@name, @position) ->
-    @position = parseInt @position, 10
+  constructor: (@name) ->
 
     @resolution =
       x: 0
@@ -50,15 +49,15 @@ class exports.Drawing extends EventEmitter
 
   # Unique string name for single slide. Used for Socket.io rooms
   getCombinedRoomName: ->
-    "#{ @name }/#{ @position }"
+    console.log "Depracated call to getCombinedRoomName"
+    "#{ @name }"
 
   updateResolution: (point) ->
     @resolution.x = point.x if point.x > @resolution.x
     @resolution.y = point.y if point.y > @resolution.y
 
   getQuery: ->
-    name: @name,
-    position: @position
+    name: @name
 
   remove: (cb=->) ->
     @_doc = null
@@ -73,7 +72,7 @@ class exports.Drawing extends EventEmitter
         , cb
 
   toString: ->
-    "<Drawing #{ @name }/#{ @position } #{ @clients.length } clients>"
+    "<Drawing #{ @name } #{ @clients.length } clients>"
 
   addDraw: mustBeOpened (draw, cb=->) ->
 
@@ -86,9 +85,7 @@ class exports.Drawing extends EventEmitter
         @updateResolution point
 
 
-    Drawing.collection.update
-      name: @name,
-      position: @position
+    Drawing.collection.update @getQuery()
     , $push: history: draw
     , (err, coll) =>
       return cb err if err
@@ -103,7 +100,7 @@ class exports.Drawing extends EventEmitter
         cb null
 
   _getImageDBName: (name) ->
-    "image/#{ @name }/#{ @position }/#{ name }"
+    "image/#{ @name }/#{ name }"
 
   saveImage: (name, data, cb=->) ->
     @_saveData @_getImageDBName(name), data, (err) =>
@@ -211,7 +208,6 @@ class exports.Drawing extends EventEmitter
   init: (cb=->) ->
     Drawing.collection.insert @_doc =
       name: @name
-      position: @position
       history: []
       cache: []
       created: Date.now()

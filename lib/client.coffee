@@ -58,15 +58,11 @@ class exports.Client extends EventEmitter
         cb?()
 
 
-    @socket.on "changeSlide", (position, cb) =>
-      @socket.broadcast.to(@model.name).emit "changeSlide", position
-      cb?()
-
 
     @socket.on "draw", (draw, cb) =>
       cb()
       console.log "Routing draw"
-      @socket.broadcast.to(@model.getCombinedRoomName()).emit "draw", draw
+      @socket.broadcast.to(@model.name).emit "draw", draw
       @model.addDraw draw, (err, status) =>
         if err
           console.log "Failed to save draw to db: #{ err }"
@@ -84,7 +80,9 @@ class exports.Client extends EventEmitter
 
     @socket.on "disconnect", =>
 
-      @socket.broadcast.to(@model.getCombinedRoomName()).emit "clientParted",
+      console.log "Disconnecting", @model.toString()
+
+      @socket.broadcast.to(@model.name).emit "clientParted",
         @getClientInfo()
 
       @destroy()
@@ -105,15 +103,14 @@ class exports.Client extends EventEmitter
     browser: useragent.parse(@userAgent).toAgent()
 
   updateAttrs: (attrs) ->
-    @socket.broadcast.to(@model.getCombinedRoomName()).emit "updateAttrs", attrs
+    @socket.broadcast.to(@model.name).emit "updateAttrs", attrs
 
   join: ->
-    console.log "joining", @model.getCombinedRoomName()
+    console.log "joining", @model.name
 
-    @socket.join @model.getCombinedRoomName()
     @socket.join @model.name
 
-    @socket.broadcast.to(@model.getCombinedRoomName()).emit "clientJoined",
+    @socket.broadcast.to(@model.name).emit "clientJoined",
       @getClientInfo()
 
     @model.fetch (err, doc) =>
