@@ -16,6 +16,8 @@ class exports.Client extends EventEmitter
     {@socket} = opts
     {@model} = opts
 
+    @model.addClient this
+
     {@id} = opts
     {@userAgent} = opts
 
@@ -81,12 +83,19 @@ class exports.Client extends EventEmitter
 
 
     @socket.on "disconnect", =>
+      @destroy()
       @socket.broadcast.to(@model.getCombinedRoomName()).emit "clientParted",
         @getClientInfo()
 
 
     @socket.on "bitmap", (bitmap) =>
       console.log "#{ @id } sent a bitmap", bitmap.data?.length, "k"
+
+
+  destroy: ->
+    @model.removeClient this
+    @socket.removeAllListeners()
+    @removeAllListeners()
 
   getClientInfo: ->
     id: @id
@@ -120,6 +129,9 @@ class exports.Client extends EventEmitter
 
       console.log "Sending history ", history.length
 
+      clients = for c in @model.clients
+        c.getClientInfo()
+
       @startWith
         resolution: @model.resolution
         background: doc.background
@@ -127,6 +139,7 @@ class exports.Client extends EventEmitter
         draws: history
         latestCachePosition: latest
         persistent: !!doc.persistent
+        clients: clients
 
 
 

@@ -171,12 +171,12 @@ $ ->
 
   socket.on "clientJoined", (client) ->
     status.addClient client
-    notifications.info "#{ client.browser } joined. We have now #{ status.getClientCount() } other users"
+    notifications.info "#{ client.browser } joined. We have now #{ status.getClientCount() - 1 } other users"
 
 
   socket.on "clientParted", (client) ->
     status.removeClient client
-    notifications.info "#{ client.browser } parted. We have now #{ status.getClientCount() } other users"
+    notifications.info "#{ client.browser } parted. We have now #{ status.getClientCount() - 1 } other users"
 
 
   if hasTouch
@@ -209,6 +209,8 @@ $ ->
   main.bind "ready", ->
     $("canvas.loading").removeClass "loading"
     $("div.loading").remove()
+
+    notifications.info "There are now #{ status.getClientCount() - 1} other users in this room."
 
 
     # http://www.html5rocks.com/en/mobile/mobifying.html#toc-optimizations-scrolling

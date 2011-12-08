@@ -14,7 +14,6 @@ resizeCanvas = (width, height, canvas, cb=->) ->
   canvas.height = height
   img.onload = =>
     canvas.getContext("2d").drawImage img, 0, 0
-    console.log "RESIZED"
     cb()
   img.src = data
 
@@ -288,7 +287,6 @@ class drawarea.DrawArea extends Backbone.View
         c.height = @areaSize.height
 
       @dirty = false
-      console.log "Canvas resized", JSON.stringify @areaSize
       @trigger "resized", @areaSize.width, @areaSize.height
       cb()
 

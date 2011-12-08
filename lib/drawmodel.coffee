@@ -1,4 +1,5 @@
 
+{EventEmitter} = require "events"
 _  = require 'underscore'
 async = require "async"
 
@@ -10,7 +11,7 @@ mustBeOpened = (fn ) -> ->
 
   fn.apply this, arguments
 
-class exports.Drawing
+class exports.Drawing extends EventEmitter
 
   Drawing.collection = null
   Drawing.db = null
@@ -28,8 +29,24 @@ class exports.Drawing
       y: 0
 
     throw "Collection must be set" unless Drawing.collection
-    @clients = {}
+
+    @clients = []
+
     @drawsAfterLastCache = 0
+
+  addClient: (c) ->
+    @clients.push c
+
+  removeClient: (c) ->
+    pos = @clients.indexOf(c)
+    if pos isnt -1
+      @clients.splice pos, 1
+
+    if @isEmpty()
+      @emit "empty"
+
+  isEmpty: ->
+    @clients.length is 0
 
   # Unique string name for single slide. Used for Socket.io rooms
   getCombinedRoomName: ->
@@ -55,6 +72,8 @@ class exports.Drawing
         , remove: true # options
         , cb
 
+  toString: ->
+    "<Drawing #{ @name }/#{ @position } #{ @clients.length } clients>"
 
   addDraw: mustBeOpened (draw, cb=->) ->
 

@@ -43,7 +43,6 @@ class Draggable extends Backbone.View
   move: (e) =>
 
 
-    console.log "TOUCH move", e.pageX, e is @_last
 
     return if not @down
 
@@ -74,14 +73,11 @@ class Draggable extends Backbone.View
 
   startMove: (e) =>
     @down = true
-    console.log "TOUCH start"
 
   stopMove: =>
-    console.log "stopping"
     if @down
       @last = null
       @down = false
-      console.log "TOUCH end"
 
 
 
@@ -129,7 +125,6 @@ class Button extends Backbone.View
     if @value
       ob = {}
       ob[@field] = @value
-      console.log "button tap setting", ob
       @model.set ob
     @trigger "select", @
 

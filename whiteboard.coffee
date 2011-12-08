@@ -104,6 +104,7 @@ app.get "/:room/:position/bitmap/:pos", (req, res) ->
     res.send data
 
 
+rooms = {}
 
 sockets = io.of "/drawer"
 sockets.on "connection", (socket) ->
@@ -113,8 +114,18 @@ sockets.on "connection", (socket) ->
     roomName = opts.room
     position = opts.position
 
-    room = new Drawing roomName, position
-    console.log "Adding client"
+    id = "#{ roomName }/#{ position }"
+
+    room = rooms[id]
+    if not room
+      room = rooms[id] =new Drawing roomName, position
+      room.on "empty", ->
+        console.log "Empty room #{ room.toString() }. Removing reference."
+        delete rooms[id]
+
+      room.removeAllListeners()
+
+    console.log "Adding client to #{ room.toString() }"
     client = new Client
       socket: socket
       model: room

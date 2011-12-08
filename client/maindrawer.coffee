@@ -97,6 +97,10 @@ class maindrawer.Main
         cachedDraws: history.latestCachePosition or 0
         startDraws: history.draws.length
 
+      for client in history.clients
+        @status.addClient client
+        console.log "Adding client from hist", client
+
       @area.bind "moved", @_setDrawingInfo
       @area.bind "resized", @_setDrawingInfo
 
