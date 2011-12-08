@@ -91,7 +91,20 @@ $ ->
 
   colorSelect = new toolmenu.ColorSelect
     model: toolSettings
-    colors: [ "black", "white", "red", "green", "blue", "yellow", "pink" ]
+    colors: [
+      "black",
+      "white",
+      "gray",
+      "red",
+      "green",
+      "lime",
+      "blue",
+      "yellow",
+      "pink",
+      "purple",
+      "cyan",
+      "brown",
+    ]
   colorSelect.render()
 
   sizeSelect = new toolmenu.SizeSelect
