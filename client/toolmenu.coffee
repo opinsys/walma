@@ -57,10 +57,10 @@ class Draggable extends Backbone.View
     newX = e.pageX - @dragArea.width() / 2
     newY = e.pageY - @dragArea.height() / 2
 
-    if newX > 0 and newX + $(@el).width() < $(window).width()
+    if newX > 0 and newX + @dragArea.width() < $(window).width()
       @toolBar.css "left", "#{ newX }px"
 
-    if newY > 0 and newY + $(@el).height() < $(window).height()
+    if newY > 0 and newY + @dragArea.height() < $(window).height()
       @toolBar.css "top", "#{ newY }px"
 
 
