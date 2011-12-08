@@ -26,6 +26,11 @@ class views.LightBox extends Backbone.View
           @remove()
     , 10
 
+    # Close lightbox when user hits esc
+    $(window).keyup (e) =>
+      if e.which is 27
+        @remove()
+
   remove: =>
     @$(@el).hide()
     for view in @subviews
