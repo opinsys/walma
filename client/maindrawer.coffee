@@ -81,6 +81,7 @@ class maindrawer.Main
   _setDrawingInfo: =>
       @status.set
         areaSize: @area.areaSize
+        position: @area.position
         drawingSize: @area.drawingSize
 
   bindEvents: ->
