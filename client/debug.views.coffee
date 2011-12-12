@@ -12,6 +12,7 @@ class views.Status extends Backbone.View
     source = $(".status-template").html()
     @template = Handlebars.compile source
     @model.bind "change", => @render()
+    @active = PWB.tags.has "debug"
 
     $(window).bind "hashtagchange", (e, tags) =>
       @active = tags.has "debug"
