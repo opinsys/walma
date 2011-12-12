@@ -74,7 +74,7 @@ class exports.Client extends EventEmitter
           console.log "asking for cache"
           @fetchBitmap (err, bitmap) =>
             if err
-              console.log "Could not get cache bitmap #{ err.message } #{ client.id }"
+              console.log "Could not get cache bitmap #{ err?.message }", err
             else
               buf = parseDataURL bitmap.data
               console.log "Saving cahce", buf.length
