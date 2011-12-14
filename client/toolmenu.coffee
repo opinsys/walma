@@ -104,7 +104,8 @@ class Button extends Backbone.View
     source = $("script.menuButtonTemplate").html()
     @template = Handlebars.compile source
 
-    @model.bind "change:#{ @field }", => @render()
+    @model.bind "change:#{ @field }", =>
+      @render()
 
 
   render: ->
@@ -320,7 +321,6 @@ class toolmenu.ToolMenu extends Draggable
   closeMenu: ->
     @$(".wrapper").removeClass "openDown"
     @selectedButton = null
-    @model.trigger "change:tool"
 
   openMenu: ->
     @$(".wrapper").addClass "openDown"
