@@ -26,6 +26,10 @@ class exports.Client extends EventEmitter
     @socket.on "state", (state) =>
       @state = state
 
+    @socket.on "ready", =>
+      @socket.broadcast.to(@model.name).emit "clientJoined",
+        @getClientInfo()
+
     @socket.on "persist", (cb) =>
       @model.persist =>
         cb()
@@ -113,8 +117,6 @@ class exports.Client extends EventEmitter
 
     @socket.join @model.name
 
-    @socket.broadcast.to(@model.name).emit "clientJoined",
-      @getClientInfo()
 
     @model.fetch (err, doc) =>
       return cb err if err

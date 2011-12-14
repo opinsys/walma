@@ -71,4 +71,4 @@ module.exports = (app, io) ->
 
 
 
-  app.listen 1337
+  app.listen 8080

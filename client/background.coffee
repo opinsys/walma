@@ -25,11 +25,11 @@ class views.BackgroundSelect extends Backbone.View
 
   deleteBackground: ->
     @model.deleteBackground()
-    @trigger "select"
+    @render()
 
   resizeBackground: ->
     @area.resizeBackgroundToThreshold()
-    @trigger "select"
+    @render()
 
   setBackgroundFromEvent: (e) ->
     @readFileToModel e.target.files[0]
@@ -38,7 +38,6 @@ class views.BackgroundSelect extends Backbone.View
   readFileToModel: (file) ->
     reader = new FileReader()
     reader.onload = =>
-      @trigger "select"
       @model.saveBackground reader.result, =>
         @render()
     reader.readAsDataURL file
@@ -52,6 +51,7 @@ class views.BackgroundSelect extends Backbone.View
 
     if not @model.get "bigBackground"
       @$(".resize").remove()
+
 
   bindDragAndDrop: ->
 

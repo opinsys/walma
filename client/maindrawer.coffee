@@ -182,6 +182,7 @@ class maindrawer.Main
           @status.set status: "ready"
           @setTool()
           @trigger "ready"
+          @socket.emit "ready"
 
       null
 
