@@ -2,7 +2,6 @@
 PWB = NS "PWB"
 
 {DrawArea} = PWB.drawarea
-{Background} = PWB.background
 
 {drawers} = NS "PWB"
 {views} = NS "PWB.drawers"
@@ -39,7 +38,6 @@ $ ->
   window.socket = io.connect().of("/drawer")
   setSocketStatus = ->
     s = ""
-
     for name in [ "open", "connected", "connecting", "reconnecting"]
       if socket.socket[name]
         s += name + " "
@@ -80,6 +78,7 @@ $ ->
     model: roomModel
     area: area
     settings: toolSettings
+    notifications: notifications
 
 
   colorSelect = new toolmenu.ColorSelect
@@ -185,14 +184,11 @@ $ ->
     window.location.reload()
 
 
-
   if hasTouch
     Input = drawers.TouchInput
   else
     Input = drawers.MouseInput
 
-
-  roomModel.bind "background-saved", -> notifications.info "Background saved"
 
 
   main = new maindrawer.Main

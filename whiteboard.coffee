@@ -2,6 +2,7 @@ fs = require "fs"
 express = require "express"
 _  = require 'underscore'
 _.mixin require 'underscore.string'
+async = require "async"
 
 app = express.createServer()
 io = require('socket.io').listen app
@@ -52,26 +53,34 @@ withRoom = (fn) -> (req, res) ->
   room = new Drawing req.params.room
   room.fetch (err) ->
     throw err if err
-    fn.call this, req, res, room
+    if err
+      console.log "failed to open room #{ req.params.room }"
+      req.send "Error opening room", 500
+    else
+      fn.call this, req, res, room
 
 # TODO: Proper 404, do not thow error on missing images
 app.get "/:room/bg", withRoom (req, res, room) ->
   res.contentType "image/png"
   room.getImage "background", (err, data) ->
-    console.log err
-    throw err if err
-    res.send data
+    if err
+      console.log "Could not find backgrond for #{ room.name }", err
+      res.send "not found", 404
+    else
+      res.send data
 
 app.get "/:room/published.png", withRoom (req, res, room) ->
   res.contentType "image/png"
   room.getImage "publishedImage", (err, data) ->
-    throw err if err
-    res.send data
+    if err
+      console.log "Could not find published image for #{ room.name }", err
+      res.send "not found", 404
+    else
+      res.send data
 
 
 
 app.post "/api/create", (req, res) ->
-
   generateUniqueName "screenshot"
     , (prefix, num) ->
       "#{ prefix }-#{ num }"
@@ -84,6 +93,50 @@ app.post "/api/create", (req, res) ->
           res.json url: "/#{ roomName }"
 
 
+# Epic dataURL parser. Returns base64 encoded PNG
+parseDataURL = (dataURL) ->
+  base64data = dataURL.split(",")[1]
+  new Buffer(base64data, "base64")
+
+
+
+
+
+
+imageResponse = (err, res) ->
+  if err
+    console.log msg = "Failed to save image", err
+    res.send msg, 500
+  else
+    console.log "image saved ok"
+    res.send "ok"
+
+app.post "/:room/image", withRoom (req, res, room) ->
+
+  if req.body.type isnt "background"
+    console.log "Unknown image type #{ req.body.type }"
+    res.send "unkown type", 500
+    return
+
+  if req.files.image
+    async.waterfall [
+      (cb) -> fs.readFile req.files.image.path, cb
+    ,
+      (data, cb) -> room.saveImage "background", data, cb
+    ,
+      (cb) -> fs.unlink req.files.image.path, cb
+    ], (err) -> imageResponse err, res
+  else
+    base64data = parseDataURL req.body.image
+    room.saveImage "background", new Buffer(base64data, "base64"), (err) ->
+      imageResponse err, res
+
+
+
+
+
+
+
 
 app.get "/:room", (req, res) ->
   res.render "paint.jade"
@@ -94,8 +147,10 @@ app.get "/:room/bitmap/:pos", (req, res) ->
 
   room = new Drawing req.params.room
   room.getCache req.params.pos, (err, data) ->
-    throw err if err
-    res.send data
+    if err
+      res.send 404
+    else
+      res.send data
 
 
 rooms = {}

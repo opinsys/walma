@@ -185,7 +185,7 @@ class drawarea.DrawArea extends Backbone.View
 
     toImage url, (err, img) =>
       throw err if err
-      isBig = img.with > @backgroundSizeThreshold or img.height > @backgroundSizeThreshold
+      isBig = img.width > @backgroundSizeThreshold or img.height > @backgroundSizeThreshold
       @model.set bigBackground: isBig
 
   resizeBackgroundToThreshold: ->

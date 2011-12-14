@@ -35,6 +35,9 @@ class exports.Client extends EventEmitter
         cb()
         @updateAttrs persistent: true
 
+    @socket.on "updateAttrs", (attrs) =>
+      @updateAttrs attrs
+
     @socket.on "remove", (cb) =>
       @model.remove (err) =>
         throw err if err
@@ -68,7 +71,6 @@ class exports.Client extends EventEmitter
 
     @socket.on "draw", (draw, cb) =>
       cb()
-      console.log "Routing draw"
       @socket.broadcast.to(@model.name).emit "draw", draw
       @model.addDraw draw, (err, status) =>
         if err

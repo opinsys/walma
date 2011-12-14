@@ -62,13 +62,67 @@ class models.RoomModel extends Backbone.Model
       @set publishedImage: new Date().getTime()
       cb()
 
-  saveBackground: (dataURL, cb=->) ->
-    @backgroundDataURL = dataURL
-    @set background: new Date().getTime()
+  _setBackgroundURLFromFile: (file, cb=->) ->
 
-    @socket.emit "backgroundData", dataURL, =>
-      @trigger "background-saved"
+    # if file it must be a dataURL (base64 with metadata)
+    if typeof file is "string"
+      @backgroundDataURL = file
       cb()
+      return
+
+    # Local file object from file input
+    reader = new FileReader()
+    reader.onload = =>
+      @backgroundDataURL = reader.result
+      cb()
+    reader.readAsDataURL file
+
+
+
+  saveBackground: (file, cb=->) ->
+    async.parallel [
+      (cb) =>
+        @postImage file, type: "background", cb
+    ,
+      (cb) =>
+        @_setBackgroundURLFromFile file, =>
+          @set background: new Date().getTime()
+          cb()
+    ], (err) =>
+      if err
+        alert "failed to save background"
+      else
+        cb()
+        @socket.emit "updateAttrs",
+          background: @get "background"
+
+
+  # Returns xhr object
+  postImage: (file, extra={}, cb) ->
+    form = new FormData()
+    form.append "image", file
+    for k, v of extra
+      form.append k, v
+
+    xhr = new XMLHttpRequest()
+    i = 0
+
+    $(xhr).bind "progress", (e) ->
+      console.log "progress event", ++i
+
+    $(xhr).bind "load", -> 
+      console.log "image sent"
+      cb()
+
+    $(xhr).bind "error abort", (e) ->
+      console.log "failed to sent image"
+      cb e, xhr
+
+    xhr.open "POST", @getImagePostURL()
+    xhr.send form
+
+    xhr
+
 
   getBackgroundURL: ->
     # We created the background. No need to download it.
@@ -78,6 +132,9 @@ class models.RoomModel extends Backbone.Model
 
   getPublishedImageURL: ->
     "#{ location.protocol }//#{ location.host }/#{ @get "roomName" }/published.png"
+
+  getImagePostURL: ->
+    "#{ location.protocol }//#{ location.host }/#{ @get "roomName" }/image"
 
   getCacheImageURL: (pos) ->
     "/#{ @get "roomName" }/bitmap/#{ pos }"

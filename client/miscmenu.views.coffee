@@ -6,7 +6,7 @@ views = NS "PWB.drawers.views"
 
 class views.MiscMenu extends Backbone.View
 
-  constructor: ({ @area, @model }) ->
+  constructor: ({ @area, @model, @notifications }) ->
     super
 
   events:
@@ -20,6 +20,7 @@ class views.MiscMenu extends Backbone.View
     backgroundSelect = new views.BackgroundSelect
       model: @model
       area: @area
+      notifications: @notifications
     @openInLightBox backgroundSelect
 
   openInLightBox: (view) ->

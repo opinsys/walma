@@ -14,13 +14,16 @@ class views.BackgroundSelect extends Backbone.View
     "tap .backgroundResize": "resizeBackground"
     "change input": "setBackgroundFromEvent"
 
-  constructor: ({ @area, @background }) ->
+  constructor: ({ @area, @background, @notifications }) ->
     super
 
     source = $("script.backgroundSelectTemplate").html()
     @template = Handlebars.compile source
 
     @bindDragAndDrop()
+
+    @model.bind "change:bigBackground", => @render()
+    @model.bind "change:background", => @render()
 
 
   deleteBackground: ->
@@ -36,11 +39,10 @@ class views.BackgroundSelect extends Backbone.View
 
 
   readFileToModel: (file) ->
-    reader = new FileReader()
-    reader.onload = =>
-      @model.saveBackground reader.result, =>
-        @render()
-    reader.readAsDataURL file
+    @model.saveBackground file, =>
+      @render()
+      @notifications.info "Background saved"
+
 
 
   render: ->

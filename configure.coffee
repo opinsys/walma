@@ -1,7 +1,6 @@
 
 express = require "express"
 piler = require "piler"
-form = require "connect-form"
 logClients = require "./lib/clientlogger"
 
 module.exports = (app, io) ->
@@ -15,11 +14,8 @@ module.exports = (app, io) ->
 
   app.configure ->
     app.use express.static __dirname + "/public"
-    app.use express.bodyParser()
-    app.use form
-      keepExtensions: true
-      # defaults to /tmp
-      # uploadDir: __dirname + '/public/img'
+    app.use express.bodyParser
+      uploadDir: "/tmp"
 
     js.bind app
     css.bind app
