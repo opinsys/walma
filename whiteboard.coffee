@@ -3,7 +3,6 @@ express = require "express"
 _  = require 'underscore'
 _.mixin require 'underscore.string'
 
-
 app = express.createServer()
 io = require('socket.io').listen app
 io.set "log level", 0
