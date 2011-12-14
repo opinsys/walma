@@ -91,10 +91,10 @@ class exports.Drawing extends EventEmitter
       return cb err if err
 
       @drawsAfterLastCache += 1
+      console.log "Draws after last cache", @drawsAfterLastCache, @waitingForCache
 
-
-      if not @fethingBitmap and @drawsAfterLastCache >= @cacheThreshold
-        @fethingBitmap = true
+      if not @waitingForCache and @drawsAfterLastCache >= @cacheThreshold
+        @waitingForCache = true
         cb null, needCache: true
       else
         cb null
@@ -178,7 +178,8 @@ class exports.Drawing extends EventEmitter
     "#{ @_getImageDBName("cache") }-#{ drawCount }"
 
   setCache: (drawCount, data, cb=->) ->
-    @fethingBitmap = false
+    drawCount = parseInt drawCount, 10
+    @waitingForCache = false
     @drawsAfterLastCache = 0
     @_saveData @getCacheName(drawCount), data, =>
       Drawing.collection.update @getQuery()

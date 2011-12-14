@@ -20,6 +20,34 @@ db = require("./db").open()
 require("./configure") app, io
 
 
+
+
+# Simple in-process room manager. This needs work when we have to scale out one
+# process
+_rooms = {}
+roomManager =
+  get: (name, cb) ->
+    room = _rooms[name]
+
+    if not room
+      room = _rooms[name] = new Drawing name
+      room.on "empty", ->
+        console.log "Empty room #{ room.toString() }. Removing reference."
+        roomManager.delete name
+
+
+    room.fetch (err, doc) ->
+      return cb err if err
+      cb null, room
+
+  delete: (name) ->
+    if room = _rooms[name]
+      room.removeAllListeners()
+      delete _rooms[name]
+
+
+
+
 app.get "/", (req, res) ->
   res.send '''
   <h1>Whiteboard</h1>
@@ -50,16 +78,14 @@ app.get "/bootstrap", (req, res) ->
   res.render "bootstrap.jade"
 
 withRoom = (fn) -> (req, res) ->
-  room = new Drawing req.params.room
-  room.fetch (err) ->
-    throw err if err
+  roomManager.get req.params.room, (err, room) ->
     if err
       console.log "failed to open room #{ req.params.room }"
       req.send "Error opening room", 500
     else
       fn.call this, req, res, room
 
-# TODO: Proper 404, do not thow error on missing images
+
 app.get "/:room/bg", withRoom (req, res, room) ->
   res.contentType "image/png"
   room.getImage "background", (err, data) ->
@@ -103,33 +129,39 @@ parseDataURL = (dataURL) ->
 
 
 
-imageResponse = (err, res) ->
-  if err
-    console.log msg = "Failed to save image", err
-    res.send msg, 500
+
+imageToBuffer = (req, cb) ->
+
+  if req.files.image
+    fs.readFile req.files.image.path, (err, data) ->
+      return cb err if err
+      fs.unlink req.files.image.path, (err) ->
+        return cb err if err
+        cb null, data
   else
-    console.log "image saved ok"
-    res.send "ok"
+    base64data = parseDataURL req.body.image
+    cb null, new Buffer(base64data, "base64")
 
 app.post "/:room/image", withRoom (req, res, room) ->
 
-  if req.body.type isnt "background"
-    console.log "Unknown image type #{ req.body.type }"
-    res.send "unkown type", 500
-    return
+  imageResponse = (err) ->
+    if err
+      console.log msg = "Failed to save image", err
+      res.send msg, 500
+    else
+      console.log "image saved ok"
+      res.send "ok"
 
-  if req.files.image
-    async.waterfall [
-      (cb) -> fs.readFile req.files.image.path, cb
-    ,
-      (data, cb) -> room.saveImage "background", data, cb
-    ,
-      (cb) -> fs.unlink req.files.image.path, cb
-    ], (err) -> imageResponse err, res
-  else
-    base64data = parseDataURL req.body.image
-    room.saveImage "background", new Buffer(base64data, "base64"), (err) ->
-      imageResponse err, res
+  imageToBuffer req, (err, data) ->
+    return imageResponse err if err
+
+    if req.body.type is "background"
+      room.saveImage "background", data, imageResponse
+    else if req.body.type is "cache"
+      room.setCache req.body.drawCount, data, imageResponse
+    else
+      imageResponse "Unknown image type #{ req.body.type }"
+
 
 
 
@@ -153,7 +185,6 @@ app.get "/:room/bitmap/:pos", (req, res) ->
       res.send data
 
 
-rooms = {}
 
 sockets = io.of "/drawer"
 sockets.on "connection", (socket) ->
@@ -161,24 +192,19 @@ sockets.on "connection", (socket) ->
 
   socket.on "join", (opts) ->
     roomName = opts.room
+    roomManager.get opts.room, (err, room) ->
+      if err
+        console.log "ERROR: could not open room #{ opts.room }", err
+        return
 
-    room = rooms[roomName]
-    if not room
-      room = rooms[roomName] = new Drawing roomName
+      client = new Client
+        socket: socket
+        model: room
+        userAgent: opts.userAgent
+        id: opts.id
 
-      console.log "new room", room.toString()
-      room.on "empty", ->
-        console.log "Empty room #{ room.toString() }. Removing reference."
-        delete rooms[roomName]
-        room.removeAllListeners()
-
-    client = new Client
-      socket: socket
-      model: room
-      userAgent: opts.userAgent
-      id: opts.id
-    console.log "added client to #{ room.toString() }"
+      console.log "added client to #{ room.toString() }"
 
 
-    client.join()
+      client.join()
 

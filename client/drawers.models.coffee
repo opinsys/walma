@@ -98,7 +98,7 @@ class models.RoomModel extends Backbone.Model
 
 
   # Returns xhr object
-  postImage: (file, extra={}, cb) ->
+  postImage: (file, extra={}, cb=->) ->
     form = new FormData()
     form.append "image", file
     for k, v of extra

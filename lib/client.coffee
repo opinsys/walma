@@ -78,13 +78,8 @@ class exports.Client extends EventEmitter
           return
         if status?.needCache
           console.log "asking for cache"
-          @fetchBitmap (err, bitmap) =>
-            if err
-              console.log "Could not get cache bitmap #{ err?.message }", err
-            else
-              buf = parseDataURL bitmap.data
-              console.log "Saving cahce", buf.length
-              @model.setCache bitmap.pos, buf
+          # Send cache request to this client
+          @socket.emit "needCache"
 
 
     @socket.on "disconnect", =>
@@ -153,19 +148,5 @@ class exports.Client extends EventEmitter
     @socket.emit "start", history
 
 
-  fetchBitmap: (cb=->) ->
-    cb = _.once cb
-    timeout = false
-
-    timer = setTimeout ->
-      timeout = true
-      cb message: "Fetching timeout", reason: "timeout"
-    , @timeoutTime
-
-    @socket.once "bitmap", (bitmap) ->
-      clearTimeout timer
-      cb null, bitmap unless timeout
-
-    @socket.emit "getbitmap"
 
 

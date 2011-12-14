@@ -125,11 +125,13 @@ class maindrawer.Main
     else
       @socket.on "connect", _.once => @join()
 
-    @socket.on "getbitmap", =>
-      console.log "I should send bitmap! pos:#{ @drawCount }", @id
-      @socket.emit "bitmap",
-        pos: @drawCount
-        data: @area.getDataURL()
+    # Got cache request. Sent current drawing
+    @socket.on "needCache", =>
+      console.log "I should send cache position! pos:#{ @drawCount }", @id
+
+      @model.postImage @area.getDataURL(),
+        type: "cache"
+        drawCount: @drawCount
 
 
   join: ->
