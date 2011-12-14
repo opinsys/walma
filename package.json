@@ -15,13 +15,12 @@
   }
   , "dependencies": {
       "coffee-script": "1.1.2"
-      , "express": "2.4.6"
-      , "jade": "0.17.0"
+      , "express": ""
+      , "jade": ""
       , "markdown-js": "0.0.3"
       , "piler": ""
       , "useragent": ""
       , "mongodb": "0.9.6-23"
-      , "connect-form": ""
       , "socket.io": "0.8.5"
       , "socket.io-client": "0.8.5"
       , "stylus": "0.15.1"
