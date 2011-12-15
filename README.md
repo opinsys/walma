@@ -1,44 +1,15 @@
 
-# Collaborative whiteboard
+# Walma - Collaborative Whiteboard
 
-## Protocol
+Walma is a collaborative whiteboard tool written with Node.js and CoffeeScript.
 
-CoffeeScriptyfied JSON
+http://www.opinsys.fi/en/new-prototype-walma-collaborative-whiteboard
 
-    board: "mathclass"
-    history: [
-        tool: "pencil",
-        user: "esa",
-        time: 1317890572951,
-        color: "red",
-        moves: [
-            down: { x: 100, y: 100 }
-        ,
-            move: { x: 100, y: 100 }
-        ,
-            move: { x: 200, y: 200 }
-        ,
-            move: { x: 100, y: 200 }
-        ,
-            move: { x: 0, y: 200 }
-        ,
-            up: { x: 0, y: 200 }
-        ]
-    ,
-        tool: "line",
-        user: "matti",
-        time: 1317890572961,
-        color: "green"
-        moves:
-            down: { x: 300, y: 300 }
-        ,
-            end: { x: 400, y: 400 }
-    ]
 
 
 # Installing
 
-Install Node.js and npm.
+Install Node.js 0.6.x and MongoDB (tested with 2.0.x)
 
     git clone git://github.com/opinsys/walma.git
     cd walma
@@ -51,14 +22,13 @@ Develop run
 
     bin/develop
 
-Production execute
+Production run
 
     npm start
 
 
 
 # Copyright
-
 
 Copyright © 2010 Opinsys Oy
 
