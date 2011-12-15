@@ -17,15 +17,8 @@ urlshortener = require "./lib/urlshortener"
 
 db = require("./db").open()
 
-setTimeout ->
-  Drawing.findExpiredRooms (err, rooms) ->
-    for r in rooms
-      console.log "got", r.toString()
-, 1000
 
 require("./configure") app, io
-
-
 
 
 # Simple in-process room manager. This needs work when we have to scale out one
@@ -78,6 +71,14 @@ app.post "/", (req, res) ->
   else
     res.setHeader "Location", "/" + req.body.roomName
     res.send 302
+
+app.get "/delete", (req, res) ->
+  Drawing.deleteExpiredRooms (err, count) ->
+    if err
+      console.log "Failed to delete", err
+      res.send "Failed to delete", 500
+    else
+      res.send "deleted #{ count }", 200
 
 
 app.get "/bootstrap", (req, res) ->

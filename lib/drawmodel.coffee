@@ -32,13 +32,15 @@ class exports.Drawing extends EventEmitter
       , (err, rooms) ->
         return cb err if err
 
-        # cb null, rooms
-
-        # for r in rooms
-        #   console.log "in", r.hasExpired(), r.getInactiveTime(), r.inactivityThreshold
-
         cb null, rooms.filter (room) ->
           room.hasExpired()
+
+  @deleteExpiredRooms = (cb=->) ->
+    Drawing.findExpiredRooms (err, rooms) ->
+      async.forEachSeries rooms, (r, next) ->
+        console.log "Removing #{ r.toString() }"
+        r.remove next
+      , (err) -> cb err, rooms.length
 
 
 
