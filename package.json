@@ -14,7 +14,7 @@
       , "node-inspector": ""
   }
   , "dependencies": {
-      "coffee-script": "1.1.2"
+      "coffee-script": "1.1.x"
       , "express": ""
       , "jade": ""
       , "markdown-js": "0.0.3"
