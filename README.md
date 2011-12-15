@@ -1,3 +1,4 @@
+[![Travis status](https://secure.travis-ci.org/opinsys/walma.png)](http://travis-ci.org/#!/opinsys/walma)
 
 # Walma - Collaborative Whiteboard
 
