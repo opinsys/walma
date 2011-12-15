@@ -222,7 +222,7 @@ describe "Drawing", ->
       (cb) -> Drawing.findExpiredRooms cb
     ,
       (rooms, cb) -> 
-          rooms.should.have.lengthOf 1
+          rooms.should.have.lengthOf 10
           rooms[0].name.should.equal room.name
           cb()
 
