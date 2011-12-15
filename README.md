@@ -19,14 +19,27 @@ Install dependencies
 
     npm install
 
-Develop run
+Setup database
 
-    bin/develop
+    bin/setupdb
+
 
 Production run
 
     npm start
 
+
+And point your browser to http://localhost:1337
+
+# Hacking
+
+Development run
+
+    bin/develop
+
+Tests
+
+    npm test
 
 
 # Copyright
