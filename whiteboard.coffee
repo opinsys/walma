@@ -15,10 +15,9 @@ generateUniqueName = require "./lib/namegenerator"
 urlshortener = require "./lib/urlshortener"
 
 
-db = require("./db").open()
+conf = require "./configure"
 
-
-require("./configure") app, io
+conf.setUp app, io
 
 
 # Simple in-process room manager. This needs work when we have to scale out one

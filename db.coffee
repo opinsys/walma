@@ -1,18 +1,19 @@
 
+fs = require "fs"
+
 async = require "async"
 {Db, Connection, Server} = require "mongodb"
 {Drawing} = require "./lib/drawmodel"
 
 
-
-exports.open = open = (dbname="whiteboard", cb=->) ->
-  db = new Db dbname,
-    new Server "localhost", Connection.DEFAULT_PORT,
+exports.open = open = (config, cb=->) ->
+  db = new Db config.mongoDBName,
+    new Server config.mongoHost, config.mongoPort,
 
   db.open (err) ->
     if err
       console.log "Could not open the database", err.trace
-      process.exit(1)
+      process.exit 1
 
     db.collection "drawings", (err, collection) ->
       throw err if err
@@ -31,9 +32,8 @@ exports.open = open = (dbname="whiteboard", cb=->) ->
 
   db
 
-exports.populate = (dbname, cb=->) ->
-
-  open dbname, (err, db) ->
+exports.populate = (config, cb=->) ->
+  open config, (err, db) ->
     throw err if err
     db.collection "whiteboard-config", (err, coll) ->
       throw err if err
@@ -49,4 +49,8 @@ exports.populate = (dbname, cb=->) ->
 
 # Populate db if this file is directly executed
 if require.main is module
-  exports.populate()
+  config = JSON.parse fs.readFileSync __dirname + "/config.json"
+  exports.populate config, ->
+    console.log "Database bootstrapped"
+    process.exit 0
+

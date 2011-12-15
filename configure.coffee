@@ -1,9 +1,16 @@
-
+fs = require "fs"
 express = require "express"
 piler = require "piler"
 logClients = require "./lib/clientlogger"
 
-module.exports = (app, io) ->
+config = JSON.parse fs.readFileSync __dirname + "/config.json"
+
+dbTools = require "./db"
+
+dbTools.open config
+
+
+exports.setUp = (app, io) ->
 
 
   css = piler.createCSSManager()
@@ -66,5 +73,6 @@ module.exports = (app, io) ->
 
 
 
+  app.listen config.listenPort, ->
+    console.log "Walma is now listening on port #{ config.listenPort }"
 
-  app.listen 1337

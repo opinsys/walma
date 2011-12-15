@@ -1,0 +1,8 @@
+{
+
+  "listenPort": 1337
+  , "mongoPort": 27017
+  , "mongoHost": "localhost"
+  , "mongoDBName": "walma"
+
+}
