@@ -16,10 +16,37 @@ class exports.Drawing extends EventEmitter
   Drawing.collection = null
   Drawing.db = null
 
+  @findExpiredRooms = (cb) ->
+    cursor = Drawing.collection.find
+      persistent:
+        $exists: false
+    , name: true
+
+    cursor.toArray (err, docs) ->
+      return cb err if err
+      async.map docs, (doc, next) ->
+        d = new Drawing doc.name
+        d.fetch true, (err) ->
+          return next err if err
+          next null, d
+      , (err, rooms) ->
+        return cb err if err
+
+        # cb null, rooms
+
+        # for r in rooms
+        #   console.log "in", r.hasExpired(), r.getInactiveTime(), r.inactivityThreshold
+
+        cb null, rooms.filter (room) ->
+          room.hasExpired()
+
+
+
   cacheThreshold: 100
 
   # One hour
   inactivityThreshold: 1000 * 60 * 60
+  # inactivityThreshold: 1000 * 60 * 10
 
   constructor: (@name) ->
 
@@ -72,7 +99,7 @@ class exports.Drawing extends EventEmitter
         , cb
 
   toString: ->
-    "<Drawing #{ @name } #{ @clients.length } clients>"
+    "<Drawing #{ @name } #{ @clients.length } clients inactive: #{ @getInactiveTime() / 1000 / 60 / 60  }hours expired: #{ @hasExpired() } persistent: #{ !!@_doc.persistent } >"
 
   addDraw: mustBeOpened (draw, cb=->) ->
 
@@ -218,11 +245,14 @@ class exports.Drawing extends EventEmitter
       return cb err if err
       cb null, docs[0]
 
+  getInactiveTime: mustBeOpened ->
+    Date.now() - @_doc.modified
+
 
   # Returns true if inactivity timeout has occured
   hasExpired: mustBeOpened (cb) ->
 
-    Date.now() - @_doc.modified > @inactivityThreshold
+    @getInactiveTime() > @inactivityThreshold
 
 
   # Force gets always the drawing. If not set the drawing will be deleted if it
@@ -251,6 +281,7 @@ class exports.Drawing extends EventEmitter
         @_doc = doc
 
         if not force and @hasExpired() and not doc.persistent
+          console.log "Expired!. Deleting", @toString()
           @remove (err) =>
             return cb err if err
             @init cb

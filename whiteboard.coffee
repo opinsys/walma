@@ -17,6 +17,12 @@ urlshortener = require "./lib/urlshortener"
 
 db = require("./db").open()
 
+setTimeout ->
+  Drawing.findExpiredRooms (err, rooms) ->
+    for r in rooms
+      console.log "got", r.toString()
+, 1000
+
 require("./configure") app, io
 
 
@@ -112,7 +118,7 @@ app.post "/api/create", (req, res) ->
       "#{ prefix }-#{ num }"
     , (err, roomName) ->
       throw err if err
-      room = new Drawing roomName, 1
+      room = new Drawing roomName
       room.fetch ->
         room.saveImage "background", new Buffer(req.body.image, "base64"), (err) ->
           throw err if err

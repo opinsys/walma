@@ -205,12 +205,39 @@ describe "Drawing", ->
 
     ], done
 
+
+
+  it "can find expired rooms", (done) ->
+    orig = Drawing::inactivityThreshold
+    Drawing::inactivityThreshold = 100
+    room.addDraw createExampleDraw(), (err) ->
+      throw err if err
+      # Expire room
+      activeRoom = new Drawing "active room"
+      activeRoom.fetch (err) ->
+        throw err if err
+        console.log "waiting"
+        setTimeout ->
+          activeRoom.addDraw createExampleDraw(), (err) ->
+            throw err if err
+            console.log "waited"
+            Drawing.findExpiredRooms (err, rooms) ->
+              for r in rooms
+                console.log r.toString()
+              rooms.should.have.lengthOf 1
+              Drawing::inactivityThreshold = orig
+              done()
+        , 1000
+
+
+
   it "gets expired", (done) ->
     room.inactivityThreshold = 100
     setTimeout ->
       room.hasExpired().should.be.ok
       done()
     , 200
+
 
   it "is not yet expired", (done) ->
     setTimeout ->
