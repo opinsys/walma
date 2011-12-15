@@ -1,4 +1,5 @@
 
+async = require "async"
 {Db, Connection, Server} = require "mongodb"
 {Drawing} = require "./lib/drawmodel"
 
@@ -17,7 +18,17 @@ exports.open = open = (dbname="whiteboard", cb=->) ->
       throw err if err
       Drawing.collection = collection
       Drawing.db = db
-      cb null, db
+      console.log "Ensuring indexes"
+      async.series [
+        (cb) -> collection.ensureIndex "name", cb
+      ,
+        (cb) -> collection.ensureIndex "persistent", cb
+      ], (err) ->
+        throw err if err
+        console.log "Indexes created"
+        cb null, db
+
+
   db
 
 exports.populate = (dbname, cb=->) ->
