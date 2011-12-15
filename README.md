@@ -1,4 +1,4 @@
-
+![Travis status](https://secure.travis-ci.org/opinsys/walma.png)
 # Walma - Collaborative Whiteboard
 
 Walma is a collaborative whiteboard tool written with Node.js and CoffeeScript.
