@@ -214,14 +214,9 @@ $ ->
     $("div.loading").remove()
 
 
-    # We will show welcome message if this is the first time ever user opens
-    # any whiteboard room or the welcome message is requested with "#welcome"
-    # hashtag
-    if tags.has("welcome") or not localStorage.welcomeShown
-      localStorage.welcomeShown = true
-      l = new views.LightBox
-        subviews: [ new views.Welcome ]
-      l.render()
+    l = new views.LightBox
+      subviews: [ new views.Welcome ]
+    l.render()
 
 
     notifications.info "There are now #{ status.getClientCount() - 1} other users in this room."

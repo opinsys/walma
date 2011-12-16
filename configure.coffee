@@ -35,8 +35,8 @@ exports.setUp = (app, io) ->
 
   app.configure ->
 
-    css.addFile "main", clientFiles + "/stylesheets/reset.css"
-    css.addFile "main", clientFiles + "/stylesheets/style.styl"
+    css.addFile clientFiles + "/stylesheets/reset.css"
+    css.addFile clientFiles + "/stylesheets/style.styl"
     css.addFile clientFiles + "/vendor/jquery.notice/jquery.notice.css"
 
     js.addUrl "/socket.io/socket.io.js"
@@ -69,7 +69,9 @@ exports.setUp = (app, io) ->
     js.addFile clientFiles + "/maindrawer.coffee"
 
     js.addFile "paint", clientFiles + "/main.coffee"
+
     js.addFile "frontpage", clientFiles + "/frontpage.coffee"
+    css.addFile "frontpage", clientFiles + "/stylesheets/frontpage.styl"
 
 
 

@@ -47,15 +47,18 @@ roomManager =
 
 
 app.get "/", (req, res) ->
-  res.send '''
-  <h1>Whiteboard</h1>
-  <p>Room:</p>
-  <form action="/" method="post" accept-charset="utf-8">
-  <p><input type="text" name="roomName" /></p>
-  <p><input type="submit" value="Go"></p>
-  <p><input type="submit" name="generate" value="Generate new"></p>
-  </form>
-  '''
+  res.render "index.jade",
+    layout: false
+
+  # res.send '''
+  # <h1>Whiteboard</h1>
+  # <p>Room:</p>
+  # <form action="/" method="post" accept-charset="utf-8">
+  # <p><input type="text" name="roomName" /></p>
+  # <p><input type="submit" value="Go"></p>
+  # <p><input type="submit" name="generate" value="Generate new"></p>
+  # </form>
+  # '''
 
 app.post "/", (req, res) ->
 

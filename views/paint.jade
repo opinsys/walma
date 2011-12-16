@@ -10,11 +10,16 @@ script.welcomeTemplate(type="x-handlebars-template")
       Just send link to this page and they can join in!
 
       If you run on any issues or you have a good idea for new feature
-      feel free to contact us. 
+      *feel* free to contact us.
 
-      TODO: Contact links: email, twitter, github issues.
-      TODO: Links to blog post
+        * dev@opinsys.fi
+        * [Known issues](https://github.com/opinsys/walma/issues)
+        * [Twitter](https://twitter.com/opinsys)
 
+    // .notSupported 
+    //   h2 Warning
+    //   :markdown
+    //     Your browser does
 
     button.close Thanks!
 
@@ -68,7 +73,7 @@ script.roomInfoTemplate(type="x-handlebars-template")
 
     | {{else}}
 
-    p.warning This room is not persistent. It will be deleted automatically when it becomes inactive.
+    p.warning This room is not persistent. It will be deleted automatically when it has been inactive for one hour.
     p
       button.persist Persist
       button.delete Delete now
