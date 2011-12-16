@@ -41,6 +41,7 @@ exports.setUp = (app, io) ->
 
     js.addUrl "/socket.io/socket.io.js"
     js.addFile clientFiles + "/require.coffee"
+    js.addFile clientFiles + "/vendor/browserdetect.js"
     js.addFile clientFiles + "/vendor/modernizr.js"
     js.addFile clientFiles + "/vendor/require.js"
     js.addFile clientFiles + "/vendor/jquery.js"

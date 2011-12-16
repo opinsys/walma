@@ -1,8 +1,10 @@
-
 Backbone = require "backbone"
 _  = require 'underscore'
 
 views = NS "PWB.drawers.views"
+
+
+# alert "#{ BrowserDetect.OS } #{ BrowserDetect.browser } #{ navigator.userAgent }"
 
 
 supportedBrowser = do ->
@@ -23,6 +25,10 @@ supportedBrowser = do ->
       console.log "No canvas.toDataURL support"
       result = false
 
+  # iPad does not have FormData or file inputs, but otherwise it works very
+  # well. So don't show warning.
+  if BrowserDetect.OS is "iPad"
+    return true
 
   result
 
