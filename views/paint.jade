@@ -72,13 +72,13 @@ script.roomInfoTemplate(type="x-handlebars-template")
 
     | {{#if persistent}}
 
-    p This room is persistent. All drawings are saved automatically.
+    p This drawing is persistent. All drawings are saved automatically.
     p
       button.delete Delete now
 
     | {{else}}
 
-    p.warning This room is not persistent. It will be deleted automatically when it has been inactive for one hour.
+    p.warning This drawing is not persistent. It will be deleted automatically when it has been inactive for one hour.
     p
       button.persist Persist
       button.delete Delete now
