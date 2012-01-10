@@ -1,7 +1,7 @@
 !!! 5
 html(lang="en")
   head
-    title Walma Collaborative Whiteboard
+    title Walma Whiteboard
     !{renderStyleTags("frontpage")}
     !{renderScriptTags("frontpage")}
   body
@@ -9,7 +9,7 @@ html(lang="en")
 
     .content
 
-      h1 Walma - Collaborative Whiteboard
+      h1 Walma Whiteboard
 
       form(action="/", method="post", accept-charset="utf-8")
         input(type="submit", name="generate", value="New Drawing!")
@@ -17,4 +17,8 @@ html(lang="en")
         span Room id
         input.roomName(type="text", name="roomName")
         input(type="submit", value="Join existing")
+
+      .footer
+        a(href="http://walma.opinsys.fi") About
+
 
