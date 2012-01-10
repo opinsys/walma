@@ -1,3 +1,0 @@
-#!/bin/bash
-
-node_modules/.bin/supervisor -w lib,whiteboard.coffee,configure.coffee,bin -e 'coffee|js' server.js
