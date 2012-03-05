@@ -1,0 +1,176 @@
+{
+  "name": "whiteboard",
+  "version": "0.0.1",
+  "dependencies": {
+    "coffee-script": {
+      "version": "1.1.2"
+    },
+    "express": {
+      "version": "2.5.2",
+      "dependencies": {
+        "connect": {
+          "version": "1.8.2",
+          "dependencies": {
+            "formidable": {
+              "version": "1.0.8"
+            }
+          }
+        },
+        "mime": {
+          "version": "1.2.4"
+        },
+        "qs": {
+          "version": "0.4.0"
+        },
+        "mkdirp": {
+          "version": "0.0.7"
+        }
+      }
+    },
+    "jade": {
+      "version": "0.19.0",
+      "dependencies": {
+        "commander": {
+          "version": "0.2.1"
+        },
+        "mkdirp": {
+          "version": "0.2.1"
+        }
+      }
+    },
+    "markdown-js": {
+      "version": "0.0.3",
+      "dependencies": {
+        "test": {
+          "version": "0.4.3"
+        }
+      }
+    },
+    "piler": {
+      "version": "0.3.3",
+      "dependencies": {
+        "uglify-js": {
+          "version": "1.2.2"
+        },
+        "csso": {
+          "version": "1.2.8"
+        }
+      }
+    },
+    "useragent": {
+      "version": "1.0.4",
+      "dependencies": {
+        "yamlparser": {
+          "version": "0.0.2"
+        },
+        "request": {
+          "version": "2.2.9"
+        },
+        "semver": {
+          "version": "1.0.12"
+        }
+      }
+    },
+    "mongodb": {
+      "version": "0.9.6-23"
+    },
+    "socket.io": {
+      "version": "0.8.7",
+      "dependencies": {
+        "socket.io-client": {
+          "version": "0.8.7",
+          "dependencies": {
+            "uglify-js": {
+              "version": "1.0.6"
+            },
+            "websocket-client": {
+              "version": "1.0.0"
+            },
+            "xmlhttprequest": {
+              "version": "1.2.2"
+            }
+          }
+        },
+        "policyfile": {
+          "version": "0.0.4"
+        },
+        "redis": {
+          "version": "0.6.7"
+        }
+      }
+    },
+    "socket.io-client": {
+      "version": "0.8.5",
+      "dependencies": {
+        "uglify-js": {
+          "version": "1.0.6"
+        },
+        "websocket-client": {
+          "version": "1.0.0"
+        },
+        "xmlhttprequest": {
+          "version": "1.2.2"
+        }
+      }
+    },
+    "stylus": {
+      "version": "0.15.1",
+      "dependencies": {
+        "cssom": {
+          "version": "0.2.0"
+        },
+        "growl": {
+          "version": "1.1.0"
+        }
+      }
+    },
+    "backbone": {
+      "version": "0.5.3"
+    },
+    "underscore": {
+      "version": "1.1.7"
+    },
+    "underscore.string": {
+      "version": "1.1.6"
+    },
+    "async": {
+      "version": "0.1.15"
+    },
+    "supervisor": {
+      "version": "0.2.0"
+    },
+    "should": {
+      "version": "0.3.2"
+    },
+    "node-inspector": {
+      "version": "0.1.10",
+      "dependencies": {
+        "paperboy": {
+          "version": "0.0.3"
+        }
+      }
+    },
+    "mocha": {
+      "version": "0.5.0",
+      "dependencies": {
+        "commander": {
+          "version": "0.3.2"
+        },
+        "debug": {
+          "version": "0.1.0"
+        }
+      }
+    },
+    "jasmine-node": {
+      "version": "1.0.13",
+      "dependencies": {
+        "jasmine-reporters": {
+          "version": "0.1.0"
+        },
+        "requirejs": {
+          "version": "1.0.2"
+        }
+      }
+    }
+  }
+}
