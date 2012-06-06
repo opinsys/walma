@@ -130,6 +130,24 @@ app.get "/multipart", (req, res) ->
     </body>
   """
 
+app.post "/api/create_multipart", (req, res) ->
+  generateUniqueName "screenshot"
+    , (prefix, num) ->
+      "#{ prefix }-#{ num }"
+    , (err, roomName) ->
+      return res.send err.message if err
+      room = new Drawing roomName
+      room.fetch ->
+        fs.readFile req.files.image.path, (err, imageData) ->
+          return res.send err.message if err
+          room.saveImage "background", imageData, (err) ->
+
+            fs.unlink req.files.image.path, (err) ->
+              if err
+                console.info "Failed to remove", req.files.image, err
+
+            return res.send err.message if err
+            res.json url: "/#{ roomName }"
 
 app.post "/api/create", (req, res) ->
   generateUniqueName "screenshot"
