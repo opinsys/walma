@@ -114,6 +114,22 @@ app.get "/:room/published.png", withRoom (req, res, room) ->
       res.send data
 
 
+app.get "/multipart", (req, res) ->
+  res.send """
+    <!doctype html>
+    <head>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+      <title>POST</title>
+    </head>
+    <body>
+      <form action="/api/create_multipart" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+       <input name=image type=file />
+       <input type=submit value="Send image" />
+      </form>
+    </body>
+  """
+
 
 app.post "/api/create", (req, res) ->
   generateUniqueName "screenshot"
