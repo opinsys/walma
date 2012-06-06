@@ -4,7 +4,7 @@
 
 Walma is a collaborative whiteboard tool written with Node.js and CoffeeScript.
 
-http://www.opinsys.fi/en/new-prototype-walma-collaborative-whiteboard
+http://walma.opinsys.fi/
 
 
 
