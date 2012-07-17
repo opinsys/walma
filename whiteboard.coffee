@@ -147,6 +147,7 @@ app.post "/api/create_multipart", (req, res) ->
                 console.info "Failed to remove", req.files.image, err
 
             return res.send err.message if err
+            desktopSockets.in(req.body.remotekey).emit("open-browser", { url: "/#{ roomName }" })
             res.json url: "/#{ roomName }"
 
 app.post "/api/create", (req, res) ->
@@ -227,6 +228,12 @@ app.get "/:room/bitmap/:pos", (req, res) ->
     else
       res.send data
 
+
+desktopSockets = io.of "/remote-start"
+desktopSockets.on "connection", (socket) ->
+  socket.on "join-desktop", (opts) ->
+    console.log "Joining: ", opts
+    socket.join opts.remote_key
 
 
 sockets = io.of "/drawer"
