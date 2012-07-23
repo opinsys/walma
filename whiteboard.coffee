@@ -235,6 +235,9 @@ desktopSockets.on "connection", (socket) ->
   socket.on "join-desktop", (opts) ->
     console.log "Joining: ", opts
     socket.join opts.remote_key
+  socket.on "leave-desktop", (opts) ->
+    console.log "Leaving: ", opts
+    socket.leave opts.remote_key
 
 
 sockets = io.of "/drawer"
