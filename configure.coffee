@@ -73,6 +73,8 @@ exports.setUp = (app, io) ->
 
     js.addFile "frontpage", clientFiles + "/frontpage.coffee"
     css.addFile "frontpage", clientFiles + "/stylesheets/frontpage.styl"
+    js.addFile "remotestart", clientFiles + "/remotestart.coffee"
+    css.addFile "remotestart", clientFiles + "/stylesheets/remotestart.styl"
 
 
 

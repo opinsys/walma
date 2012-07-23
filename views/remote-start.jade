@@ -1,0 +1,22 @@
+!!! 5
+html(lang="en")
+  head
+    title Walma Whiteboard
+    !{renderStyleTags("remotestart")}
+    !{renderScriptTags("remotestart")}
+  body
+
+    .content
+
+      h1 Walma Whiteboard - remote start
+
+      form(action="/remote-start", method="post", accept-charset="utf-8")
+        span Remote key
+        input.remoteKey(type="text", name="remoteKey")
+        input(type="submit", value="Start listening")
+
+      .footer
+        a(href="http://walma.opinsys.fi") About
+
+
+    div.
