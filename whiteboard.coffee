@@ -147,7 +147,8 @@ app.post "/api/create_multipart", (req, res) ->
                 console.info "Failed to remove", req.files.image, err
 
             return res.send err.message if err
-            desktopSockets.in(req.body.remotekey).emit("open-browser", { url: "/#{ roomName }" })
+            console.log "Send open-browser message: ", req.body.remote_key
+            desktopSockets.in(req.body.remote_key).emit("open-browser", { url: "/#{ roomName }" })
             res.json url: "/#{ roomName }"
 
 app.post "/api/create", (req, res) ->
