@@ -1,4 +1,5 @@
 fs = require "fs"
+gm = require "gm"
 express = require "express"
 _  = require 'underscore'
 _.mixin require 'underscore.string'
@@ -142,18 +143,32 @@ app.post "/api/create_multipart", (req, res) ->
       return res.send err.message if err
       room = new Drawing roomName
       room.fetch ->
-        fs.readFile req.files.image.path, (err, imageData) ->
-          return res.send err.message if err
-          room.saveImage "background", imageData, (err) ->
+        widths = []
+        heights = []
 
-            fs.unlink req.files.image.path, (err) ->
-              if err
-                console.info "Failed to remove", req.files.image, err
+        # Find clients minium resolutions
+        for client in desktopSockets.clients(req.body.remote_key)
+          client.get "resolution", (err, resolution) ->
+            widths.push resolution.width
+            heights.push resolution.height
+        minWidth = Math.min.apply null, widths
+        minHeight = Math.min.apply null, heights
+     
+        gm(req.files.image.path)
+        .resize(minWidth, minHeight)
+        .write req.files.image.path, ->
 
-            return res.send err.message if err
-            console.log "Send open-browser message: ", req.body.remote_key
-            desktopSockets.in(req.body.remote_key).emit("open-browser", { url: "/#{ roomName }" })
-            res.json url: "/#{ roomName }"
+          fs.readFile req.files.image.path, (err, imageData) ->
+            room.saveImage "background", imageData, (err) ->
+
+              fs.unlink req.files.image.path, (err) ->
+                if err
+                  console.info "Failed to remove", req.files.image, err
+  
+              return res.send err.message if err
+              console.log "Send open-browser message: ", req.body.remote_key
+              desktopSockets.in(req.body.remote_key).emit("open-browser", { url: "/#{ roomName }" })
+              res.json url: "/#{ roomName }"
 
 app.post "/api/create", (req, res) ->
   generateUniqueName "screenshot"
@@ -242,6 +257,8 @@ desktopSockets.on "connection", (socket) ->
   socket.on "leave-desktop", (opts) ->
     console.log "Leaving: ", opts
     socket.leave opts.remote_key
+  socket.on 'set resolution', (resolution) ->
+    socket.set 'resolution', resolution, ->
 
 
 sockets = io.of "/drawer"

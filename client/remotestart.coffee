@@ -16,6 +16,10 @@ $ ->
       socket.emit "leave-desktop", { remote_key: currentRemoteKey }
     newRemoteKey = $('[name=remoteKey]').val()
     socket.emit "join-desktop", { remote_key: newRemoteKey }
+    # Set client resolution
+    socket.emit "set resolution",
+      width: $(window).width(),
+      height: $(window).height()
     currentRemoteKey = newRemoteKey
     false
   
