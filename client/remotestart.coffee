@@ -1,10 +1,12 @@
 console.log "walma-remote-start"
 
+server = window.location.protocol + "//" + window.location.host
+
 socket = io.connect().of("/remote-start")
  
 socket.on "open-browser", (opts) ->
   console.log "Open new window"
-  window.open "http://localhost" + opts.url
+  window.open server + opts.url
 
 currentRemoteKey = ""
 newRemoteKey = ""
