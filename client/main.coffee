@@ -213,10 +213,10 @@ $ ->
     $("canvas.loading").removeClass "loading"
     $("div.loading").remove()
 
-
-    l = new views.LightBox
-      subviews: [ new views.Welcome ]
-    l.render()
+    if main.model.attributes.roomName.indexOf("screenshot-") != 0
+      l = new views.LightBox
+        subviews: [ new views.Welcome ]
+      l.render()
 
 
     notifications.info "There are now #{ status.getClientCount() - 1} other users in this room."
