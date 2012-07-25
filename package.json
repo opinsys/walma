@@ -29,5 +29,6 @@
       , "underscore.string": "1.1.6"
       , "socket.io": ""
       , "async": ""
+      , "gm": ""
   }
 }
