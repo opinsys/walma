@@ -75,10 +75,6 @@ app.post "/", (req, res) ->
     res.setHeader "Location", "/" + req.body.roomName
     res.send 302
 
-app.get "/remote-start", (req, res) ->
-  res.render "remote-start.jade",
-    layout: false
-
 app.get "/delete", (req, res) ->
   Drawing.deleteExpiredRooms (err, count) ->
     if err
