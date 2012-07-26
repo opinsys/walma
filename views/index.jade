@@ -4,8 +4,11 @@ html(lang="en")
     title Walma Whiteboard
     !{renderStyleTags("frontpage")}
     !{renderScriptTags("frontpage")}
+    !{renderScriptTags("remotestart")}
   body
     | <a href="http://github.com/opinsys/walma"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/71eeaab9d563c2b3c590319b398dd35683265e85/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub"></a>
+
+    div(class="pageOverlay", style="display: none;")
 
     .content
 
@@ -17,6 +20,34 @@ html(lang="en")
         span Room id
         input.roomName(type="text", name="roomName")
         input(type="submit", value="Join existing")
+
+      .startProjector
+        form
+          h2 Walma Projector
+          span Camera id
+          input.remoteKey(type="text", name="remoteKey")				
+          input(type="submit", value="Start projector")
+
+      .projectorInfo
+        a(href="#", class="close") Sulje
+        h2 Walma projektori
+        p
+          span Projektori on nyt käynnissä ja kamera id:ksi on asetettu 
+          span(class="cameraId")
+          span . Aseta sama kamera id mobiililaiteen Walma Camera sovellukseen. Tämän jälkeen lähettämäsi kuvat avataan automaattisesti tällä selaimella!
+        p
+          div Walma Cameran asennusohjeet:
+          ul
+            li
+              a(href="https://github.com/opinsys/walma-android", target="_blank") Android
+            li
+              a(href="https://github.com/opinsys/walma-ios", target="_blank") iPad
+
+
+        form
+          span Kamera id 
+          input.remoteKey(type="text", name="remoteKey")
+          input(type="submit", value="Vaihda kamera id")
 
       .footer
         a(href="http://walma.opinsys.fi") About
