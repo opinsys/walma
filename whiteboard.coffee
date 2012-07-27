@@ -137,6 +137,13 @@ app.get "/multipart", (req, res) ->
   """
 
 app.post "/api/create_multipart", (req, res) ->
+  if req.body.cameraId?
+    cameraId = req.body.cameraId
+  else
+    if req.body.remotekey?
+      cameraId = req.body.remotekey
+      console.log "Warning: client use old parameter name:", cameraId
+
   cameraId = req.body.cameraId or req.body.remote_key
   generateUniqueName "screenshot"
     , (prefix, num) ->
