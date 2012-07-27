@@ -5,7 +5,7 @@ socket = io.connect().of("/remote-start")
 socket.on "open-browser", (opts) ->
   window.open server + opts.url
 
-currentRemoteKey = ""
+currentCameraId = ""
 
 $ ->
   blank_camera_id = "Camera id can't be blank"
@@ -27,45 +27,45 @@ $ ->
     $(this).click()
 
   $(".startProjector input[type=submit]").click ->
-    newRemoteKey = $('.startProjector [name=remoteKey]').val()
-    if newRemoteKey is ""
+    newCameraId = $('.startProjector [name=cameraId]').val()
+    if newCameraId is ""
       $('.error').text(blank_camera_id)
       return false
     e = $('.projectorInfo')
     e.css 'top', $(this).position().top + $(this).height() - e.height()
-    $('.projectorInfo input[name=remoteKey]').val(newRemoteKey)
-    $('.cameraId').text(newRemoteKey)
+    $('.projectorInfo input[name=cameraId]').val(newCameraId)
+    $('.cameraId').text(newCameraId)
     e.show()
     $('.pageOverlay').show()
-    startListening newRemoteKey
+    startListening newCameraId
     false
 
   $(".projectorInfo input[type=submit]").click ->
-    newRemoteKey = $('.projectorInfo input[name=remoteKey]').val()
-    if newRemoteKey is ""
+    newCameraId = $('.projectorInfo input[name=cameraId]').val()
+    if newCameraId is ""
       $('.error').text(blank_camera_id)
       return false
-    $('.cameraId').text(newRemoteKey)
-    startListening newRemoteKey
+    $('.cameraId').text(newCameraId)
+    startListening newCameraId
     false
 
   $(".projectorInfo a.close").click ->
-    if currentRemoteKey isnt ""
-      socket.emit "leave-desktop", { remote_key: currentRemoteKey }
-    currentRemoteKey = ""
-    $('.startProjector [name=remoteKey]').val("")
+    if currentCameraId isnt ""
+      socket.emit "leave-desktop", { cameraId: currentCameraId }
+    currentCameraId = ""
+    $('.startProjector [name=cameraId]').val("")
     $('.projectorInfo').hide(500)
     $('.pageOverlay').hide()
     false
-
-startListening = (newRemoteKey) ->
+  
+startListening = (newCameraId) ->
   $('.error').text("")
-  if currentRemoteKey isnt ""
-    socket.emit "leave-desktop", { remote_key: currentRemoteKey }
-  socket.emit "join-desktop", { remote_key: newRemoteKey }
+  if currentCameraId isnt ""
+    socket.emit "leave-desktop", { cameraId: currentCameraId }
+  socket.emit "join-desktop", { cameraId: newCameraId }
   # Set client resolution
   socket.emit "set resolution",
     width: $(window).width(),
     height: $(window).height()
-  currentRemoteKey = newRemoteKey
+  currentCameraId = newCameraId
 

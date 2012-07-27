@@ -137,6 +137,7 @@ app.get "/multipart", (req, res) ->
   """
 
 app.post "/api/create_multipart", (req, res) ->
+  cameraId = req.body.cameraId or req.body.remote_key
   generateUniqueName "screenshot"
     , (prefix, num) ->
       "#{ prefix }-#{ num }"
@@ -148,7 +149,7 @@ app.post "/api/create_multipart", (req, res) ->
         heights = []
 
         # Find clients minium resolutions
-        for client in desktopSockets.clients(req.body.remote_key)
+        for client in desktopSockets.clients(cameraId)
           client.get "resolution", (err, resolution) ->
             widths.push resolution.width
             heights.push resolution.height
@@ -167,8 +168,8 @@ app.post "/api/create_multipart", (req, res) ->
                   console.info "Failed to remove", req.files.image, err
   
               return res.send err.message if err
-              console.log "Send open-browser message: ", req.body.remote_key
-              desktopSockets.in(req.body.remote_key).emit("open-browser", { url: "/#{ roomName }" })
+              console.log "Send open-browser message: ", cameraId
+              desktopSockets.in(cameraId).emit("open-browser", { url: "/#{ roomName }" })
               res.json url: "/#{ roomName }"
 
 app.post "/api/create", (req, res) ->
@@ -254,10 +255,10 @@ desktopSockets = io.of "/remote-start"
 desktopSockets.on "connection", (socket) ->
   socket.on "join-desktop", (opts) ->
     console.log "Joining: ", opts
-    socket.join opts.remote_key
+    socket.join opts.cameraId
   socket.on "leave-desktop", (opts) ->
     console.log "Leaving: ", opts
-    socket.leave opts.remote_key
+    socket.leave opts.cameraId
   socket.on 'set resolution', (resolution) ->
     socket.set 'resolution', resolution, ->
 
