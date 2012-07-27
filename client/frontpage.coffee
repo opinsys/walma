@@ -59,6 +59,7 @@ $ ->
     false
 
 startListening = (newRemoteKey) ->
+  $('.error').text("")
   if currentRemoteKey isnt ""
     socket.emit "leave-desktop", { remote_key: currentRemoteKey }
   socket.emit "join-desktop", { remote_key: newRemoteKey }
