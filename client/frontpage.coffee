@@ -8,6 +8,7 @@ socket.on "open-browser", (opts) ->
 currentRemoteKey = ""
 
 $ ->
+  blank_camera_id = "Camera id can't be blank"
 
   # Projector form is hidden. Show only if projector parameter is set.
   # This code shoubld be deleted when Projector feature published
@@ -27,10 +28,13 @@ $ ->
 
   $(".startProjector input[type=submit]").click ->
     newRemoteKey = $('.startProjector [name=remoteKey]').val()
+    if newRemoteKey is ""
+      $('.error').text(blank_camera_id)
+      return false
     e = $('.projectorInfo')
     e.css 'top', $(this).position().top + $(this).height() - e.height()
     $('.projectorInfo input[name=remoteKey]').val(newRemoteKey)
-    $('.cameraId').text(newRemoteKey).html
+    $('.cameraId').text(newRemoteKey)
     e.show()
     $('.pageOverlay').show()
     startListening newRemoteKey
@@ -38,7 +42,10 @@ $ ->
 
   $(".projectorInfo input[type=submit]").click ->
     newRemoteKey = $('.projectorInfo input[name=remoteKey]').val()
-    $('.cameraId').text(newRemoteKey).html
+    if newRemoteKey is ""
+      $('.error').text(blank_camera_id)
+      return false
+    $('.cameraId').text(newRemoteKey)
     startListening newRemoteKey
     false
 

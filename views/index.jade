@@ -27,6 +27,7 @@ html(lang="en")
         form
           h2 Walma Projector
           span Camera id
+          div(class="error")
           input.remoteKey(type="text", name="remoteKey")				
           input(type="submit", value="Start projector")
 
@@ -50,6 +51,7 @@ html(lang="en")
           span Camera id 
           input.remoteKey(type="text", name="remoteKey")
           input(type="submit", value="Change camera id")
+          span(class="error")
 
       .footer
         a(href="http://walma.opinsys.fi") About
