@@ -48,9 +48,14 @@ roomManager =
 
 
 app.get "/", (req, res) ->
-  res.render "index.jade",
-    layout: false
+  projector = "false"
+  if req.query["projector"]?
+    projector = "true"
 
+  res.render "index.jade",
+    layout: false,
+    locals: { projector: projector }
+ 
   # res.send '''
   # <h1>Whiteboard</h1>
   # <p>Room:</p>

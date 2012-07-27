@@ -8,6 +8,18 @@ socket.on "open-browser", (opts) ->
 currentRemoteKey = ""
 
 $ ->
+
+  # Projector form is hidden. Show only if projector parameter is set.
+  # This code shoubld be deleted when Projector feature published
+  if projector
+    $(".startProjector").show()
+  else
+    footer = $('.footer')
+    footer.css('text-align', 'center')
+    footer.css('padding-top', '10px')
+    footer.css('position', 'absolute')
+    footer.css('bottom', '1em')
+
   buttons = $("form input[type='submit']")
 
   buttons.bind "tap", ->
