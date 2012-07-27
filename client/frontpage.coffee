@@ -18,7 +18,7 @@ $ ->
     e = $('.projectorInfo')
     e.css 'top', $(this).position().top + $(this).height() - e.height()
     $('.projectorInfo input[name=remoteKey]').val(newRemoteKey)
-    $('.cameraId').html(newRemoteKey)
+    $('.cameraId').text(newRemoteKey).html
     e.show()
     $('.pageOverlay').show()
     startListening newRemoteKey
@@ -26,7 +26,7 @@ $ ->
 
   $(".projectorInfo input[type=submit]").click ->
     newRemoteKey = $('.projectorInfo input[name=remoteKey]').val()
-    $('.cameraId').html(newRemoteKey)
+    $('.cameraId').text(newRemoteKey).html
     startListening newRemoteKey
     false
 
