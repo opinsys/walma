@@ -137,14 +137,13 @@ app.get "/multipart", (req, res) ->
   """
 
 app.post "/api/create_multipart", (req, res) ->
-  if req.body.cameraId?
+  if req.body.cameraId
     cameraId = req.body.cameraId
   else
-    if req.body.remotekey?
+    if req.body.remotekey
       cameraId = req.body.remotekey
       console.log "Warning: client use old parameter name:", cameraId
 
-  cameraId = req.body.cameraId or req.body.remote_key
   generateUniqueName "screenshot"
     , (prefix, num) ->
       "#{ prefix }-#{ num }"
@@ -156,10 +155,13 @@ app.post "/api/create_multipart", (req, res) ->
         heights = []
 
         # Find clients minium resolutions
-        for client in desktopSockets.clients(cameraId)
-          client.get "resolution", (err, resolution) ->
-            widths.push resolution.width
-            heights.push resolution.height
+        if cameraId
+          for client in desktopSockets.clients(cameraId)
+            client.get "resolution", (err, resolution) ->
+              if resolution
+                widths.push resolution.width
+                heights.push resolution.height
+  
         minWidth = Math.min.apply null, widths
         minHeight = Math.min.apply null, heights
      
@@ -168,6 +170,7 @@ app.post "/api/create_multipart", (req, res) ->
         .write req.files.image.path, ->
 
           fs.readFile req.files.image.path, (err, imageData) ->
+            throw err if err
             room.saveImage "background", imageData, (err) ->
 
               fs.unlink req.files.image.path, (err) ->
@@ -175,8 +178,10 @@ app.post "/api/create_multipart", (req, res) ->
                   console.info "Failed to remove", req.files.image, err
   
               return res.send err.message if err
-              console.log "Send open-browser message: ", cameraId
-              desktopSockets.in(cameraId).emit("open-browser", { url: "/#{ roomName }" })
+
+              if cameraId
+                console.log "Send open-browser message: ", cameraId
+                desktopSockets.in(cameraId).emit("open-browser", { url: "/#{ roomName }" })
               res.json url: "/#{ roomName }"
 
 app.post "/api/create", (req, res) ->
