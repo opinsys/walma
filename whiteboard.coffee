@@ -266,11 +266,13 @@ app.get "/:room/bitmap/:pos", (req, res) ->
 desktopSockets = io.of "/remote-start"
 desktopSockets.on "connection", (socket) ->
   socket.on "join-desktop", (opts) ->
-    console.log "Joining: ", opts
-    socket.join opts.cameraId
+    if opts && opts.cameraId
+      console.log "Joining: ", opts
+      socket.join opts.cameraId
   socket.on "leave-desktop", (opts) ->
-    console.log "Leaving: ", opts
-    socket.leave opts.cameraId
+    if opts && opts.cameraId
+      console.log "Leaving: ", opts
+      socket.leave opts.cameraId
   socket.on 'set resolution', (resolution) ->
     socket.set 'resolution', resolution, ->
 
