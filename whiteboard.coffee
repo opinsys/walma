@@ -167,6 +167,7 @@ app.post "/api/create_multipart", (req, res) ->
      
         gm(req.files.image.path)
         .resize(minWidth, minHeight)
+        .autoOrient()
         .write req.files.image.path, ->
 
           fs.readFile req.files.image.path, (err, imageData) ->
